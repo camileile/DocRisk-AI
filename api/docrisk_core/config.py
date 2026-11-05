@@ -22,7 +22,7 @@ PAGES_DIR = DATA_DIR / "pages"
 
 AI_PROVIDER = os.getenv("AI_PROVIDER", "gemini").strip().lower()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash").strip()
 GEMINI_RPM = int(os.getenv("GEMINI_RPM", "8"))
 
 LIMIAR_CONFIANCA = float(os.getenv("LIMIAR_CONFIANCA", "0.75"))

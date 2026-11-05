@@ -93,6 +93,21 @@ def _tipo_erro(exc: BaseException) -> str:
     return f"{type(exc).__name__}{f'({codigo})' if isinstance(codigo, int) else ''}"
 
 
+def _motivo_api(exc: BaseException) -> str:
+    """Resumo do erro devolvido pelo Google (status + mensagem curta), sem conteúdo do documento."""
+    partes = [_tipo_erro(exc)]
+    status = getattr(exc, "status", None)
+    mensagem = getattr(exc, "message", None)
+    if status:
+        partes.append(str(status))
+    if mensagem:
+        partes.append(re.sub(r"\s+", " ", str(mensagem))[:200])
+    texto = " — ".join(partes)
+    if getattr(exc, "code", None) == 404:
+        texto += ". Confira GEMINI_MODEL com: python -m docrisk_core.ai.poc_gemini --modelos"
+    return texto
+
+
 def _retry_after(exc: BaseException) -> float | None:
     """Segundos sugeridos pelo servidor: cabeçalho Retry-After ou RetryInfo.retryDelay."""
     resposta = getattr(exc, "response", None)
@@ -228,7 +243,7 @@ class GeminiProvider:
                             self.modelo, VERSAO_PROMPT, tentativa, self.max_tentativas, ms,
                             _tipo_erro(exc), transitorio)
                 if not transitorio:
-                    raise ErroIAPermanente(f"Gemini recusou a chamada ({_tipo_erro(exc)}).") from exc
+                    raise ErroIAPermanente(f"Gemini recusou a chamada ({_motivo_api(exc)}).") from exc
                 if tentativa == self.max_tentativas:
                     raise ErroIATransitorio(
                         f"Gemini indisponível após {self.max_tentativas} tentativas ({_tipo_erro(exc)}).") from exc

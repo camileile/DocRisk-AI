@@ -150,6 +150,12 @@ def test_erro_permanente_nao_repete():
     assert len(cliente.chamadas) == 1
 
 
+def test_modelo_inexistente_explica_o_motivo():
+    p, _ = provedor(ClienteFalso(erro_api(404)))
+    with pytest.raises(ErroIAPermanente, match="404.*falha simulada.*GEMINI_MODEL"):
+        p.analisar(PNG)
+
+
 def test_limite_maximo_de_tentativas():
     cliente = ClienteFalso(*[erro_api(503) for _ in range(3)])
     p, r = provedor(cliente, max_tentativas=3, espera_base=1.0)
