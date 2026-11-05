@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docrisk-core"
+version = "0.2.0"
+description = "DocRisk AI - motor documental, regras e API (Hack Garanhuns Tech 2026, Desafio 3)"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.30,<1",
+  "python-multipart>=0.0.18,<1",
+  "python-dotenv>=1.0,<2",
+  "PyMuPDF>=1.24,<2",
+  "Pillow>=10,<13",
+  "pytesseract>=0.3.10,<1",
+  "google-genai>=1.0,<2",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10", "httpx>=0.27,<1"]
+
+[project.scripts]
+docrisk-inspect = "docrisk_core.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.setuptools.packages.find]
+include = ["docrisk_core*"]
+
+[tool.setuptools.package-data]
+docrisk_core = ["db/schema.sql"]

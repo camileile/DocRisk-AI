@@ -1,0 +1,30 @@
+# Segredos
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# Dados gerados em execução (uploads, páginas, banco) — nunca versionar
+api/data/
+*.sqlite
+*.db
+uploads/
+private/
+reports/
+
+# Documentos: por padrão nada de PDF/AEJ entra no Git (risco de dado real).
+# Exceção: o lote SINTÉTICO gerado pelo script da equipe.
+*.pdf
+*.aej
+*.p7s
+!api/scripts/lote_demo/*.pdf
+
+# Front
+web/node_modules/
+web/.next/
