@@ -136,7 +136,8 @@ PONTO_P2 = "Matrícula: T001\n" + "16/10 08:00 12:00 13:00 17:00\n" * 40 + "TOTA
 
 def test_bug1_revisao_nao_e_forcada_para_todos():
     assert all(g["needs_review"] for g in _sprint01([PONTO_P1]))  # comportamento antigo
-    [s] = segmentar([analisar_texto(PONTO_P1.replace("Página 1 de 2", "Página 1 de 1"))])
+    completo = PONTO_P1.replace("Página 1 de 2", "TOTAL DE HORAS EXTRAS: 2,00 h\nPágina 1 de 1")
+    [s] = segmentar([analisar_texto(completo)])
     assert s.alertas == [] and rotear(s, CONTRATO, 0.75).status is S.APTO
 
 
@@ -165,9 +166,11 @@ def test_bug4_troca_de_trabalhador_em_pagina_de_continuacao():
 
 
 # --- roteamento -----------------------------------------------------------
-def seg(tipo=T.HOLERITE, trab="T001", comp="10/2026", conf=0.9, ileg=(), falt=(), alertas=()):
+def seg(tipo=T.HOLERITE, trab="T001", comp="10/2026", conf=0.9, ileg=(), falt=(), alertas=(),
+        campos=None):
+    campos = CamposPagina(horas_extras_h=8) if campos is None else campos
     return SegmentoDocumento(paginas=[1], tipo=tipo, trabalhador_id=trab, competencia=comp, confianca=conf,
-                             campos=CamposPagina(), paginas_ilegiveis=list(ileg),
+                             campos=campos, paginas_ilegiveis=list(ileg),
                              paginas_faltantes=list(falt), alertas=list(alertas))
 
 
@@ -202,6 +205,19 @@ def test_nao_prioritario_nao_gera_pendencia():
     r = rotear(seg(T.CONTRATO, trab=None, comp=None, falt=[2]), CONTRATO, 0.75)
     assert r.status is S.REVISAO_HUMANA and r.motivos_pendencia == []
     assert rotear(seg(T.CONTRATO, trab=None, comp=None), CONTRATO, 0.75).status is S.APTO
+
+
+def test_foco_sem_nenhum_campo_vai_para_revisao():
+    # Achado no teste real com Gemini: holerite só com cabeçalho saía APTO.
+    r = rotear(seg(campos=CamposPagina()), CONTRATO, 0.75)
+    assert r.status is S.REVISAO_HUMANA and r.motivos_pendencia == []
+    assert "Nenhum campo" in r.motivos_revisao[-1]
+
+
+def test_tipo_outro_vai_para_revisao():
+    # Achado no teste real com Gemini: anotação solta classificada como OUTRO com confiança 1.0.
+    r = rotear(seg(T.OUTRO, trab=None, comp=None, conf=1.0), CONTRATO, 0.75)
+    assert r.status is S.REVISAO_HUMANA and "OUTRO" in r.motivos_revisao[0]
 
 
 def test_baixa_confianca_ou_alerta_e_incerteza_nao_pendencia():

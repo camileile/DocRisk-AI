@@ -19,9 +19,9 @@ def rotear(segmento: SegmentoDocumento, trabalhadores_do_contrato: set[str],
     """Decide o status do documento.
 
     PENDENTE_CORRECAO (só tipos de foco): página ilegível ou página faltante comprovada.
-    REVISAO_HUMANA: tipo DESCONHECIDO; confiança < limiar; alertas da segmentação;
-        documento de foco sem trabalhador/competência; trabalhador fora do contrato;
-        problema objetivo em documento FORA do foco.
+    REVISAO_HUMANA: tipo DESCONHECIDO ou OUTRO; confiança < limiar; alertas da segmentação;
+        documento de foco sem trabalhador/competência, fora do contrato ou sem nenhum
+        campo de horas/valores; problema objetivo em documento FORA do foco.
     APTO: o resto. Pendência tem precedência sobre revisão.
     """
     foco = segmento.tipo in TIPOS_FOCO
@@ -37,6 +37,8 @@ def rotear(segmento: SegmentoDocumento, trabalhadores_do_contrato: set[str],
 
     if segmento.tipo is TipoDocumento.DESCONHECIDO:
         revisao.append("Tipo documental não identificado")
+    elif segmento.tipo is TipoDocumento.OUTRO:
+        revisao.append("Documento classificado como OUTRO (fora do catálogo); confirmar o tipo")
     elif segmento.confianca < limiar_confianca:
         revisao.append(f"Confiança de classificação baixa ({segmento.confianca:.2f} < {limiar_confianca:.2f})")
     revisao.extend(segmento.alertas)
@@ -48,6 +50,10 @@ def rotear(segmento: SegmentoDocumento, trabalhadores_do_contrato: set[str],
             revisao.append(f"Trabalhador {segmento.trabalhador_id} não cadastrado neste contrato")
         if not segmento.competencia:
             revisao.append("Competência não identificada")
+        c = segmento.campos
+        if all(v is None for v in (c.horas_extras_h, c.horas_extras_valor, c.valor_liquido, c.valor_pago)):
+            # Ex.: holerite só com cabeçalho. Legível, mas sem conteúdo útil: incerteza, não pendência.
+            revisao.append("Nenhum campo de horas ou valores extraído; conferir o conteúdo do documento")
 
     revisao = list(dict.fromkeys(revisao))  # sem duplicatas, ordem preservada
     if pendencia:
