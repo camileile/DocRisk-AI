@@ -10,7 +10,7 @@ import io
 from collections.abc import Iterator
 from dataclasses import dataclass
 
-import fitz
+import pymupdf as fitz
 from PIL import Image, ImageSequence, UnidentifiedImageError
 
 from .. import config

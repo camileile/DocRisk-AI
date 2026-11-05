@@ -3,7 +3,7 @@ import hashlib
 import logging
 import time
 
-import fitz
+import pymupdf as fitz
 import pytest
 
 from docrisk_core import config, db

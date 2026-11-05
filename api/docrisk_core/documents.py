@@ -7,7 +7,7 @@ from __future__ import annotations
 from io import BytesIO
 from typing import Any
 import re
-import fitz
+import pymupdf as fitz
 from PIL import Image, UnidentifiedImageError
 import pytesseract
 

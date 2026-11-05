@@ -15,7 +15,7 @@ import sys
 import time
 from pathlib import Path
 
-import fitz
+import pymupdf as fitz
 
 from . import ErroIA
 from .gemini import GeminiProvider, listar_modelos_visao

@@ -1,7 +1,7 @@
 """F2 — renderização de lotes (pipeline/render.py)."""
 import io
 
-import fitz
+import pymupdf as fitz
 import pytest
 from PIL import Image
 

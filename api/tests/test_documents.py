@@ -1,5 +1,5 @@
 import shutil
-import fitz
+import pymupdf as fitz
 import pytest
 from io import BytesIO
 from PIL import Image, ImageDraw
