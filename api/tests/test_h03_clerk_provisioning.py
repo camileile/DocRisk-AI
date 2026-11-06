@@ -118,7 +118,7 @@ def test_synthetic_worker_provisioning_is_scoped_audited_and_idempotent(real_env
         assert response.status_code == 200
         assert {"SYNW001", "SYNW002"} <= {x["id"] for x in response.json()}
         forbidden = client.get("/api/contracts/CT-001/workers", headers=state["headers"]("u-gestor-alfa"))
-        assert forbidden.status_code == 200  # contratante do contrato pode consultar os identificadores
+        assert forbidden.status_code == 403  # contratante só consulta pareceres publicados
 
     with db.tx() as conn:
         assert conn.execute("SELECT count(*) FROM workers WHERE id LIKE 'SYNW%'").fetchone()[0] == 2
