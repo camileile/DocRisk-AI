@@ -33,13 +33,18 @@ def test_six_profiles_from_auditor_registration_to_published_report(banco, monke
             "contratante_id": contractor["id"], "contrato_nome": "Contrato Integração",
         })
         contract = supplier["contract_id"]
-        analyst = auth(post("/api/admin/users", admin, {"nome": "Analista Integração", "org_id": auditor["id"], "papel": "ANALISTA_BH"}))
+        analyst_result = post("/api/admin/users", admin, {"nome": "Analista Integração", "org_id": auditor["id"], "papel": "ANALISTA_BH"})
+        analyst = auth(analyst_result)
         manager = auth(post("/api/admin/users", admin, {"nome": "Gestor Fornecedora", "org_id": supplier["id"], "papel": "GESTOR_FORN"}))
         customer = auth(post("/api/admin/users", admin, {"nome": "Gestor Contratante", "org_id": contractor["id"], "papel": "GESTOR_CONTR"}))
         # 3. Gestor da fornecedora cadastra operador na mesma organização.
         operator_result = post("/api/supplier/operators", manager, {"nome": "Operador Integração"})
         operator = auth(operator_result)
         assert operator_result["org_id"] == supplier["id"]
+        for target, actor in ((analyst_result, admin), (operator_result, manager)):
+            assert client.get('/api/contracts', headers=auth(target)).json() == []
+            assert client.put(f"/api/contract-access/users/{target['id']}/contracts/{contract}",
+                              headers=actor, json={'ativo': True}).status_code == 200
         # Preparação do cadastro sintético de trabalhador (ainda sem tela própria no MVP).
         with db.tx() as conn:
             conn.execute("INSERT INTO workers (id,nome,contract_id) VALUES ('T900','Trabalhador Sintético',?)", (contract,))
@@ -51,8 +56,12 @@ def test_six_profiles_from_auditor_registration_to_published_report(banco, monke
         assert upload.status_code == 202, upload.text
         batch = upload.json()["batch_id"]
         assert client.get(f"/api/batches/{batch}", headers=manager).status_code == 200
-        # Outro operador da mesma empresa pode consultar o envio.
-        colleague = auth(post("/api/supplier/operators", manager, {"nome": "Colega Integração"}))
+        # Colega só compartilha o envio depois da atribuição explícita.
+        colleague_result = post("/api/supplier/operators", manager, {"nome": "Colega Integração"})
+        colleague = auth(colleague_result)
+        assert client.get(f"/api/batches/{batch}/documents", headers=colleague).status_code == 404
+        assert client.put(f"/api/contract-access/users/{colleague_result['id']}/contracts/{contract}",
+                          headers=manager, json={'ativo': True}).status_code == 200
         assert len(client.get(f"/api/batches/{batch}/documents", headers=colleague).json()) == 2
         # 5. Analista publica; antes disso nada chega à contratante.
         assert client.get("/api/client/reports", headers=customer).json() == []

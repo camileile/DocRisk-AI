@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 import path from "node:path";
 const productionAuth = process.env.NEXT_PUBLIC_AUTH_MODE === "clerk";
+// A build pública é sempre exportação estática, sem login nem API.
+if (productionAuth && process.env.NEXT_PUBLIC_DOCRISK_PUBLIC_DEMO === "1")
+  throw new Error("NEXT_PUBLIC_DOCRISK_PUBLIC_DEMO=1 não pode ser combinado com NEXT_PUBLIC_AUTH_MODE=clerk.");
 // O SDK inclui Server Actions. Elas não fazem parte da exportação offline.
 const aliases: Record<string, string> = {
   "@docrisk/clerk": productionAuth ? "./lib/clerk-sdk.tsx" : "./lib/clerk-offline.tsx",

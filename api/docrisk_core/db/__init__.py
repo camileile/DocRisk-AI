@@ -12,12 +12,13 @@ import secrets
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .. import config
 
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")
+MIGRATIONS_PATH = Path(__file__).with_name("migrations")
 
 
 def agora() -> str:
@@ -53,11 +54,26 @@ def init_db(seed: bool = True) -> None:
     conn = connect()
     try:
         conn.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
+        _apply_migrations(conn)
         if seed:
             seed_demo(conn)
         conn.commit()
     finally:
         conn.close()
+
+
+def _apply_migrations(conn: sqlite3.Connection) -> None:
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS schema_migrations ("
+        "version TEXT PRIMARY KEY, applied_at TEXT NOT NULL)"
+    )
+    for migration in sorted(MIGRATIONS_PATH.glob("*.sql")):
+        version = migration.name
+        if conn.execute("SELECT 1 FROM schema_migrations WHERE version=?", (version,)).fetchone():
+            continue
+        conn.executescript(migration.read_text(encoding="utf-8"))
+        conn.execute("INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)",
+                     (version, agora()))
 
 
 # ---------------------------------------------------------------------------
@@ -106,3 +122,14 @@ def seed_demo(conn: sqlite3.Connection) -> None:
         CONTRATOS,
     )
     conn.executemany("INSERT OR IGNORE INTO workers VALUES (?, ?, ?)", TRABALHADORES)
+    # Só personas fixas da demo; não concede novos contratos automaticamente
+    # nem reativa concessões revogadas após reiniciar a aplicação.
+    for uid, contract_id, manager in (
+        ("u-analista", "CT-001", "u-admin"), ("u-analista", "CT-002", "u-admin"),
+        ("u-oper-beta", "CT-001", "u-gestor-beta"), ("u-oper-gama", "CT-002", "u-admin"),
+    ):
+        conn.execute(
+            "INSERT INTO user_contract_grants (user_id,contract_id,granted_by,granted_at) "
+            "SELECT ?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM user_contract_grants "
+            "WHERE user_id=? AND contract_id=?)",
+            (uid, contract_id, manager, datetime.now(timezone.utc).isoformat(), uid, contract_id))

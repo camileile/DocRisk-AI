@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -20,6 +20,7 @@ import { useSession } from "@/components/demo-provider";
 import { roleLabels, type Papel } from "@/lib/api";
 import { DEMO_ROLES } from "@/lib/offline-demo";
 import { demoApiEnabled, demoApiToken } from "@/lib/demo-api";
+import { publicDemoOnly } from "@/lib/auth-mode";
 
 const icons: Record<Papel, LucideIcon> = {
   ADMIN_PLATAFORMA: Layers3,
@@ -50,11 +51,15 @@ export default function Access({ operational = false }: { operational?: boolean 
   const [entering, setEntering] = useState(false);
   const [token, setTokenInput] = useState("");
   const [tokenError, setTokenError] = useState("");
+  // O HTML pré-renderizado chega antes do React. Até a hidratação, o que fosse
+  // digitado ou clicado seria descartado (o campo controlado voltaria a vazio).
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
   const { login, enterDemo } = useSession();
   const router = useRouter();
 
   async function enter() {
-    if (entering) return;
+    if (entering || !hydrated) return;
     setEntering(true);
     setTokenError("");
     try {
@@ -68,7 +73,7 @@ export default function Access({ operational = false }: { operational?: boolean 
   }
 
   async function enterWithToken() {
-    if (entering || !token.trim()) return;
+    if (entering || !hydrated || !token.trim()) return;
     setEntering(true);
     setTokenError("");
     try {
@@ -117,7 +122,7 @@ export default function Access({ operational = false }: { operational?: boolean 
           <h2>{operational ? "Conectar ao ambiente de testes." : "Explorar a demonstração."}</h2>
           {!operational && <>
           <p>{demoApiEnabled ? "Escolha um perfil de teste. A API local permite enviar arquivos e acompanhar os resultados com dados sintéticos." : "Escolha um dos seis perfis para explorar a plataforma com dados fictícios, sem token e sem conexão com a API."}</p>
-          <fieldset className="persona-options">
+          <fieldset className="persona-options" disabled={!hydrated}>
             <legend>Perfil de acesso fictício</legend>
             {DEMO_ROLES.map((role) => {
               const Icon = icons[role];
@@ -140,7 +145,7 @@ export default function Access({ operational = false }: { operational?: boolean 
               );
             })}
           </fieldset>
-          <button className="button access-enter" onClick={() => { void enter(); }} disabled={entering}>
+          <button className="button access-enter" onClick={() => { void enter(); }} disabled={entering || !hydrated}>
             {entering ? "Entrando…" : demoApiEnabled ? "Entrar na demo com API" : "Explorar demonstração"} <ArrowRight size={18} />
           </button>
           {tokenError && <p className="api-access-error" role="alert">{tokenError}</p>}
@@ -148,7 +153,7 @@ export default function Access({ operational = false }: { operational?: boolean 
             {demoApiEnabled ? "Ambiente local de testes. Envios e alterações são gravados na API. Utilize somente documentos sintéticos."
               : "Perfis, documentos e indicadores são fictícios. A navegação funciona sem backend; envios, aprovações e publicações não são realizados neste modo."}
           </p>
-          <Link className="text-link" href="/operacao">Conectar à API de testes <ArrowRight size={16} /></Link>
+          {!publicDemoOnly && <Link className="text-link" href="/operacao">Conectar à API de testes <ArrowRight size={16} /></Link>}
           </>}
           {operational && <section className="api-access" aria-labelledby="api-access-title">
             <span className="eyebrow">
@@ -177,10 +182,10 @@ export default function Access({ operational = false }: { operational?: boolean 
                   autoComplete="off"
                   spellCheck={false}
                   required
-                  disabled={entering}
+                  disabled={entering || !hydrated}
                 />
               </div>
-              <button type="submit" className="button api-access-submit" disabled={entering || !token.trim()}>
+              <button type="submit" className="button api-access-submit" disabled={entering || !hydrated || !token.trim()}>
                 <PlugZap size={17} /> {entering ? "Conectando…" : "Conectar API de testes"}
               </button>
               {tokenError && (

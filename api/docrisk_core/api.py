@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from . import config, db
 from .clerk_identity import validate_configuration
 from .routes.identity import router as identity_router
+from .routes.contract_access import router as contract_access_router
 from .aej import AEJError
 from .documents import DocumentError
 from .routes.platform_management import router as platform_router
@@ -59,10 +60,11 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH"],
     allow_headers=["Authorization", "Content-Type", "X-DocRisk-Link"],
-    expose_headers=["X-DocRisk-Link-Invalid"],
+    expose_headers=["X-DocRisk-Link-Invalid", "X-DocRisk-Contracts-Changed"],
 )
 app.include_router(router)
 app.include_router(identity_router)
+app.include_router(contract_access_router)
 app.include_router(supplier_management_router)
 
 

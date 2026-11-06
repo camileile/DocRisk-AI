@@ -105,6 +105,8 @@ local. Para revisão, saia e entre como **Analista Bernhoeft**. Utilize somente 
 sintéticos. `textlayer` lê PDFs com texto digital; imagens digitalizadas exigem um
 provedor OCR, como Gemini configurado com chave e cota disponíveis.
 
+`NEXT_PUBLIC_DOCRISK_PUBLIC_DEMO=1` tem prioridade e mantém a publicação totalmente offline, mesmo se a opção de API estiver habilitada.
+
 Sem `NEXT_PUBLIC_DEMO_API_ENABLED=1`, a demonstração continua offline. Se a conexão
 falhar, a tela mostra o erro; não apresenta resultados fictícios como processamento
 real. Esta conexão automática aceita somente API em loopback. Uma demo já compilada
@@ -139,6 +141,8 @@ pulado automaticamente se o Tesseract não estiver instalado.
 - Pendência de `DOCUMENTO_AUSENTE` nasce `ABERTA` (aguarda o analista); não há notificação por e-mail.
 
 ## Regras do projeto
+
+Analistas e operadores precisam de concessão individual de contratos. ADMIN_BH atribui contratos em **Gestão de Usuários**; GESTOR_FORN em **Operadores**. Atualizar uma instalação Clerk não concede acessos automaticamente aos usuários existentes. Veja [operação, migração e testes](docs/ACESSO_INDIVIDUAL_CONTRATOS.md).
 
 - IA lê a página; **regras em Python decidem** fronteiras, bloqueios e conciliação.
 - Toda rota confere organização + contrato + papel **no back-end**.

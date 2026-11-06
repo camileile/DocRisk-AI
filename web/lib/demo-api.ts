@@ -1,8 +1,8 @@
-import { clerkEnabled } from "./auth-mode";
+import { clerkEnabled, publicDemoOnly } from "./auth-mode";
 import { API_URL } from "./api-transport";
 import type { Papel } from "./api-contracts";
 
-export const demoApiEnabled = !clerkEnabled && process.env.NEXT_PUBLIC_DEMO_API_ENABLED === "1";
+export const demoApiEnabled = !publicDemoOnly && !clerkEnabled && process.env.NEXT_PUBLIC_DEMO_API_ENABLED === "1";
 
 /** Bootstrap somente da API demo local. A sessão e os contratos são validados pelo login normal. */
 export async function demoApiToken(role: Papel): Promise<string> {

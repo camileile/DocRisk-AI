@@ -19,6 +19,7 @@ const { environment } = require('./regression-env.cjs');
   for (const settings of [
     { NEXT_PUBLIC_DEMO_API_ENABLED: '' },
     { NEXT_PUBLIC_AUTH_MODE: 'clerk' },
+    { NEXT_PUBLIC_DOCRISK_PUBLIC_DEMO: '1' },
     { NEXT_PUBLIC_API_URL: 'https://api.example.com' },
     { NEXT_PUBLIC_API_URL: 'http://127.0.0.1:8000/path' },
     { NEXT_PUBLIC_API_URL: 'http://secret@localhost:8000' },
