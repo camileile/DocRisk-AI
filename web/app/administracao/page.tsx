@@ -1,105 +1,92 @@
 "use client";
+
+import Link from "next/link";
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { ArrowUpRight, Building2, ClipboardList, Users } from "lucide-react";
 import { EmptyState, ErrorState, LoadingState, PageIntro } from "@/components/workspace-parts";
-import { formatDate, type AuditEvent, type Metrics } from "@/lib/api";
+import { type AdminOverview, type AdminRegistry } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 
-const actionLabels: Record<string, string> = {
-  LOTE_ENVIADO: "Lote enviado",
-  LOTE_REPROCESSADO: "Lote reprocessado",
-  CONTRATO_NEGADO: "Acesso a contrato negado",
-  PENDENCIA_REENVIADA: "Pendência reenviada",
-  PARECER_RASCUNHO_CRIADO: "Rascunho de parecer criado",
-  PARECER_PUBLICADO: "Parecer publicado",
-  DOCUMENTO_APROVAR: "Documento aprovado",
-  DOCUMENTO_DIVIDIR: "Documento dividido",
-  DOCUMENTO_UNIR_PROXIMO: "Documentos unidos",
-  DOCUMENTO_SOLICITAR_CORRECAO: "Correção solicitada",
-};
+export default function AdminOverviewPage() {
+  const [contratante, setContratante] = useState("");
+  const registry = useApi<AdminRegistry>("/api/admin/registry");
+  const params = new URLSearchParams();
+  if (contratante) params.set("contratante_id", contratante);
+  const report = useApi<AdminOverview>("/api/admin/overview" + (params.size ? "?" + params.toString() : ""));
+  const data = report.data;
+  const clients = (registry.data?.empresas ?? []).filter((e) => e.tipo === "CONTRATANTE");
 
-export default function AuditPage() {
-  const audit = useApi<AuditEvent[]>("/api/audit");
-  const metrics = useApi<Metrics>("/api/bernhoeft/metrics");
-  const [query, setQuery] = useState("");
-  const [result, setResult] = useState("todos");
-  const term = query.trim().toLocaleLowerCase("pt-BR");
-  const rows = (audit.data ?? []).filter(
-    (e) =>
-      (result === "todos" || e.resultado === result) &&
-      `${e.acao} ${actionLabels[e.acao] ?? ""} ${e.alvo ?? ""} ${e.user_id ?? ""} ${e.org_id ?? ""}`
-        .toLocaleLowerCase("pt-BR")
-        .includes(term),
-  );
-  const m = metrics.data;
   return (
     <>
       <PageIntro
-        eyebrow="TRILHA DE AUDITORIA"
-        title="Quem fez o quê, e quando."
-        description="Registro das ações e dos acessos negados gravado pela API. A trilha nunca guarda conteúdo de documentos."
+        eyebrow="GESTÃO OPERACIONAL"
+        title="Visão geral da organização."
+        description="Acompanhe vínculos empresariais, contratos e desempenho da operação, sem dados de faturamento ou acesso aos documentos de trabalho dos analistas."
       />
-      {m && (
-        <div className="stat-grid">
-          <div className="stat-card"><strong>{m.lotes.total}</strong><span>Lotes recebidos</span></div>
-          <div className="stat-card"><strong>{m.documentos.logicos}</strong><span>Documentos lógicos</span></div>
-          <div className="stat-card"><strong>{m.pendencias.em_aberto}</strong><span>Pendências em aberto</span></div>
-          <div className="stat-card"><strong>{m.pareceres_publicados}</strong><span>Pareceres publicados</span></div>
-        </div>
-      )}
-      <div className="list-toolbar">
-        <label className="search-field">
-          <Search size={18} />
-          <span className="sr-only">Filtrar eventos</span>
-          <input type="search" placeholder="Filtrar por ação, usuário, organização ou alvo" value={query} onChange={(e) => setQuery(e.target.value)} />
-        </label>
+      <section className="workspace-card">
         <label className="filter-label">
-          Resultado
-          <select value={result} onChange={(e) => setResult(e.target.value)}>
-            <option value="todos">Todos</option>
-            <option value="OK">Registradas</option>
-            <option value="NEGADO">Negadas</option>
+          Contratante
+          <select aria-label="Filtrar contratante" value={contratante} onChange={(e) => setContratante(e.target.value)}>
+            <option value="">Todas as contratantes</option>
+            {clients.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
           </select>
         </label>
-      </div>
-      {audit.loading ? (
-        <LoadingState />
-      ) : audit.error ? (
-        <ErrorState message={audit.error} onRetry={audit.reload} />
-      ) : rows.length === 0 ? (
-        <EmptyState title="Nenhum evento." text="As ações feitas na plataforma aparecem aqui." />
+      </section>
+      {registry.error && <ErrorState message={registry.error} onRetry={registry.reload} />}
+      {report.loading || registry.loading ? <LoadingState /> : report.error || !data ? (
+        <ErrorState message={report.error ?? "Não foi possível obter os indicadores."} onRetry={report.reload} />
       ) : (
-        <div className="table-scroll">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Quando</th>
-                <th>Ação</th>
-                <th>Usuário</th>
-                <th>Organização</th>
-                <th>Alvo</th>
-                <th>Resultado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((e) => (
-                <tr key={e.id}>
-                  <td>{formatDate(e.instante)}</td>
-                  <td>{actionLabels[e.acao] ?? e.acao}</td>
-                  <td>{e.user_id ?? "—"}</td>
-                  <td>{e.org_id ?? "—"}</td>
-                  <td>{e.alvo ?? "—"}</td>
-                  <td>
-                    <span className={`status-badge ${e.resultado === "OK" ? "success" : "warning"}`}>
-                      <i />
-                      {e.resultado === "OK" ? "Registrada" : e.resultado === "NEGADO" ? "Acesso negado" : e.resultado}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          <div className="stat-grid admin-stat-grid">
+            <div className="stat-card"><strong>{data.contratantes}</strong><span>Contratantes vinculadas</span></div>
+            <div className="stat-card"><strong>{data.fornecedoras}</strong><span>Fornecedoras vinculadas</span></div>
+            <div className="stat-card"><strong>{data.contratos_ativos}</strong><span>Contratos ativos</span></div>
+            <div className="stat-card">
+              <strong>{data.contratos_vencendo_30d}</strong>
+              <span>Contratos vencendo em 30 dias</span>
+              <small className="stat-hint">{data.contratos_sem_prazo} contrato(s) sem data de término informada</small>
+            </div>
+          </div>
+          <div className="dashboard-grid">
+            <section className="workspace-card">
+              <div className="card-title"><h2>Desempenho operacional</h2></div>
+              <table className="data-table compact">
+                <tbody>
+                  <tr><th scope="row">Documentos lógicos</th><td>{data.operacao.documentos.logicos}</td></tr>
+                  <tr><th scope="row">Conciliações analisadas</th><td>{data.operacao.conciliacao.aptos}</td></tr>
+                  <tr><th scope="row">Análises bloqueadas</th><td>{data.operacao.conciliacao.bloqueados}</td></tr>
+                  <tr><th scope="row">Páginas lidas</th><td>{data.operacao.paginas.lidas}</td></tr>
+                  <tr><th scope="row">Tempo médio por página</th><td>{data.operacao.paginas.tempo_medio_ms === null ? "—" : data.operacao.paginas.tempo_medio_ms + " ms"}</td></tr>
+                </tbody>
+              </table>
+            </section>
+            <section className="workspace-card">
+              <div className="card-title"><h2>Qualidade e eficiência</h2></div>
+              <table className="data-table compact">
+                <tbody>
+                  <tr><th scope="row">Divergências a verificar</th><td>{data.operacao.conciliacao.divergencias_a_verificar}</td></tr>
+                  <tr><th scope="row">Pendências abertas</th><td>{data.operacao.pendencias.em_aberto}</td></tr>
+                  <tr><th scope="row">Pareceres publicados</th><td>{data.operacao.pareceres_publicados}</td></tr>
+                  <tr><th scope="row">Taxa de revisão humana</th><td>{data.operacao.documentos.taxa_revisao_humana === null ? "—" : (data.operacao.documentos.taxa_revisao_humana * 100).toFixed(1) + "%"}</td></tr>
+                  <tr><th scope="row">Tempo médio de regularização</th><td>{data.operacao.pendencias.tempo_medio_regularizacao_h === null ? "—" : data.operacao.pendencias.tempo_medio_regularizacao_h.toFixed(1) + " h"}</td></tr>
+                </tbody>
+              </table>
+            </section>
+          </div>
+          <section className="workspace-card">
+            <div className="card-title"><h2>Atalhos administrativos</h2></div>
+            {clients.length === 0 ? (
+              <EmptyState title="Nenhuma contratante cadastrada." text="Cadastre a primeira contratante em Empresas e Contratos." />
+            ) : (
+              <p className="muted">Os indicadores acima se referem exclusivamente às relações contratuais da organização auditora.</p>
+            )}
+            <div className="admin-actions">
+              <Link className="button secondary" href="/administracao/empresas"><Building2 size={16} /> Empresas e Contratos <ArrowUpRight size={14}/></Link>
+              <Link className="button secondary" href="/administracao/usuarios"><Users size={16} /> Gestão de Usuários <ArrowUpRight size={14}/></Link>
+              <Link className="button secondary" href="/administracao/auditoria"><ClipboardList size={16} /> Auditoria <ArrowUpRight size={14}/></Link>
+            </div>
+          </section>
+        </>
       )}
     </>
   );
