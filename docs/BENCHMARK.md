@@ -17,15 +17,15 @@
 
 ## Execução
 
-- Data: 2026-11-06 07:48:23 UTC
+- Data: 2026-11-06 08:04:08 UTC
 - Leitor: `textlayer` (determinístico, sem chamadas de IA remotas)
 - Ambiente: Python 3.13.5, Windows-10-10.0.19045-SP0, processador `AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD`
 - Lote: 300 páginas, 100 trabalhadores, 300 documentos; status `CONCLUIDO`
-- Tempo total medido: 21.39 s
-- Vazão: 841.7 páginas/min
-- Tempo médio: 71.3 ms/página
-- Segmentação: 3.9 ms
-- Conciliação: 16.1 ms
+- Tempo total medido: 26.00 s
+- Vazão: 692.3 páginas/min
+- Tempo médio: 86.7 ms/página
+- Segmentação: 4.3 ms
+- Conciliação: 17.2 ms
 - Páginas lidas sem erro: 300/300
 
 ## Acurácia contra `gabarito.json`
@@ -34,6 +34,30 @@
 - Tipos de documento: 100.0% (300/300)
 - Conciliação (status e resultado): 100.0% (100/100)
 
+## Métricas detalhadas D1-09
+
+- Fronteiras exatas: precisão 100.0%, recall 100.0% (300 corretas; 300 previstas; 300 esperadas).
+- Tipo por documento, alinhado pela primeira página:
+
+| Tipo | Precisão | Recall | TP | FP | FN |
+|---|---:|---:|---:|---:|---:|
+| COMPROVANTE_PAGAMENTO | 100.0% | 100.0% | 100 | 0 | 0 |
+| ESPELHO_PONTO | 100.0% | 100.0% | 100 | 0 | 0 |
+| HOLERITE | 100.0% | 100.0% | 100 | 0 | 0 |
+
+- Campos numéricos usam tolerância absoluta 0.01; valores ausentes contam como FN e MAE usa os pares numéricos previstos.
+
+| Campo | Precisão | Recall | MAE |
+|---|---:|---:|---:|
+| `horas_extras_h` | 100.0% | 94.9% | 0.000 |
+| `horas_extras_valor` | 100.0% | 95.0% | 0.000 |
+| `valor_liquido` | 100.0% | 95.0% | 0.000 |
+| `valor_pago` | 100.0% | 100.0% | 0.000 |
+
+- Associação ao trabalhador: precisão 100.0%, recall 100.0% (TP 300, FP 0, FN 0).
+- Revisão humana: taxa 3.3%; precisão 100.0%; recall 100.0%.
+- Falsos alertas de revisão: 0 (taxa 0.0%); falsos negativos de revisão: 0.
+- Avaliação sobre gabarito sintético fixo do lote de desenvolvimento; não estima desempenho em documentos reais. O holdout D1-08 não é carregado.
 ## Estimativa de custo Gemini (não medida)
 
 - Resolução de renderização: aproximadamente 1239×1754 px (150 DPI)

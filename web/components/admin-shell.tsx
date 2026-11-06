@@ -7,6 +7,7 @@ import {
   ArrowUpRight, Building2, ChevronRight, ClipboardList, FlaskConical,
   LayoutDashboard, LockKeyhole, LogOut, Menu, ShieldCheck, Users, X,
 } from "lucide-react";
+import { authEntry } from "@/lib/auth-mode";
 import { useSession } from "./demo-provider";
 import { SessionGate } from "./workspace-shell";
 import { roleLabels } from "@/lib/api";
@@ -84,7 +85,7 @@ function Admin({ children, platform = false }: { children: ReactNode; platform?:
             className="sidebar-link"
             onClick={() => {
               logout();
-              router.push("/acesso");
+              router.push(authEntry());
             }}
           >
             <LogOut size={17} /> Sair

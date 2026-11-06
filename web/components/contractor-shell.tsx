@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { ArrowUpRight, FileCheck2, FlaskConical, LayoutDashboard, LogOut, Menu, X } from "lucide-react";
+import { authEntry } from "@/lib/auth-mode";
 import { useSession } from "./demo-provider";
 import { SessionGate } from "./workspace-shell";
 import { roleLabels } from "@/lib/api";
@@ -52,7 +53,7 @@ function Contractor({ children }: { children: ReactNode }) {
             className="sidebar-link"
             onClick={() => {
               logout();
-              router.push("/acesso");
+              router.push(authEntry());
             }}
           >
             <LogOut size={17} /> Sair

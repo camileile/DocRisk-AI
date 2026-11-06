@@ -42,3 +42,7 @@ Rotas de detalhe usam `?id=` porque a exportação estática não gera páginas 
 - A fornecedora recebe `EM_ANALISE` no lugar de `REVISAO_HUMANA`, sem motivos internos nem campos extraídos.
 - A contratante não acessa imagens, documentos, busca nem rascunhos; o parecer não traz valores em reais nem texto de OCR.
 - O formulário de contato continua sem envio.
+
+## Login Clerk
+
+O modo produtivo, os convites, a recuperação e o bootstrap institucional estão documentados em [`docs/D3_07_CLERK.md`](../docs/D3_07_CLERK.md). O modo padrão mantém a exportação offline; `NEXT_PUBLIC_AUTH_MODE=clerk` usa runtime Next.js e exige a configuração da instância.

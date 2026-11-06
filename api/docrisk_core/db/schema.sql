@@ -166,9 +166,30 @@ CREATE TABLE IF NOT EXISTS audit (
 );
 
 CREATE TABLE IF NOT EXISTS ai_cache (
-  chave           TEXT PRIMARY KEY,  -- provedor:modelo:versao_prompt:sha256_png
+  chave           TEXT PRIMARY KEY,  -- provedor:modelo:versao_prompt:versao_schema:sha256_png
   resultado_json  TEXT NOT NULL,
   created_at      TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ai_telemetry (
+  page_id                       INTEGER PRIMARY KEY REFERENCES pages(id),
+  provider                      TEXT NOT NULL,
+  model                         TEXT NOT NULL,
+  prompt_version                TEXT NOT NULL,
+  schema_version                TEXT NOT NULL,
+  input_tokens                  INTEGER,
+  output_tokens                 INTEGER,
+  total_tokens                  INTEGER,
+  input_price_usd_per_million   REAL,
+  output_price_usd_per_million  REAL,
+  estimated_cost_usd            REAL,
+  timeout_ms                    INTEGER,
+  max_output_tokens             INTEGER,
+  cache_hit                     INTEGER NOT NULL DEFAULT 0,
+  status                        TEXT NOT NULL CHECK (status IN ('OK', 'ERRO')),
+  duration_ms                   INTEGER NOT NULL,
+  error_type                    TEXT,
+  created_at                    TEXT NOT NULL
 );
 
 -- AEJ: fonte original permanece em batches.arquivo, com hash em batches.sha256.
@@ -258,6 +279,41 @@ CREATE TABLE IF NOT EXISTS platform_settings (
 );
 INSERT OR IGNORE INTO platform_settings (id,nome) VALUES (1,'DocRisk AI');
 
+-- Identidades produtivas são independentes dos tokens demonstrativos.
+CREATE TABLE IF NOT EXISTS identity_links (
+  id TEXT PRIMARY KEY,
+  issuer TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  user_id TEXT UNIQUE REFERENCES users(id),
+  platform_account_id TEXT UNIQUE REFERENCES platform_accounts(id),
+  ativo INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL,
+  CHECK ((user_id IS NULL) != (platform_account_id IS NULL))
+);
+CREATE INDEX IF NOT EXISTS ix_identity_subject ON identity_links(issuer,subject,ativo);
+CREATE TABLE IF NOT EXISTS identity_invitations (
+  id TEXT PRIMARY KEY,
+  email TEXT NOT NULL,
+  nome TEXT NOT NULL,
+  org_id TEXT NOT NULL REFERENCES organizations(id),
+  role TEXT NOT NULL,
+  invited_by TEXT NOT NULL,
+  invited_link_id TEXT NOT NULL REFERENCES identity_links(id),
+  provider_id TEXT,
+  status TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  accepted_by TEXT,
+  accepted_at TEXT
+);
+CREATE INDEX IF NOT EXISTS ix_identity_invite_email ON identity_invitations(email,status);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ix_pending_identity_invite
+  ON identity_invitations(email,org_id,role) WHERE status IN ('CREATING','PENDING');
+CREATE TRIGGER IF NOT EXISTS identity_kind_exclusive BEFORE INSERT ON identity_links
+WHEN EXISTS (SELECT 1 FROM identity_links WHERE issuer=NEW.issuer AND subject=NEW.subject
+             AND (platform_account_id IS NULL) != (NEW.platform_account_id IS NULL))
+BEGIN SELECT RAISE(ABORT,'Identidade institucional independente'); END;
 -- Texto público do rascunho e prévias conferíveis, separados das observações internas.
 CREATE TABLE IF NOT EXISTS report_editorial (
   report_id INTEGER PRIMARY KEY REFERENCES reports(id),

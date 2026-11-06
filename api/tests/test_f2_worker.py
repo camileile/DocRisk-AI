@@ -146,6 +146,43 @@ def test_cache_evita_nova_chamada(banco):
     assert len(leitor.chamadas) == 5
     worker.processar_lote(worker.criar_lote(BETA, "CT-001", "b.pdf", data), provedor=leitor)
     assert len(leitor.chamadas) == 5  # mesmas páginas: tudo veio de ai_cache
+    telemetria = q("SELECT cache_hit, provider, model, status, estimated_cost_usd "
+                   "FROM ai_telemetry ORDER BY page_id")
+    assert len(telemetria) == 10
+    assert all(r["provider"] == "teste" and r["model"] == "v1" and r["status"] == "OK"
+               for r in telemetria)
+    assert [r["cache_hit"] for r in telemetria] == [0] * 5 + [1] * 5
+    assert all(r["estimated_cost_usd"] == 0 for r in telemetria)
+
+
+def test_telemetria_persiste_uso_e_custo_por_pagina(banco):
+    class LeitorComUso(Contador):
+        nome = "gemini"
+        modelo = "modelo-teste"
+
+        def analisar_com_proveniencia(self, png, texto_camada):
+            analise = self.analisar(png, texto_camada)
+            return analise, {
+                "input_tokens": 10,
+                "output_tokens": 2,
+                "total_tokens": 12,
+                "input_price_usd_per_million": 2.0,
+                "output_price_usd_per_million": 4.0,
+                "estimated_cost_usd": 0.000028,
+            }
+
+    leitor = LeitorComUso()
+    bid = worker.criar_lote(BETA, "CT-001", "uso.pdf", pdf(NOTA))
+    worker.processar_lote(bid, provedor=leitor)
+
+    [registro] = q("SELECT provider, model, prompt_version, schema_version, input_tokens, "
+                   "output_tokens, total_tokens, estimated_cost_usd, cache_hit, status "
+                   "FROM ai_telemetry")
+    assert (registro["provider"], registro["model"]) == ("gemini", "modelo-teste")
+    assert (registro["prompt_version"], registro["schema_version"]) == ("p1", "s1")
+    assert (registro["input_tokens"], registro["output_tokens"], registro["total_tokens"]) == (10, 2, 12)
+    assert registro["estimated_cost_usd"] == pytest.approx(0.000028)
+    assert registro["cache_hit"] == 0 and registro["status"] == "OK"
 
 
 def test_retomada_le_so_a_pagina_que_falhou(banco):
