@@ -10,6 +10,7 @@ from typing import Any
 
 import pymupdf
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, UploadFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, Response
 
 from .. import config, db
@@ -270,14 +271,21 @@ async def upload_batch(contract_id: str = Form(...), file: UploadFile = File(...
     data = await file.read(config.MAX_UPLOAD_MB * 1024 * 1024 + 1)
     if not data or len(data) > config.MAX_UPLOAD_MB * 1024 * 1024:
         raise HTTPException(422, "Arquivo vazio ou acima do limite de upload")
-    try:
-        batch_id = worker.criar_lote(user, contract_id, file.filename or "arquivo", data)
-        worker.enfileirar(batch_id)
-    except ArquivoInvalido as exc:
-        raise HTTPException(422, str(exc)) from exc
-    except NotImplementedError as exc:
-        raise HTTPException(503, "Processamento de lotes ainda não está disponível (F2)") from exc
-    auditar(conn, user, "LOTE_ENVIADO", str(batch_id))
+
+    # SQLite e render são bloqueantes: fora do event loop (D4-09). No loop, a espera
+    # pelo lock de escrita impedia o teardown de outras requisições que o detinham.
+    def _registrar() -> int:
+        try:
+            batch_id = worker.criar_lote(user, contract_id, file.filename or "arquivo", data)
+            worker.enfileirar(batch_id)
+        except ArquivoInvalido as exc:
+            raise HTTPException(422, str(exc)) from exc
+        except NotImplementedError as exc:
+            raise HTTPException(503, "Processamento de lotes ainda não está disponível (F2)") from exc
+        auditar(conn, user, "LOTE_ENVIADO", str(batch_id))
+        return batch_id
+
+    batch_id = await run_in_threadpool(_registrar)
     return {"batch_id": batch_id, "status": "RECEBIDO"}
 
 
@@ -733,26 +741,31 @@ async def resubmit_issue(issue_id: int, file: UploadFile = File(...),
     data = await file.read(config.MAX_UPLOAD_MB * 1024 * 1024 + 1)
     if not data or len(data) > config.MAX_UPLOAD_MB * 1024 * 1024:
         raise HTTPException(422, "Arquivo vazio ou acima do limite de upload")
-    try:
-        batch_id = worker.criar_lote(user, issue["contract_id"], file.filename or "arquivo", data,
-                                     issue_id=issue_id)
-    except ArquivoInvalido as exc:
-        raise HTTPException(422, str(exc)) from exc
-    # REENVIADA é gravada e confirmada ANTES de enfileirar: o worker pode resolver ou
-    # reabrir a pendência logo em seguida, e essa decisão não pode ser sobrescrita.
-    historico = _json_list(issue["historico_json"])
-    now = db.agora()
-    historico.append({"status": StatusPendencia.REENVIADA.value, "em": now, "motivo": "reenvio recebido",
-                      "lote": batch_id})
-    conn.execute("UPDATE issues SET status=?, updated_at=?, historico_json=? WHERE id=?",
-                 (StatusPendencia.REENVIADA.value, now,
-                  json.dumps(historico, ensure_ascii=False), issue_id))
-    auditar(conn, user, "PENDENCIA_REENVIADA", str(issue_id))
-    conn.commit()
-    try:
-        worker.enfileirar(batch_id)
-    except NotImplementedError as exc:
-        raise HTTPException(503, "Reenvio ainda não está disponível (F2)") from exc
+
+    def _registrar() -> int:  # bloqueante: fora do event loop (D4-09)
+        try:
+            batch_id = worker.criar_lote(user, issue["contract_id"], file.filename or "arquivo", data,
+                                         issue_id=issue_id)
+        except ArquivoInvalido as exc:
+            raise HTTPException(422, str(exc)) from exc
+        # REENVIADA é gravada e confirmada ANTES de enfileirar: o worker pode resolver ou
+        # reabrir a pendência logo em seguida, e essa decisão não pode ser sobrescrita.
+        historico = _json_list(issue["historico_json"])
+        now = db.agora()
+        historico.append({"status": StatusPendencia.REENVIADA.value, "em": now, "motivo": "reenvio recebido",
+                          "lote": batch_id})
+        conn.execute("UPDATE issues SET status=?, updated_at=?, historico_json=? WHERE id=?",
+                     (StatusPendencia.REENVIADA.value, now,
+                      json.dumps(historico, ensure_ascii=False), issue_id))
+        auditar(conn, user, "PENDENCIA_REENVIADA", str(issue_id))
+        conn.commit()
+        try:
+            worker.enfileirar(batch_id)
+        except NotImplementedError as exc:
+            raise HTTPException(503, "Reenvio ainda não está disponível (F2)") from exc
+        return batch_id
+
+    batch_id = await run_in_threadpool(_registrar)
     return {"batch_id": batch_id, "issue_id": issue_id, "status": "RECEBIDO"}
 
 
