@@ -160,7 +160,7 @@ function Workspace({ children }: { children: ReactNode }) {
         </header>
         <main className="workspace-body" id="conteudo-painel">
           {isDemo && <div className="api-notice" role="status"><strong>Demonstração offline:</strong> informações e documentos são inteiramente fictícios. Nenhuma alteração é enviada à API.</div>}
-          {contracts.length > 0 && (
+          {contracts.length > 0 && !(me.papel === "ANALISTA_BH" && path === "/painel") && (
             <div className="workspace-context">
               <span>CONTRATO</span>
               <div>
