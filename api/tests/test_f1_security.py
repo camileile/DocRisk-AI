@@ -50,6 +50,39 @@ def test_gama_cannot_read_beta_batch_and_denial_is_audited():
     assert audit["alvo"] == "CT-001"
 
 
+def test_gama_nao_acessa_imagem_de_pagina_da_beta(
+    banco, monkeypatch, tmp_path
+):
+    monkeypatch.setattr(config, "PAGES_DIR", tmp_path)
+
+    image_path = tmp_path / "pagina.png"
+    image_path.write_bytes(b"imagem-de-teste")
+
+    with TestClient(app) as client:
+        _, page_id = create_batch_and_page()
+
+        with db.tx() as conn:
+            conn.execute(
+                "UPDATE pages SET image_path=? WHERE id=?",
+                (str(image_path), page_id),
+            )
+
+        # A organização Gama não pode acessar a imagem da Beta.
+        response_gama = client.get(
+            f"/api/pages/{page_id}/image",
+            headers=headers("u-oper-gama"),
+        )
+
+        # A organização Beta, proprietária do contrato, pode acessar.
+        response_beta = client.get(
+            f"/api/pages/{page_id}/image",
+            headers=headers("u-oper-beta"),
+        )
+
+    assert response_gama.status_code == 404
+    assert response_beta.status_code == 200
+    assert response_beta.content == b"imagem-de-teste"
+
 def test_upload_calls_f2_worker_with_authorized_contract(monkeypatch):
     received = {}
 
