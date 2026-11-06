@@ -46,6 +46,8 @@ O documento separa **implementação**, **teste simulado** e **evidência real**
 
 A matriz organiza os critérios, não atribui proprietários nem declara entregas que dependem de evidência ausente.
 
+**Complemento H04 (PR #75):** provar que analista/operador sem concessão não herda contratos da organização; gestor atribui somente dentro de seu escopo; validade e revogação bloqueiam consultas e alterações no backend; revogar um contrato limpa o documento aberto e preserva outro contrato permitido. Incluir contas Clerk existentes, que precisam de atribuição explícita após a migração, e executar `web/scripts/contract-access-smoke.cjs` com API/banco dedicados.
+
 ## 4. Testes automatizados de referência
 
 **API** (a partir da pasta `api/`):

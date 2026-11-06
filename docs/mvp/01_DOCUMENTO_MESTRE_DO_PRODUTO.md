@@ -34,6 +34,8 @@ A solução proposta estabelece um fluxo compartilhado: **receber → classifica
 
 A autorização deve ser aplicada no **backend**, combinando identidade, vínculo ativo, papel, organização e contrato. O sistema não deve inferir permissão a partir de parâmetros fornecidos apenas pela interface.
 
+Analistas e operadores também precisam de concessão individual vigente para cada contrato. O Administrador Bernhoeft atribui contratos aos analistas da própria auditora; o Gestor da Fornecedora atribui aos operadores da própria empresa. A organização continua limitando o escopo. Novas contas não herdam contratos, e usuários Clerk existentes precisam receber concessões explícitas após a atualização. Revogar um contrato preserva os outros acessos e o histórico documental.
+
 ## 4. Escopo funcional do MVP
 
 ### 4.1 Incluído no núcleo da plataforma

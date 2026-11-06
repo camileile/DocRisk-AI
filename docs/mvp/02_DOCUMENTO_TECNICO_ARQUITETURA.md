@@ -52,6 +52,7 @@ A diagramação acima representa módulos lógicos, não serviços independentes
 | `platform_accounts`, `users` | Contas institucionais separadas dos usuários operacionais. |
 | `identity_links`, `identity_invitations` | Identidade Clerk ↔ vínculo autorizado, convites e revogação. |
 | `contracts`, `contract_metadata` | Relação contratante-fornecedora-auditora; situação e datas contratuais. |
+| `user_contract_grants` | Concessões individuais de contratos a analistas e operadores, validade e histórico de revogação. |
 | `workers` | Trabalhadores vinculados ao contrato; sintéticos no hackathon. |
 | `batches`, `pages`, `documents`, `doc_pages` | Origem e processamento dos arquivos, páginas, documento lógico/versões. |
 | `document_field_reviews` | Histórico auditável de mudanças em campos extraídos. |
@@ -77,6 +78,7 @@ A distinção entre documento, análise e parecer é obrigatória para evitar qu
 | Contexto | Endpoints de referência | Autorização esperada |
 |---|---|---|
 | Sessão e contratos | `GET /api/me`, `GET /api/contracts` | Vínculo ativo. |
+| Atribuição individual | `GET /api/contract-access/users/{user_id}`, `PUT /api/contract-access/users/{user_id}/contracts/{contract_id}` | Admin BH para analistas da auditora; Gestor Forn para operadores da fornecedora. |
 | Login e convites | `/api/auth/links`, `/api/auth/invitations`, `/api/auth/managed-links` | Regras de emissor e destinatário. |
 | Administração da auditora | `/api/admin/registry`, `/api/admin/companies`, `/api/admin/contracts`, `/api/admin/overview` | Administrador Bernhoeft; criação de token só na demo. |
 | Envio | `POST /api/supplier/batches` | Perfil de fornecedora no contrato permitido. |
@@ -94,6 +96,7 @@ A especificação executável de rotas/modelos deve ser obtida do **OpenAPI da i
 
 - **Autenticação real:** frontend obtém sessão do Clerk; backend valida JWT/JWKS, emissor, origem autorizada e estado da sessão; o vínculo local é validado em cada contexto.
 - **Autorização:** checagem do papel e dos IDs organizacionais/contratuais no backend; não confiar em filtros client-side.
+- **Concessão de contrato:** analistas e operadores exigem concessão individual vigente além do escopo organizacional. A migração `0002_user_contract_grants.sql` não preenche acessos Clerk existentes automaticamente. A interface consulta alterações no foco, após recusa de escopo e a cada 30 segundos, descartando respostas anteriores; o backend bloqueia requisições assim que a concessão deixa de valer.
 - **Convites:** um uso, prazo limitado; confirmação de e-mail principal e vínculo autorizado. Não liberar papéis por cadastro livre.
 - **Revogação:** usuário e vínculo devem perder acesso na requisição seguinte, sem reviver tela por cache/polling.
 - **Arquivos:** imagens/documentos privados; não embutir documentos nem OCR em telas administrativas ou portal da contratante.

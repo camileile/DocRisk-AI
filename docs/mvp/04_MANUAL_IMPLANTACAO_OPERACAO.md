@@ -49,6 +49,9 @@ cd api
 python -m venv .venv
 # Windows PowerShell: .\.venv\Scripts\python.exe -m pip install -e ".[test]"
 # macOS/Linux: .venv/bin/python -m pip install -e ".[test]"
+# Ative o ambiente antes dos comandos seguintes:
+# Windows PowerShell: .\.venv\Scripts\Activate.ps1
+# macOS/Linux: source .venv/bin/activate
 python -m pytest -q
 python -m uvicorn docrisk_core.api:app --host 127.0.0.1 --port 8000
 ```
@@ -74,8 +77,9 @@ npm run dev
 5. Destinatário valida seu e-mail, aceita o convite e seleciona o vínculo.
 6. Admin Bernhoeft cadastra contratante, fornecedora e contrato; convida analista e gestores.
 7. Gestor da Fornecedora aceita convite e convida operador.
-8. Preparar trabalhadores fictícios e documentos correspondentes; consultar o passo seguinte.
-9. Reiniciar/reciclar uma instância controladamente e confirmar persistência antes do ensaio final.
+8. Admin Bernhoeft atribui contratos aos analistas em **Gestão de Usuários**; Gestor da Fornecedora atribui contratos aos operadores em **Operadores**. A concessão pode ter validade e deve ser feita também para contas Clerk anteriores à atualização: não há preenchimento automático de acessos.
+9. Preparar trabalhadores fictícios e documentos correspondentes; consultar o passo seguinte.
+10. Reiniciar/reciclar uma instância controladamente e confirmar persistência antes do ensaio final, incluindo concessões e revogações. Conferir [Acesso individual a contratos](../ACESSO_INDIVIDUAL_CONTRATOS.md).
 
 O cadastro de usuários por token (`/api/admin/users`, `/api/supplier/operators`) é exclusivo da configuração demo de testes. A sessão Clerk deve usar convites e vínculos.
 

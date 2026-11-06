@@ -4,6 +4,8 @@
 **Data-base:** 06/11/2026  
 **Código verificado:** `camileile/DocRisk-AI` / `main` / `0008ab2d97f759002aa6e60b485d1e2b6965a36b`
 
+**Complemento de integração:** a revisão desta documentação incorpora a atribuição individual de contratos da PR #75. Consulte [Acesso individual a contratos](../ACESSO_INDIVIDUAL_CONTRATOS.md): analistas e operadores novos ou já existentes precisam de concessão explícita, sem preenchimento automático na atualização.
+
 ## Índice e uso desta documentação
 
 As cinco minutas são a **documentação consolidada do MVP**, versionada nesta pasta para consulta e manutenção. A inclusão destes arquivos não modifica código da aplicação ou qualquer implantação. Os títulos e regras consideram o código e as descrições atuais. As palavras **implementado**, **testado em ambiente simulado** e **homologado com provedor real** são deliberadamente distintas.
