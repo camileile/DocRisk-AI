@@ -201,6 +201,10 @@ export function demoRead(path: string, role: Papel): unknown {
     throw new Error("A contratante acessa apenas pareceres publicados.");
   }
   if (role === "ADMIN_BH") throw new Error("O administrador acessa somente a área administrativa nesta demonstração.");
+  if (route === "/api/supplier/operators") {
+    if (role !== "GESTOR_FORN") throw new Error("Gestão de operadores restrita ao gestor da fornecedora.");
+    return [{ id: "demo-operador-forn", nome: "Operador fictício", org_id: "demo-forn", papel: "OPERADOR_FORN", ativo: 1 }];
+  }
   if (route === "/api/batches") return BATCHES;
   if (route === "/api/supplier/issues" && (role === "GESTOR_FORN" || role === "OPERADOR_FORN")) return ISSUES;
   if (route === "/api/issues" && role === "ANALISTA_BH") return ISSUES;

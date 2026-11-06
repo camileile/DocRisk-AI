@@ -13,6 +13,7 @@ from .documents import DocumentError
 from .importer import UnsupportedFile, import_bytes
 from .pipeline import worker
 from .routes import router
+from .routes.supplier_management import router as supplier_management_router
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,7 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 app.include_router(router)
+app.include_router(supplier_management_router)
 
 
 @app.get("/health")

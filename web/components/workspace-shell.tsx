@@ -14,6 +14,7 @@ import {
   Menu,
   Package,
   Upload,
+  Users,
   X,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
@@ -30,6 +31,7 @@ const navigation = [
   { href: "/painel/documentos", label: "Documentos", icon: Files, roles: FORN },
   { href: "/painel/revisao", label: "Fila de Exceções", icon: ClipboardCheck, roles: BH },
   { href: "/painel/pendencias", label: "Pendências", icon: CircleAlert, roles: FORN },
+  { href: "/painel/operadores", label: "Operadores", icon: Users, roles: ["GESTOR_FORN"] as Papel[] },
   { href: "/painel/pareceres", label: "Pareceres", icon: FileCheck2, roles: BH },
 ];
 
