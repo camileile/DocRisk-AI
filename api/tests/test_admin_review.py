@@ -15,7 +15,8 @@ def test_admin_management_only_even_with_known_document_ids(banco):
                               "VALUES ('CT-001','10/2026',1,'RASCUNHO','u-analista',?)", (db.agora(),)).lastrowid
     with TestClient(app) as client:
         h = headers("u-admin")
-        for path in ["/api/documents", f"/api/documents/{doc}", "/api/batches", f"/api/batches/{batch}",
+        for path in ["/api/documents", f"/api/documents/{doc}", f"/api/documents/{doc}/anonimizado",
+                     "/api/batches", f"/api/batches/{batch}",
                      f"/api/batches/{batch}/source", f"/api/batches/{batch}/documents", f"/api/pages/{page}/image",
                      "/api/analyses", "/api/issues", "/api/reports", f"/api/reports/{report}/preview",
                      "/api/search?q=holerite", "/api/contracts/CT-001/aej-mappings"]:
