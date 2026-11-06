@@ -50,6 +50,23 @@ def test_aej_vira_espelho_sem_ia_e_so_concilia_depois_do_mapeamento(banco):
         assert analise["status"] == "BLOQUEADA_PENDENCIA"  # falta o holerite do T001 nesta base
 
 
+def test_intervalo_aej_sobreposto_vai_para_revisao_sem_descartar_linhas(banco):
+    sobreposto = (AEJ_LIMPO
+                  .replace(b"2026-10-01T13:00:00-0300", b"2026-10-01T11:00:00-0300")
+                  .replace(b"2026-10-01T19:00:00-0300", b"2026-10-01T15:00:00-0300"))
+    with TestClient(app) as client:
+        batch_id = _enviar(client, sobreposto)
+        assert _mapear(client).status_code == 200
+    [doc] = q("SELECT id, status FROM documents WHERE batch_id=?", batch_id)
+    [calculation] = q("SELECT calculation_json FROM aej_documents WHERE document_id=?", doc["id"])
+    detailed = json.loads(calculation["calculation_json"])
+
+    assert doc["status"] == "REVISAO_HUMANA"
+    assert detailed["calculation_status"] == "REVIEW_REQUIRED"
+    assert any("Sobreposição" in warning for warning in detailed["warnings"])
+    assert q("SELECT COUNT(*) AS n FROM aej_records WHERE batch_id=? AND record_type='05'", batch_id)[0]["n"] == 4
+
+
 def test_mapeamento_substitui_o_espelho_em_pdf_do_mesmo_trabalhador(banco):
     _api_lote()  # espelho em PDF do T001 (12 h) já vigente
     [pdf_ponto] = _espelhos_vigentes("T001")
