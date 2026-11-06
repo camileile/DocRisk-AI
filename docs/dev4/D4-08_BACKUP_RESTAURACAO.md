@@ -81,3 +81,5 @@ compileall e diff --check aprovados. Schema atual inclui tabelas Clerk, copiadas
 pelo snapshot SQLite integral, sem alterar contratos de autenticação.
 Status: PARCIAL. Validação local aprovada; ensaio de recuperação em infraestrutura
 privada e proteção operacional integrada com D4-04 continuam pendentes.
+
+Base final f085df4 (novo schema de proveniência/cache): 398 aprovados, 1 ignorado, 176,04s, Pillow12.3. Inclui os 11 testes de backup/integridade/restauração. Status PARCIAL; ensaio privado e integração operacional de proteção continuam pendentes.
