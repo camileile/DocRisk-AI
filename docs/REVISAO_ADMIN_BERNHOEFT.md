@@ -20,8 +20,10 @@ Foram acrescentados rótulos legíveis para eventos administrativos na auditoria
 - Operadores continuam geridos pelo Gestor da Fornecedora. Admin Geral permanece um papel independente.
 - Acesso à própria conta não pode ser desativado pelo Admin Bernhoeft, como já ocorria.
 
-## Validação enxuta
+## Validação
 
-18 verificações direcionadas aprovadas: novos cenários da revisão, cadastro administrativo existente, matriz de acesso afetada e fluxo integrado dos seis perfis ajustado à decisão. Build com TypeScript aprovado. Não foi repetida manualmente a suíte completa nem a validação de navegador.
+Na validação inicial, 18 verificações direcionadas e o build com TypeScript foram aprovados. Após integrar a main com os PRs #23 e #24, a suíte backend completa passou com 237 testes aprovados e 1 ignorado, com um aviso de compatibilidade Starlette/HTTPX. A validação de navegador não foi repetida localmente.
+
+O teste do PDF anonimizado foi alinhado à decisão de gestão apenas: Admin recebe 403, os demais perfis operacionais autorizados continuam recebendo PDF e a tentativa negada não gera evento de download concluído. Essa rota também integra a matriz de bloqueios do Admin.
 
 Cadastros e alterações permanecem restritos ao modo de testes. Autenticação produtiva e refinamento visual seguem pendentes. Alterações entregues em branch/PR próprio, sem merge ou deploy automático.

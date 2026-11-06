@@ -290,6 +290,57 @@ def test_reports_are_restricted_and_json_is_decoded(banco):
     visible_ids = {item["id"] for item in visible.json()}
     assert {review_id, replaced_id}.issubset(visible_ids)
 
+def test_publish_new_report_version_replaces_previous(banco, monkeypatch):
+    from docrisk_core.routes import parecer
+
+    with db.tx() as conn:
+        previous_id = conn.execute(
+            "INSERT INTO reports (contract_id, competencia, versao, status, "
+            "conteudo_json, autor_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (
+                "CT-001", "10/2026", 1, "APROVADO_PUBLICADO",
+                '{"versao": 1}', "u-analista", db.agora(),
+            ),
+        ).lastrowid
+
+    monkeypatch.setattr(
+        parecer,
+        "snapshot_parecer",
+        lambda conn, contract_id, competencia: {"versao": 2},
+    )
+
+    with TestClient(app) as client:
+        create_response = client.post(
+            "/api/reports",
+            headers=_headers(),
+            json={"contract_id": "CT-001", "competencia": "10/2026"},
+        )
+
+        assert create_response.status_code == 201, create_response.text
+        new_report = create_response.json()
+        assert new_report["versao"] == 2
+        assert new_report["status"] == "RASCUNHO"
+
+        publish_response = client.post(
+            f"/api/reports/{new_report['id']}/publish",
+            headers=_headers(),
+        )
+
+    assert publish_response.status_code == 200, publish_response.text
+
+    with db.tx() as conn:
+        previous = conn.execute(
+            "SELECT status FROM reports WHERE id=?", (previous_id,)
+        ).fetchone()
+        current = conn.execute(
+            "SELECT status, versao, conteudo_json FROM reports WHERE id=?",
+            (new_report["id"],),
+        ).fetchone()
+
+    assert previous["status"] == "SUBSTITUIDO_POR_VERSAO"
+    assert current["status"] == "APROVADO_PUBLICADO"
+    assert current["versao"] == 2
+    assert json.loads(current["conteudo_json"]) == {"versao": 2}
 
 def test_search_snippet_uses_neutral_markers(banco):
     batch_id = _insert_batch(status="CONCLUIDO")
@@ -362,3 +413,52 @@ def test_resubmit_enqueues_batch_async(banco, monkeypatch):
 
     assert response.status_code == 202
     assert queued == [response.json()["batch_id"]]
+
+def test_resubmit_repetido_nao_cria_lote_duplicado(banco, monkeypatch):
+    with db.tx() as conn:
+        issue_id = conn.execute(
+            "INSERT INTO issues (contract_id, categoria, motivo, acao, "
+            "status, created_at, updated_at, historico_json) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                "CT-001", "ILEGIVEL", "ilegível", "reenviar",
+                "NOTIFICADA", db.agora(), db.agora(), "[]",
+            ),
+        ).lastrowid
+
+    criados = []
+    enfileirados = []
+
+    def criar_lote(*args, **kwargs):
+        batch_id = 700 + len(criados)
+        criados.append(batch_id)
+        return batch_id
+
+    monkeypatch.setattr(worker, "criar_lote", criar_lote)
+    monkeypatch.setattr(worker, "enfileirar", enfileirados.append)
+
+    with TestClient(app) as client:
+        primeira = client.post(
+            f"/api/issues/{issue_id}/resubmit",
+            headers=_headers("u-oper-beta"),
+            files={"file": ("reenviado.pdf", b"fake")},
+        )
+        segunda = client.post(
+            f"/api/issues/{issue_id}/resubmit",
+            headers=_headers("u-oper-beta"),
+            files={"file": ("reenviado.pdf", b"fake")},
+        )
+
+    assert primeira.status_code == 202, primeira.text
+    assert segunda.status_code == 409, segunda.text
+    assert len(criados) == 1
+    assert enfileirados == criados
+
+    with db.tx() as conn:
+        issue = conn.execute(
+            "SELECT status, historico_json FROM issues WHERE id=?",
+            (issue_id,),
+        ).fetchone()
+
+    assert issue["status"] == "REENVIADA"
+    assert len(json.loads(issue["historico_json"])) == 1

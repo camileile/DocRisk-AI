@@ -4,20 +4,23 @@ import json
 import math
 import re
 import sqlite3
+import unicodedata
 from pathlib import Path
 from typing import Any
 
+import pymupdf
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 
 from .. import config, db
 from ..auth import (Usuario, auditar, contratos_do_usuario, exigir_contrato,
                     exigir_papel, usuario_atual)
-from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT, PAPEIS_FORNECEDORA,
-                         TIPOS_FOCO, Papel, StatusDocumento, StatusParecer, StatusPendencia,
-                         StatusLote, TipoDocumento)
+from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT,
+                         PAPEIS_FORNECEDORA, TIPOS_FOCO, Papel, StatusDocumento,
+                         StatusParecer, StatusPendencia, StatusLote, TipoDocumento)
 from ..pipeline.render import ArquivoInvalido
 from ..pipeline import integracao_f3 as f3, revisao, worker
+from ..privacidade import SemCamadaDeTexto, anonimizar_pdf, mascarar_texto
 from ..rules import metricas, metricas_analista, parecer, pendencias, portal_contratante
 
 router = APIRouter()
@@ -541,7 +544,9 @@ def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
         "SELECT p.id, p.ordem, p.texto FROM doc_pages dp JOIN pages p ON p.id=dp.page_id "
         "WHERE dp.document_id=? ORDER BY dp.posicao", (document_id,)).fetchall()
     item["paginas_detalhe"] = [
-        {"page_id": int(p["id"]), "ordem": int(p["ordem"]), "texto": p["texto"] or ""} for p in paginas]
+        {"page_id": int(p["id"]), "ordem": int(p["ordem"]),
+         "texto": (p["texto"] or "") if user.org_tipo == "BERNHOEFT"
+         else mascarar_texto(p["texto"] or "")[0]} for p in paginas]
     versoes = []
     if row["worker_id"] and row["competencia"]:
         versoes = _rows(conn.execute(
@@ -557,6 +562,55 @@ def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
     if aej is not None and user.org_tipo == "BERNHOEFT":
         item["aej"] = _json_object(aej["calculation_json"])
     return item
+
+
+@router.get("/api/documents/{document_id}/anonimizado")
+def document_anonimizado(document_id: int, user: Usuario = Depends(usuario_atual),
+                         conn: sqlite3.Connection = Depends(get_conn)) -> Response:
+    # A contratante consulta apenas pareceres publicados, nunca documentos operacionais.
+    _require_batch_reader(user)
+    row = _document_or_404(conn, user, document_id)
+    lote = conn.execute("SELECT arquivo, tipo_arquivo FROM batches WHERE id=?", (row["batch_id"],)).fetchone()
+    if lote is None or lote["tipo_arquivo"] != "PDF":
+        raise HTTPException(422, "A versão anonimizada só está disponível para PDF")
+    ordens = [int(r["ordem"]) for r in conn.execute(
+        "SELECT p.ordem FROM doc_pages dp JOIN pages p ON p.id=dp.page_id "
+        "WHERE dp.document_id=? ORDER BY dp.posicao", (document_id,))]
+    if not ordens or min(ordens) < 1:
+        raise HTTPException(409, "Documento sem páginas válidas para anonimização")
+    path = Path(lote["arquivo"]).resolve()
+    try:
+        path.relative_to(config.UPLOAD_DIR.resolve())
+    except ValueError as exc:
+        raise HTTPException(404, "Arquivo não encontrado") from exc
+    if not path.is_file():
+        raise HTTPException(404, "Arquivo não encontrado")
+
+    data = path.read_bytes()
+    try:
+        with pymupdf.open(stream=data, filetype="pdf") as original:
+            if max(ordens) > original.page_count:
+                raise HTTPException(409, "Páginas do documento não correspondem ao PDF original")
+            for ordem in ordens:
+                page = original[ordem - 1]
+                # Anotações, campos e links não entram no texto usado pelas tarjas.
+                # Recusar a página evita devolver dados pessoais fora dessa camada.
+                if page.annot_xrefs():
+                    raise HTTPException(
+                        422, "PDF contém anotações, links ou formulários; não é possível anonimizar com segurança")
+                blocos = page.get_text("dict").get("blocks", [])
+                if any(bloco.get("type") == 1 for bloco in blocos):
+                    raise HTTPException(
+                        422, "PDF contém imagem; a anonimização não consegue garantir a remoção dos dados nela")
+        pdf = anonimizar_pdf(data, ordens)
+    except SemCamadaDeTexto as exc:
+        raise HTTPException(422, "Documento sem camada de texto: não dá para anonimizar com segurança") from exc
+    except (pymupdf.FileDataError, pymupdf.FileNotFoundError, RuntimeError) as exc:
+        raise HTTPException(422, "Não foi possível anonimizar este PDF com segurança") from exc
+
+    auditar(conn, user, "DOCUMENTO_ANONIMIZADO_BAIXADO", str(document_id))
+    return Response(pdf, media_type="application/pdf", headers={
+        "Content-Disposition": f'inline; filename="documento-{document_id}-anonimizado.pdf"'})
 
 
 @router.patch("/api/documents/{document_id}/aej-review")
@@ -621,6 +675,49 @@ def _document_view(conn: sqlite3.Connection, user: Usuario, row: sqlite3.Row) ->
     return item
 
 
+def _normalizar_busca(texto: str) -> tuple[str, list[int]]:
+    normalizado: list[str] = []
+    offsets: list[int] = []
+    for indice, caractere in enumerate(texto):
+        for letra in unicodedata.normalize("NFKD", caractere).casefold():
+            if not unicodedata.combining(letra):
+                normalizado.append(letra)
+                offsets.append(indice)
+    return "".join(normalizado), offsets
+
+
+def _trecho_busca_mascarado(texto: str, consulta: str, contexto: int = 90) -> str:
+    seguro = mascarar_texto(texto)[0]
+    normalizado, offsets = _normalizar_busca(seguro)
+    termos = ["".join(c for c in unicodedata.normalize("NFKD", termo).casefold()
+                      if not unicodedata.combining(c))
+              for termo in re.findall(r"\w+", consulta, flags=re.UNICODE)]
+    ocorrencias = []
+    for termo in termos:
+        if not termo:
+            continue
+        inicio = normalizado.find(termo)
+        if inicio >= 0:
+            ocorrencias.append((inicio, inicio + len(termo)))
+    if not ocorrencias or not offsets:
+        return ""
+    inicio_norm, fim_norm = min(ocorrencias)
+    inicio = offsets[inicio_norm]
+    fim = offsets[min(fim_norm - 1, len(offsets) - 1)] + 1
+    recorte_inicio = max(0, inicio - contexto)
+    while recorte_inicio > 0 and not seguro[recorte_inicio - 1].isspace():
+        recorte_inicio -= 1
+    recorte_fim = min(len(seguro), fim + contexto)
+    while recorte_fim < len(seguro) and not seguro[recorte_fim].isspace():
+        recorte_fim += 1
+    trecho = seguro[recorte_inicio:inicio] + "[[" + seguro[inicio:fim] + "]]" + seguro[fim:recorte_fim]
+    if recorte_inicio:
+        trecho = "…" + trecho
+    if recorte_fim < len(seguro):
+        trecho += "…"
+    return trecho
+
+
 @router.post("/api/issues/{issue_id}/resubmit", status_code=202)
 async def resubmit_issue(issue_id: int, file: UploadFile = File(...),
                          user: Usuario = Depends(usuario_atual),
@@ -681,14 +778,22 @@ def search(q: str = Query(min_length=1, max_length=250),
             return []
         rows = conn.execute(
             f"SELECT f.page_id, f.contract_id, snippet(page_fts, 0, '[[', ']]', '…', 12) AS trecho, "
-            f"dp.document_id, p.ordem, p.batch_id "
+            f"dp.document_id, p.ordem, p.batch_id, f.texto AS texto_completo "
             f"FROM page_fts f JOIN pages p ON p.id=f.page_id "
             f"LEFT JOIN doc_pages dp ON dp.page_id=f.page_id "
             f"WHERE page_fts MATCH ? AND f.contract_id IN ({marks}) ORDER BY rank LIMIT 100",
             (termos, *ids)).fetchall()
     except sqlite3.OperationalError as exc:
         raise HTTPException(400, "Consulta de busca inválida") from exc
-    return _rows(rows)
+    result = _rows(rows)
+    if user.org_tipo != "BERNHOEFT":
+        for item in result:
+            texto = item.pop("texto_completo", None)
+            item["trecho"] = _trecho_busca_mascarado(texto or "", q) if texto else ""
+    else:
+        for item in result:
+            item.pop("texto_completo", None)
+    return result
 
 
 @router.post("/api/reports", status_code=201)
