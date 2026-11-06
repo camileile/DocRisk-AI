@@ -16,6 +16,7 @@ async function go(page, route) {
 
 async function login(page, roleLabel, expectedPath) {
   const roles = {
+    "Administrador geral da plataforma": "ADMIN_PLATAFORMA",
     "Operador da fornecedora": "OPERADOR_FORN",
     "Gestor da fornecedora": "GESTOR_FORN",
     "Analista Bernhoeft": "ANALISTA_BH",
@@ -30,6 +31,7 @@ async function login(page, roleLabel, expectedPath) {
   assert.ok(user?.token, "Perfil de testes nao encontrado: " + roleLabel);
   await page.evaluate(() => sessionStorage.clear()).catch(() => {});
   await go(page, "/acesso/");
+  await page.getByRole("radio").first().waitFor();
   await page.getByLabel("Token Bearer de teste").fill(user.token);
   await page.getByRole("button", { name: /Conectar API de testes/ }).click();
   await page.waitForURL((url) => url.pathname.startsWith(expectedPath), { timeout: 20000 });
@@ -46,6 +48,23 @@ async function run() {
     await page.getByRole("heading", { name: /Documentos complexos/ }).waitFor();
     await go(page, "/painel/");
     await page.getByText("Entre com um perfil para continuar.").waitFor();
+
+    console.log("[equipe] Gestor gerencia operadores no backend conectado");
+    await login(page, "Gestor da fornecedora", "/painel");
+    await page.getByRole("link", { name: "Operadores", exact: true }).click();
+    await page.getByLabel("Nome do operador", { exact: true }).fill("Operador Navegador");
+    await page.getByRole("button", { name: "Cadastrar operador", exact: true }).click();
+    const operatorRow = page.getByRole("row", { name: /Operador Navegador/ });
+    await operatorRow.waitFor();
+    await operatorRow.getByRole("button", { name: "Desativar Operador Navegador", exact: true }).click();
+    await operatorRow.getByRole("cell", { name: "Inativo", exact: true }).waitFor();
+    const [reactivation] = await Promise.all([
+      page.waitForResponse((r) => r.url().includes("/api/supplier/operators/") && r.url().endsWith("/status") && r.request().method() === "PATCH"),
+      operatorRow.getByRole("button", { name: "Reativar Operador Navegador", exact: true }).click(),
+    ]);
+    assert.equal(reactivation.status(), 200, "A API precisa confirmar a reativação");
+    assert.equal((await reactivation.json()).ativo, true);
+    await operatorRow.getByRole("cell", { name: "Ativo", exact: true }).waitFor();
 
     console.log("[2/7] Fornecedora envia o lote sintético e acompanha o processamento");
     await login(page, "Operador da fornecedora", "/painel");
@@ -127,6 +146,25 @@ async function run() {
     await page.locator("aside.workspace-sidebar.visible").waitFor({ state: "visible" });
     await page.getByRole("button", { name: "Fechar navegação" }).first().click();
     assert.equal(await page.locator("aside.workspace-sidebar.visible").count(), 0);
+
+    console.log("[plataforma] Admin Geral cadastra auditora e persiste dados institucionais");
+    await page.setViewportSize({ width: 1365, height: 900 });
+    await login(page, "Administrador geral da plataforma", "/plataforma");
+    await page.getByRole("heading", { name: "Estrutura do DocRisk AI." }).waitFor();
+    await page.getByRole("link", { name: "Organizações Auditoras", exact: true }).click();
+    await page.getByLabel("Nome da auditora", { exact: true }).fill("Auditora Navegador");
+    await page.getByLabel("Administrador inicial", { exact: true }).fill("Admin Navegador");
+    await page.getByRole("button", { name: "Cadastrar auditora", exact: true }).click();
+    await page.getByRole("heading", { name: "Auditora Navegador", exact: true }).waitFor();
+    await page.getByRole("link", { name: "Dados da Plataforma", exact: true }).click();
+    await page.getByLabel("Contato de suporte", { exact: true }).fill("Suporte de integração");
+    await page.getByRole("button", { name: "Salvar dados", exact: true }).click();
+    await page.getByText("Alteração salva no ambiente de testes.", { exact: true }).waitFor();
+    await page.reload();
+    assert.equal(await page.getByLabel("Contato de suporte", { exact: true }).inputValue(), "Suporte de integração");
+    await go(page, "/painel/");
+    await page.waitForURL((url) => url.pathname.startsWith("/plataforma"));
+    await page.getByRole("heading", { name: "Estrutura do DocRisk AI." }).waitFor();
 
     assert.equal(runtimeErrors.length, 0, "Erros JavaScript na navegação: " + runtimeErrors.join(" | "));
     console.log("Frontend smoke: PASSOU");

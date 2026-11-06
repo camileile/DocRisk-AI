@@ -32,6 +32,16 @@ async function run() {
       await page.getByRole("button", { name: "Explorar demonstração" }).click();
       await page.waitForURL((url) => url.pathname === route, { timeout: 15000 });
       await page.getByText("Demonstração offline:", { exact: false }).first().waitFor();
+      if (role === "Administrador geral da plataforma") {
+        await page.getByRole("heading", { name: "Estrutura do DocRisk AI." }).waitFor();
+        await page.getByRole("link", { name: "Organizações Auditoras", exact: true }).click();
+        await page.getByRole("heading", { name: "Organizações auditoras.", exact: true }).waitFor();
+        assert.equal(await page.getByRole("button", { name: "Cadastrar auditora", exact: true }).isDisabled(), true);
+        await page.getByRole("link", { name: "Dados da Plataforma", exact: true }).click();
+        await page.getByRole("heading", { name: "Dados institucionais da plataforma.", exact: true }).waitFor();
+        await page.goto(base + "/administracao/");
+        await page.waitForURL((url) => url.pathname === "/plataforma/");
+      }
       if (role === "Administrador Bernhoeft") {
         const labels = await page.locator('nav[aria-label="Navegação administrativa"] a').allTextContents();
         assert.deepEqual(labels.map((text) => text.trim()), [
@@ -50,6 +60,17 @@ async function run() {
       if (role === "Operador da fornecedora" || role === "Gestor da fornecedora") {
         await page.goto(base + "/painel/envio/", { waitUntil: "domcontentloaded" });
         await page.getByText("Envio desativado nesta demonstração").waitFor();
+      }
+      if (role === "Gestor da fornecedora") {
+        await page.goto(base + "/painel/operadores/");
+        await page.getByRole("heading", { name: "Operadores da sua empresa." }).waitFor();
+        assert.equal(await page.getByRole("button", { name: "Cadastrar operador", exact: true }).isDisabled(), true);
+      }
+      if (role === "Operador da fornecedora") {
+        assert.equal(await page.getByRole("link", { name: "Operadores", exact: true }).count(), 0);
+        await page.goto(base + "/painel/documentos/");
+        await page.getByRole("combobox", { name: "Situação", exact: true }).selectOption("EM_ANALISE");
+        await page.getByRole("row", { name: /T003/ }).waitFor();
       }
       if (role === "Analista Bernhoeft") {
         await page.getByRole("heading", { name: "Visão geral das divergências." }).waitFor();

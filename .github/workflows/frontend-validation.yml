@@ -53,14 +53,19 @@ jobs:
           test -f out/painel/pareceres/index.html
           test -f out/contratante/index.html
           test -f out/contratante/pareceres/index.html
+          test -f out/plataforma/index.html
+          test -f out/plataforma/auditoras/index.html
+          test -f out/plataforma/configuracoes/index.html
+          test -f out/painel/operadores/index.html
           test -f out/administracao/index.html
           test -f out/administracao/empresas/index.html
           test -f out/administracao/usuarios/index.html
           test -f out/administracao/auditoria/index.html
       - name: Playwright e Chromium (somente testes)
+        timeout-minutes: 3
         run: |
           npm install --no-save --package-lock=false playwright@1.58.2
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
       - name: Servidor da exportação estática
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 --directory out > /tmp/docrisk-static.log 2>&1 &
@@ -70,7 +75,7 @@ jobs:
           done
           cat /tmp/docrisk-static.log
           exit 1
-      - name: Demonstracao offline (5 perfis sem backend)
+      - name: Demonstracao offline (6 perfis sem backend)
         run: |
           node scripts/offline-smoke.cjs
           node scripts/contractor-smoke.cjs
