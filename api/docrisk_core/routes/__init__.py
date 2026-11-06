@@ -432,13 +432,23 @@ def review_document(document_id: int, payload: dict[str, Any],
              user.id, now, document_id))
         par_depois = _document_pair({"tipo": tipo_final.value, "worker_id": trabalhador_id,
                                      "competencia": competencia})
-        if dados_corrigidos and tipo_final in TIPOS_FOCO:
+        # Aprovar uma "possível duplicidade" confirma o documento novo como versão vigente.
+        duplicidade = any("Possível duplicidade" in m for m in _json_list(doc["motivos_revisao"]))
+        if (dados_corrigidos or duplicidade) and tipo_final in TIPOS_FOCO:
+            anteriores = conn.execute(
+                "SELECT id, versao FROM documents WHERE contract_id=? AND tipo=? AND worker_id=? "
+                "AND competencia=? AND status=? AND id<>? ORDER BY versao DESC, id DESC",
+                (doc["contract_id"], tipo_final.value, trabalhador_id, competencia,
+                 StatusDocumento.APTO.value, document_id)).fetchall()
             conn.execute(
                 "UPDATE documents SET status=?, revisado_por=?, updated_at=? "
                 "WHERE contract_id=? AND tipo=? AND worker_id=? AND competencia=? AND status=? AND id<>?",
                 (StatusDocumento.SUBSTITUIDO.value, user.id, now, doc["contract_id"], tipo_final.value,
                  trabalhador_id, competencia, StatusDocumento.APTO.value, document_id),
             )
+            if duplicidade and anteriores:
+                conn.execute("UPDATE documents SET versao=?, substitui_id=? WHERE id=?",
+                             (int(anteriores[0]["versao"]) + 1, anteriores[0]["id"], document_id))
         pendencias.resolver_do_documento(conn, document_id, "resolvida na revisão")
         _reconcile_pairs(conn, doc["contract_id"], par_antes, par_depois)
     elif action == "solicitar_correcao":
@@ -760,9 +770,19 @@ async def resubmit_issue(issue_id: int, file: UploadFile = File(...),
     now = db.agora()
     historico.append({"status": StatusPendencia.REENVIADA.value, "em": now, "motivo": "reenvio recebido",
                       "lote": batch_id})
-    conn.execute("UPDATE issues SET status=?, updated_at=?, historico_json=? WHERE id=?",
-                 (StatusPendencia.REENVIADA.value, now,
-                  json.dumps(historico, ensure_ascii=False), issue_id))
+    alterada = conn.execute(
+        "UPDATE issues SET status=?, updated_at=?, historico_json=? WHERE id=? AND status=? "
+        "AND updated_at=? AND historico_json=?",
+        (StatusPendencia.REENVIADA.value, now, json.dumps(historico, ensure_ascii=False), issue_id,
+         issue["status"], issue["updated_at"], issue["historico_json"]),
+    )
+    if alterada.rowcount != 1:
+        lote = conn.execute("SELECT arquivo FROM batches WHERE id=?", (batch_id,)).fetchone()
+        conn.execute("DELETE FROM batches WHERE id=?", (batch_id,))
+        conn.commit()
+        if lote is not None and lote["arquivo"]:
+            Path(lote["arquivo"]).unlink(missing_ok=True)
+        raise HTTPException(409, "Pendência alterada durante o reenvio; atualize e tente novamente")
     auditar(conn, user, "PENDENCIA_REENVIADA", str(issue_id))
     conn.commit()
     try:

@@ -7,7 +7,7 @@ from docrisk_core import config, db
 from docrisk_core.ai.textlayer import TextLayerProvider
 from docrisk_core.api import app
 from docrisk_core.pipeline import worker
-from test_f2_worker import BETA, LOTE, banco, documentos, pdf, q
+from test_f2_worker import BETA, HOLERITE, LOTE, banco, documentos, pdf, q
 
 
 def _token(user_id):
@@ -263,6 +263,41 @@ def test_resubmit_does_not_overwrite_f3_resolution(banco, monkeypatch):
         issue = conn.execute("SELECT * FROM issues WHERE id=?", (issue_id,)).fetchone()
     assert issue["status"] == "RESOLVIDA"
     assert json.loads(issue["historico_json"]) == [{"status": "RESOLVIDA"}]
+
+
+def test_resubmit_does_not_reset_issue_changed_before_enqueue(banco, monkeypatch):
+    with db.tx() as conn:
+        issue_id = conn.execute(
+            "INSERT INTO issues (contract_id, categoria, motivo, acao, status, created_at, updated_at, "
+            "historico_json) VALUES ('CT-001', 'ILEGIVEL', 'ilegível', 'reenviar', 'NOTIFICADA', ?, ?, ?)",
+            (db.agora(), db.agora(), '[{"status":"NOTIFICADA"}]'),
+        ).lastrowid
+
+    enfileirados = []
+
+    def criar_lote(*args, **kwargs):
+        batch_id = _insert_batch()
+        with db.tx() as conn:
+            conn.execute(
+                "UPDATE issues SET status='RESOLVIDA', updated_at=?, historico_json=? WHERE id=?",
+                (db.agora(), '[{"status":"NOTIFICADA"},{"status":"RESOLVIDA"}]', issue_id),
+            )
+        return batch_id
+
+    monkeypatch.setattr(worker, "criar_lote", criar_lote)
+    monkeypatch.setattr(worker, "enfileirar", enfileirados.append)
+    with TestClient(app) as client:
+        response = client.post(f"/api/issues/{issue_id}/resubmit", headers=_headers("u-oper-beta"),
+                               files={"file": ("reenviado.pdf", b"fake")})
+
+    assert response.status_code == 409
+    assert enfileirados == []
+    with db.tx() as conn:
+        issue = conn.execute("SELECT status, historico_json FROM issues WHERE id=?", (issue_id,)).fetchone()
+        batch_count = conn.execute("SELECT COUNT(*) FROM batches WHERE filename='reprocess.pdf'").fetchone()[0]
+    assert issue["status"] == "RESOLVIDA"
+    assert json.loads(issue["historico_json"])[-1]["status"] == "RESOLVIDA"
+    assert batch_count == 0
 
 
 def test_reports_are_restricted_and_json_is_decoded(banco):
@@ -531,3 +566,33 @@ def test_resubmit_repetido_nao_cria_lote_duplicado(banco, monkeypatch):
 
     assert issue["status"] == "REENVIADA"
     assert len(json.loads(issue["historico_json"])) == 1
+
+
+def test_aprovar_duplicidade_deixa_uma_unica_versao_vigente(banco):
+    primeiro = worker.criar_lote(BETA, "CT-001", "h1.pdf", pdf(HOLERITE.format(t="T001", h="6,00")))
+    worker.processar_lote(primeiro, provedor=TextLayerProvider())
+    segundo = worker.criar_lote(BETA, "CT-001", "h2.pdf", pdf(HOLERITE.format(t="T001", h="7,00")))
+    worker.processar_lote(segundo, provedor=TextLayerProvider())
+    [antigo] = documentos(primeiro)
+    [duplicado] = documentos(segundo)
+    assert duplicado["status"] == "REVISAO_HUMANA"
+    with TestClient(app) as client:
+        r = client.patch(f"/api/documents/{duplicado['id']}/review", headers=_headers(), json={"acao": "aprovar"})
+    assert r.status_code == 200, r.text
+    vigentes = q("SELECT id, versao, substitui_id FROM documents WHERE worker_id='T001' AND tipo='HOLERITE' "
+                 "AND competencia='10/2026' AND status<>'SUBSTITUIDO'")
+    assert [(v["id"], v["versao"], v["substitui_id"]) for v in vigentes] == [(duplicado["id"], 2, antigo["id"])]
+
+
+def test_publicar_depois_da_previa_ignora_horario_de_geracao(banco, monkeypatch):
+    # O analista lê a prévia e publica minutos depois: só o horário de geração mudou.
+    horarios = iter(["2026-11-06T10:00:00", "2026-11-06T10:03:00", "2026-11-06T10:03:01", "2026-11-06T10:03:02"])
+    with TestClient(app) as client:
+        rid = client.post("/api/reports", headers=_headers(),
+                          json={"contract_id": "CT-001", "competencia": "10/2026"}).json()["id"]
+        monkeypatch.setattr(db, "agora", lambda: next(horarios, "2026-11-06T10:05:00"))
+        previa = client.get(f"/api/reports/{rid}/preview", headers=_headers()).json()
+        publicado = client.post(f"/api/reports/{rid}/publish", headers=_headers(),
+                                json={"conteudo_sha256": previa["conteudo_sha256"]})
+    assert publicado.status_code == 200, publicado.text
+    assert publicado.json()["conteudo_json"]["gerado_em"] != previa["conteudo_json"]["gerado_em"]

@@ -9,9 +9,11 @@ import { useDemo } from "@/components/demo-provider";
 import { PageIntro } from "@/components/workspace-parts";
 import { BatchBadge } from "@/components/batch-badge";
 import {
-  ApiRequestError, fetchApiBatch, uploadApiBatch, validateApiUploadFile,
-  type ApiBatch, type ApiUploadReceipt,
-} from "@/lib/api-client";
+  fetchApiBatch, uploadApiBatch, validateApiUploadFile,
+  type ApiUploadReceipt,
+} from "@/lib/api-upload";
+
+import { ApiError, type Batch } from "@/lib/api";
 
 const TERMINAL = new Set(["CONCLUIDO", "FALHA_PROCESSAMENTO"]);
 const MAX_STATUS_CHECKS = 60;
@@ -22,7 +24,7 @@ function ProcessingStatus({ receipt, token, submittedContract, filename }: {
   submittedContract: string;
   filename: string;
 }) {
-  const [batch, setBatch] = useState<ApiBatch | null>(null);
+  const [batch, setBatch] = useState<Batch | null>(null);
   const [error, setError] = useState("");
   const [finishedChecking, setFinishedChecking] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -55,7 +57,7 @@ function ProcessingStatus({ receipt, token, submittedContract, filename }: {
       } catch (reason) {
         if (!active) return;
         setError(reason instanceof Error ? reason.message : "Não foi possível atualizar o status.");
-        if (reason instanceof ApiRequestError && reason.status !== null && reason.status < 500) {
+        if (reason instanceof ApiError && !reason.retryable) {
           setFinishedChecking(true);
           return;
         }

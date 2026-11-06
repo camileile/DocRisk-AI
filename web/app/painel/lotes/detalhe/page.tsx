@@ -48,7 +48,7 @@ function BatchDetail() {
     reprocessing.current = true;
     setReprocessBusy(true);
     try {
-      await api(`/api/batches/${b.id}/reprocess`, { method: "POST" });
+      await api(`/api/batches/${b.id}/reprocess`, { method: "POST", timeoutMs: 120000 });
       setNotice({ tone: "success", text: "Lote reenfileirado. Páginas já lidas são reaproveitadas do cache." });
       await batch.reload();
     } catch (err) {
