@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import config, db
+from . import config, db, runtime
 from .clerk_identity import validate_configuration
 from .routes.identity import router as identity_router
 from .aej import AEJError
@@ -39,17 +39,20 @@ def _configured_cors_origins() -> list[str]:
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     validate_configuration()
-    db.init_db(seed=config.AUTH_MODE == "token" and config.DEMO_MODE)
+    runtime.preparar_inicio()
     worker_started = False
     try:
-        worker_started = worker.iniciar_worker()
-    except NotImplementedError:
-        logger.info("Worker F2 ainda não implementado; API iniciada sem processamento assíncrono")
-    try:
+        db.init_db(seed=config.AUTH_MODE == "token" and config.DEMO_MODE)
+        try:
+            worker_started = worker.iniciar_worker()
+        except NotImplementedError:
+            logger.info("Worker F2 ainda não implementado; API iniciada sem processamento assíncrono")
         yield
     finally:
         if worker_started:
             worker.parar_worker()
+        runtime.liberar_instancia()
+        logger.info("docrisk encerrado")
 
 
 app = FastAPI(title="DocRisk AI", version="0.2.0", lifespan=lifespan)
