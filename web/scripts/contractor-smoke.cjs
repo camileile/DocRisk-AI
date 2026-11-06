@@ -76,6 +76,7 @@ async function run() {
     await page.getByRole("heading", { name: "Por trabalhador", exact: true }).waitFor();
     assert.equal(await page.locator("aside.workspace-sidebar.visible").count(), 0);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
+    if (overflow) console.error(await page.evaluate(() => [...document.querySelectorAll("main *")].filter((el) => el.getBoundingClientRect().right > innerWidth + 1 && getComputedStyle(el).position !== "fixed").slice(0, 12).map((el) => ({tag: el.tagName, class: el.className, right: el.getBoundingClientRect().right, width: el.getBoundingClientRect().width}))));
     assert.equal(overflow, false, "Tabelas devem rolar no próprio contêiner no celular");
     await page.screenshot({ path: "/tmp/docrisk-contratante-mobile.png", fullPage: true });
     await page.goto(base + "/painel/");

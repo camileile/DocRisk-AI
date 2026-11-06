@@ -23,7 +23,7 @@ function Contractor({ children }: { children: ReactNode }) {
   const onReports = path === "/contratante/pareceres";
   if (!me) return null;
   return (
-    <div className="workspace">
+    <div className="workspace contractor-workspace">
       <aside className={open ? "workspace-sidebar visible" : "workspace-sidebar"}>
         <div className="sidebar-brand">
           <Link href="/" aria-label="DocRisk AI — início">

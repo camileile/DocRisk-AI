@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "./contractor.css";
 import { ContractorShell } from "@/components/contractor-shell";
 export const metadata: Metadata = {
   title: "Portal da contratante | DocRisk AI",
