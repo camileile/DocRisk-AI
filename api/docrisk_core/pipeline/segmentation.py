@@ -142,6 +142,16 @@ def _resumir(membros: list[AnalisePagina], ordens: list[int], alertas: list[str]
     )
 
 
+def resumir_paginas(analises: list[AnalisePagina], ordens: list[int], alertas: list[str] | None = None,
+                    limiar_legibilidade: float | None = None) -> SegmentoDocumento:
+    """Resume páginas JÁ AGRUPADAS (ex.: por decisão humana na revisão) num documento,
+    com as mesmas regras de tipo, campos, faltantes e ilegíveis da segmentação."""
+    if not analises or len(analises) != len(ordens):
+        raise ValueError("Informe ao menos uma página e uma ordem por página.")
+    limiar = config.LIMIAR_LEGIBILIDADE if limiar_legibilidade is None else limiar_legibilidade
+    return _resumir(list(analises), list(ordens), list(alertas or []), limiar)
+
+
 def segmentar(analises: list[AnalisePagina], ordens: list[int] | None = None,
               limiar_legibilidade: float | None = None) -> list[SegmentoDocumento]:
     """Agrupa páginas consecutivas em documentos.

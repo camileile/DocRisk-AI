@@ -25,8 +25,29 @@ O que a F1 lê do banco depois do processamento:
   `motivos_pendencia` (pode ir à fornecedora), `motivos_revisao` (**só Bernhoeft**), `campos_json`, `versao`, `substitui_id`.
 - `page_fts`: busca com `MATCH` **sempre** filtrada por `contract_id` do usuário.
 
-Ainda não implementado na F2 (pedido pela rota de revisão): `dividir` e `unir_proximo` de documentos.
-Proposta: `pipeline.revisao.dividir(conn, doc_id, posicao)` e `unir_proximo(conn, doc_id)`, reaproveitando `segmentar` sobre as páginas do documento.
+### Dividir e unir na revisão (`pipeline/revisao.py`)
+
+A rota `PATCH /api/documents/{id}/review` (ações `dividir` e `unir_proximo`) deve só autorizar e chamar:
+
+```python
+from docrisk_core.pipeline.revisao import RevisaoInvalida, dividir, unir_proximo
+
+try:
+    if acao == "dividir":
+        r = dividir(conn, document_id, payload["apos_pagina"], usuario_id=user.id)  # 1..n-1
+    else:
+        r = unir_proximo(conn, document_id, usuario_id=user.id)
+except RevisaoInvalida as exc:
+    raise HTTPException(409 if exc.conflito else 422, str(exc)) from exc
+# r.documentos -> ids resultantes; r.removidos -> absorvidos na união; r.pares_afetados -> já reconciliados
+```
+
+- Campos, tipo, trabalhador e competência são recalculados a partir das páginas (nada é copiado entre as partes).
+- Os documentos ajustados voltam para `REVISAO_HUMANA`; a decisão final continua sendo `aprovar`.
+- Uma página fica em um único documento; na união, as pendências do documento absorvido passam para o que ficou.
+- `substitui_id`/`versao` não são usados aqui (são do reenvio). Documento com histórico de versões não é unido (409).
+- A conciliação dos pares afetados já é chamada dentro da função; a rota não precisa repetir.
+- Tudo roda na transação da requisição: qualquer erro desfaz o ajuste inteiro.
 
 ## Para a F3 (regras)
 
