@@ -1,182 +1,143 @@
 "use client";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Search, ArrowRight, CircleAlert, X } from "lucide-react";
-import { issues } from "@/lib/demo";
-import { useDemo } from "@/components/demo-provider";
+import { ArrowUpRight, FileUp } from "lucide-react";
+import { useSession } from "@/components/demo-provider";
 import {
-  IssueBadge,
   EmptyState,
+  ErrorState,
+  IssueBadge,
+  LoadingState,
+  Notice,
   PageIntro,
 } from "@/components/workspace-parts";
-export default function Issues() {
-  return (
-    <Suspense fallback={<p>Carregando pendências…</p>}>
-      <IssuesContent />
-    </Suspense>
-  );
-}
-function IssuesContent() {
-  const searchParams = useSearchParams();
-  const { role, contract, competence } = useDemo();
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState("todos");
-  const [expandedId, setSelectedId] = useState<string | null | undefined>(
-    undefined,
-  );
-  const selectedId =
-    expandedId === undefined ? searchParams.get("pendencia") : expandedId;
-  const rows = issues.filter(
-    (d) =>
-      d.contract === contract &&
-      d.competence === competence &&
-      (status === "todos" || d.status === status) &&
-      `${d.id} ${d.worker} ${d.title}`
-        .toLocaleLowerCase("pt-BR")
-        .includes(query.toLocaleLowerCase("pt-BR")),
-  );
-  const selected = rows.find((d) => d.id === selectedId);
+import { api, formatDate, issueCategoryLabels, issueStatusLabels, typeLabels, type Issue } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const OPEN = ["ABERTA", "NOTIFICADA", "REABERTA"];
+
+export default function IssuesPage() {
+  const { me, contract } = useSession();
+  const supplier = me?.org_tipo === "FORNECEDORA";
+  const { data, error, loading, reload } = useApi<Issue[]>(supplier ? "/api/supplier/issues" : "/api/issues");
+  const [filter, setFilter] = useState<"abertas" | "todas">("abertas");
+  const [sent, setSent] = useState<{ issue: number; batch: number } | null>(null);
+  const rows = (data ?? [])
+    .filter((i) => !contract || i.contract_id === contract)
+    .filter((i) => filter === "todas" || i.status !== "RESOLVIDA");
   return (
     <>
       <PageIntro
-        eyebrow="ACOMPANHAMENTO DOCUMENTAL"
-        title="Pendências com direção."
-        description="Entenda o que precisa ser corrigido e acompanhe a situação de cada solicitação."
+        eyebrow="PENDÊNCIAS DOCUMENTAIS"
+        title={supplier ? "O que precisa ser corrigido." : "Devoluções à fornecedora."}
+        description="Cada pendência traz motivo objetivo, evidência (lote e página), ação solicitada e prazo. O reenvio cria uma nova versão sem apagar o histórico."
       />
-      <div className="inline-info">
-        <CircleAlert size={18} />
-        <p>
-          Um reenvio precisa ser conferido antes da resolução. Nenhuma pendência
-          é encerrada automaticamente nesta demonstração.
-        </p>
+      <div className="list-toolbar">
+        <div className="segmented" role="group" aria-label="Filtrar pendências">
+          <button className={filter === "abertas" ? "selected" : ""} onClick={() => setFilter("abertas")}>Em aberto</button>
+          <button className={filter === "todas" ? "selected" : ""} onClick={() => setFilter("todas")}>Todas</button>
+        </div>
       </div>
-      <section className="workspace-card">
-        <div className="list-toolbar">
-          <label className="search-field">
-            <Search size={18} />
-            <input
-              aria-label="Buscar pendências"
-              placeholder="Buscar trabalhador, solicitação ou ID…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+      {sent && (
+        <Notice tone="success">
+          Reenvio da pendência #{sent.issue} recebido (lote #{sent.batch}). A nova versão é processada e a pendência é
+          resolvida ou reaberta automaticamente.{" "}
+          <Link href={`/painel/lotes/detalhe?id=${sent.batch}`}>Acompanhar <ArrowUpRight size={13} /></Link>
+        </Notice>
+      )}
+      {loading ? (
+        <LoadingState />
+      ) : error ? (
+        <ErrorState message={error} onRetry={reload} />
+      ) : rows.length === 0 ? (
+        <EmptyState title="Nenhuma pendência." text={filter === "abertas" ? "Não há pendências em aberto neste contrato." : "Nenhuma pendência registrada."} />
+      ) : (
+        <div className="issue-list">
+          {rows.map((i) => (
+            <IssueCard
+              key={i.id}
+              issue={i}
+              canResubmit={supplier && OPEN.includes(i.status)}
+              onSent={(batch) => {
+                setSent({ issue: i.id, batch });
+                void reload();
+              }}
             />
-          </label>
-          <label className="filter-label">
-            Situação
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="todos">Todas as situações</option>
-              <option value="ABERTA">Aberta</option>
-              <option value="REENVIADA">Reenviada</option>
-              <option value="RESOLVIDA">Resolvida</option>
-            </select>
-          </label>
+          ))}
         </div>
-        <div className="list-summary" aria-live="polite">
-          {rows.length} pendência{rows.length !== 1 ? "s" : ""} encontrada
-          {rows.length !== 1 ? "s" : ""}
-        </div>
-        {rows.length ? (
-          <div className="table-scroll">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Solicitação</th>
-                  <th>Trabalhador</th>
-                  <th>Situação</th>
-                  <th>
-                    <span className="sr-only">Ações</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      <strong>{item.title}</strong>
-                      <small>
-                        {item.id} · {item.competence}
-                      </small>
-                    </td>
-                    <td>{item.worker}</td>
-                    <td>
-                      <IssueBadge status={item.status} />
-                    </td>
-                    <td>
-                      <button
-                        className="table-action"
-                        aria-expanded={selectedId === item.id}
-                        onClick={() =>
-                          setSelectedId(selectedId === item.id ? null : item.id)
-                        }
-                      >
-                        Ver orientação <ArrowRight size={14} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <EmptyState
-            title="Nenhuma pendência encontrada"
-            text="Altere os filtros ou o contexto para consultar outros exemplos."
-          />
-        )}
-      </section>
-      {selected && (
-        <section
-          className="workspace-card issue-detail"
-          aria-label={`Orientação de ${selected.id}`}
-        >
-          <div className="card-title">
-            <div>
-              <span className="eyebrow">
-                {selected.id} · {selected.worker}
-              </span>
-              <h2>{selected.title}</h2>
-            </div>
-            <button
-              className="icon-button"
-              aria-label="Fechar orientação"
-              onClick={() => setSelectedId(null)}
-            >
-              <X size={19} />
-            </button>
-          </div>
-          <IssueBadge status={selected.status} />
-          <h3>Orientação para a fornecedora</h3>
-          <p>{selected.instruction}</p>
-          <dl className="detail-list">
-            <div>
-              <dt>Contrato</dt>
-              <dd>{selected.contract}</dd>
-            </div>
-            <div>
-              <dt>Competência</dt>
-              <dd>{selected.competence}</dd>
-            </div>
-            {selected.document && (
-              <div>
-                <dt>Documento de referência</dt>
-                <dd>{selected.document}</dd>
-              </div>
-            )}
-          </dl>
-          {selected.status === "ABERTA" && role === "OPERADOR_FORN" && (
-            <Link href="/painel/envio" className="button">
-              Conferir como preparar o reenvio <ArrowRight size={16} />
-            </Link>
-          )}
-          {selected.status === "ABERTA" && role === "ANALISTA_BH" && (
-            <p className="integration-note">
-              Exemplo de solicitação à fornecedora. Notificações e resolução
-              dependem da integração com o backend.
-            </p>
-          )}
-        </section>
       )}
     </>
+  );
+}
+
+function IssueCard({ issue: i, canResubmit, onSent }: { issue: Issue; canResubmit: boolean; onSent: (batch: number) => void }) {
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  async function resubmit() {
+    if (!file) return;
+    setBusy(true);
+    setFeedback(null);
+    const form = new FormData();
+    form.append("file", file);
+    try {
+      const r = await api<{ batch_id: number }>(`/api/issues/${i.id}/resubmit`, { method: "POST", body: form });
+      setFile(null);
+      onSent(r.batch_id);
+    } catch (err) {
+      setFeedback(err instanceof Error ? err.message : "Falha no reenvio");
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <article className="workspace-card issue-card">
+      <header>
+        <div>
+          <span className="eyebrow">PENDÊNCIA #{i.id} · {issueCategoryLabels[i.categoria] ?? i.categoria}</span>
+          <h2>
+            {typeLabels[i.tipo_documento ?? ""] ?? i.tipo_documento ?? "Documento"} · {i.worker_id ?? "trabalhador não identificado"} ·{" "}
+            {i.competencia ?? "—"}
+          </h2>
+        </div>
+        <IssueBadge status={i.status} />
+      </header>
+      <dl className="detail-list">
+        <dt>Motivo</dt>
+        <dd>{i.motivo}</dd>
+        <dt>Evidência</dt>
+        <dd>{i.evidencia ?? "—"}</dd>
+        <dt>Ação solicitada</dt>
+        <dd>{i.acao}</dd>
+        <dt>Prazo</dt>
+        <dd>{i.prazo ? new Date(`${i.prazo.slice(0, 10)}T12:00:00`).toLocaleDateString("pt-BR") : "—"}</dd>
+      </dl>
+      {i.historico.length > 0 && (
+        <details>
+          <summary>Histórico ({i.historico.length})</summary>
+          <ol className="plain-list">
+            {i.historico.map((h, n) => (
+              <li key={n}>
+                {formatDate(h.em)} · <strong>{issueStatusLabels[h.status as keyof typeof issueStatusLabels] ?? h.status}</strong>
+                {h.motivo ? ` — ${h.motivo}` : ""}
+                {h.lote ? ` (lote #${h.lote})` : ""}
+              </li>
+            ))}
+          </ol>
+        </details>
+      )}
+      {canResubmit && (
+        <div className="inline-form">
+          <label className="filter-label">
+            Documento corrigido
+            <input type="file" accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+          </label>
+          <button className="button" disabled={!file || busy} onClick={resubmit}>
+            <FileUp size={16} /> {busy ? "Enviando…" : "Reenviar"}
+          </button>
+        </div>
+      )}
+      {feedback && <Notice tone="error">{feedback}</Notice>}
+    </article>
   );
 }

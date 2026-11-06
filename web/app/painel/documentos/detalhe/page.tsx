@@ -1,0 +1,124 @@
+"use client";
+import { Suspense } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { useSession } from "@/components/demo-provider";
+import {
+  DocumentBadge,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  PageImage,
+  PageIntro,
+} from "@/components/workspace-parts";
+import { formatHours, pageList, typeLabels, type DocDetail } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+export default function Page() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <DocumentDetail />
+    </Suspense>
+  );
+}
+
+function money(value: number | null | undefined) {
+  return value === null || value === undefined
+    ? "—"
+    : value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function DocumentDetail() {
+  const id = useSearchParams().get("id");
+  const { me } = useSession();
+  const { data: d, error, loading, reload } = useApi<DocDetail>(id ? `/api/documents/${id}` : null);
+  if (!id) return <EmptyState title="Documento não informado." text="Abra um documento a partir da lista." />;
+  if (loading) return <LoadingState />;
+  if (error || !d) return <ErrorState message={error ?? "Documento não encontrado"} onRetry={reload} />;
+  const bernhoeft = me?.org_tipo === "BERNHOEFT";
+  return (
+    <>
+      <Link href="/painel/documentos" className="batch-back">
+        <ArrowLeft size={16} /> Documentos
+      </Link>
+      <PageIntro
+        eyebrow={`DOCUMENTO #${d.id} · LOTE #${d.batch_id} · ${pageList(d.paginas)}`}
+        title={typeLabels[d.tipo] ?? d.tipo}
+        description={`Trabalhador ${d.worker_id ?? "não identificado"} · competência ${d.competencia ?? "não identificada"} · versão ${d.versao}`}
+        action={<DocumentBadge status={d.status} />}
+      />
+      <div className="dashboard-grid">
+        <section className="workspace-card">
+          <h2>Leitura do documento</h2>
+          <dl className="detail-list">
+            {bernhoeft && d.confianca !== undefined && (
+              <>
+                <dt>Confiança da classificação</dt>
+                <dd>{Math.round(d.confianca * 100)}%</dd>
+              </>
+            )}
+            {bernhoeft && (
+              <>
+                <dt>Horas extras (h)</dt>
+                <dd>{formatHours(d.campos.horas_extras_h)}</dd>
+                <dt>Horas extras (R$)</dt>
+                <dd>{money(d.campos.horas_extras_valor)}</dd>
+                <dt>Líquido / valor pago</dt>
+                <dd>{money(d.campos.valor_liquido ?? d.campos.valor_pago)}</dd>
+                {d.campos.data_pagamento && (
+                  <>
+                    <dt>Data do pagamento</dt>
+                    <dd>{d.campos.data_pagamento}</dd>
+                  </>
+                )}
+              </>
+            )}
+            <dt>Motivos de pendência</dt>
+            <dd>{d.motivos_pendencia.length ? d.motivos_pendencia.join("; ") : "—"}</dd>
+            {bernhoeft && (
+              <>
+                <dt>Motivos de revisão (interno)</dt>
+                <dd>{d.motivos_revisao?.length ? d.motivos_revisao.join("; ") : "—"}</dd>
+              </>
+            )}
+          </dl>
+          {bernhoeft && d.status === "REVISAO_HUMANA" && (
+            <Link className="button" href={`/painel/revisao/detalhe?id=${d.id}`}>
+              Revisar documento <ArrowUpRight size={16} />
+            </Link>
+          )}
+        </section>
+        <section className="workspace-card">
+          <h2>Versões</h2>
+          {d.versoes.length <= 1 ? (
+            <p className="muted">Versão única deste documento.</p>
+          ) : (
+            <ol className="plain-list">
+              {d.versoes.map((v) => (
+                <li key={v.id}>
+                  {v.id === d.id ? <strong>Versão {v.versao} (esta)</strong> : (
+                    <Link href={`/painel/documentos/detalhe?id=${v.id}`}>Versão {v.versao}</Link>
+                  )}{" "}
+                  · lote #{v.batch_id} · <DocumentBadge status={v.status} />
+                </li>
+              ))}
+            </ol>
+          )}
+        </section>
+      </div>
+      {d.paginas_detalhe.map((p, i) => (
+        <section key={p.page_id} id={`pagina-${p.page_id}`} className="workspace-card page-pair">
+          <div>
+            <h3>Página {i + 1} do documento · página {p.ordem} do lote</h3>
+            <PageImage pageId={p.page_id} alt={`Página ${p.ordem} do lote ${d.batch_id}`} />
+          </div>
+          <div>
+            <h3>Texto lido (OCR)</h3>
+            <pre className="ocr-text">{p.texto || "Nenhum texto lido nesta página."}</pre>
+          </div>
+        </section>
+      ))}
+    </>
+  );
+}
