@@ -98,8 +98,16 @@ async function run() {
     await go(page, "/painel/");
     await page.waitForURL((url) => url.pathname.startsWith("/contratante"), { timeout: 20000 });
 
-    console.log("[7/7] Administrador consulta a auditoria; navegação no celular");
+    console.log("[7/7] Administrador consulta gestao e auditoria; navegação no celular");
     await login(page, "Administrador Bernhoeft", "/administracao");
+    await page.getByRole("heading", { name: "Visão geral da organização." }).waitFor();
+    await page.getByText("Contratos ativos").waitFor();
+    await go(page, "/administracao/empresas/");
+    await page.getByRole("heading", { name: "Empresas e Contratos." }).waitFor();
+    await page.getByText("Contratante Alfa S.A. (fictícia)").first().waitFor();
+    await go(page, "/administracao/usuarios/");
+    await page.getByRole("heading", { name: "Gestão de Usuários." }).waitFor();
+    await go(page, "/administracao/auditoria/");
     await page.getByText("Parecer publicado").first().waitFor();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.getByRole("button", { name: "Abrir navegação" }).click();
