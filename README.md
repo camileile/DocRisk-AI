@@ -78,7 +78,41 @@ npm ci
 npm run dev        # http://127.0.0.1:3000 (usa NEXT_PUBLIC_API_URL, padrão http://127.0.0.1:8000)
 ```
 
-Roteiro de demonstração com API local: em `/operacao`, entre como **Operador da fornecedora** e envie
+### Demo conectada à API, sem Clerk
+
+Em `api/.env`, configure:
+
+```dotenv
+DOCRISK_AUTH_MODE=token
+DOCRISK_DEMO_MODE=1
+DOCRISK_DATA_DIR=./data-demo
+AI_PROVIDER=textlayer
+CORS_ORIGINS=http://127.0.0.1:3000,http://localhost:3000
+```
+
+Em `web/.env.local`, configure:
+
+```dotenv
+NEXT_PUBLIC_AUTH_MODE=demo
+NEXT_PUBLIC_DEMO_API_ENABLED=1
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+```
+
+Reinicie a API e `npm run dev`. Abra `http://127.0.0.1:3000/demo` e escolha
+**Operador da fornecedora**. A seleção conecta o perfil de teste à API, sem copiar
+tokens e sem criar conta Clerk. O upload, o histórico e os resultados usam o banco
+local. Para revisão, saia e entre como **Analista Bernhoeft**. Utilize somente dados
+sintéticos. `textlayer` lê PDFs com texto digital; imagens digitalizadas exigem um
+provedor OCR, como Gemini configurado com chave e cota disponíveis.
+
+Sem `NEXT_PUBLIC_DEMO_API_ENABLED=1`, a demonstração continua offline. Se a conexão
+falhar, a tela mostra o erro; não apresenta resultados fictícios como processamento
+real. Esta conexão automática aceita somente API em loopback. Uma demo já compilada
+precisa ser recompilada com essas variáveis; apontar para uma API remota exige uma
+implantação autenticada. Se o front estiver em outra origem, inclua sua origem exata
+em `CORS_ORIGINS` e verifique as restrições do navegador para acesso à rede local.
+
+Roteiro de demonstração com API local: em `/demo` com a conexão acima habilitada, ou em `/operacao` com token, entre como **Operador da fornecedora** e envie
 `api/scripts/lote_demo/lote_demo.pdf`; em *Pendências*, reenvie
 `reenvio_holerite_T002.pdf` na pendência do holerite ilegível; entre como **Analista
 Bernhoeft** e veja *Conciliações* (T001: 4 h a conferir; T003 bloqueado; T004 dados
