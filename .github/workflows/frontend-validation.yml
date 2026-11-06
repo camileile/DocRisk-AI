@@ -113,6 +113,8 @@ jobs:
                   page.insert_text((50, 60 + index * 18), line, fontsize=10)
               payload = document.tobytes()
               document.close()
+              from pathlib import Path
+              Path("/tmp/docrisk-browser-upload.pdf").write_bytes(payload)
               response = api.post("/api/supplier/batches", headers=header,
                   data={"contract_id": "CT-001"},
                   files={"file": ("integracao-f1-sintetico.pdf", payload, "application/pdf")})
