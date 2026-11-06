@@ -16,8 +16,9 @@ import { api, docStatusLabels, pageList, typeLabels, type Doc, type SearchHit } 
 import { useApi } from "@/lib/use-api";
 
 export default function DocumentsPage() {
-  const { contract, me } = useSession();
+  const { contract, me, setContract } = useSession();
   const supplier = me?.org_tipo === "FORNECEDORA";
+  const analyst = me?.papel === "ANALISTA_BH";
   const [status, setStatus] = useState("");
   const [tipo, setTipo] = useState("");
   const params = new URLSearchParams();
@@ -32,7 +33,7 @@ export default function DocumentsPage() {
       <PageIntro
         eyebrow="DOCUMENTOS CLASSIFICADOS"
         title="Separados, classificados e pesquisáveis."
-        description={supplier ? "Consulte os documentos da fornecedora neste contrato, inclusive os enviados por outros operadores. A seleção de contrato limita a lista e a busca." : "Consulte os documentos e suas evidências no contrato selecionado. Abra a Fila de Exceções para realizar a revisão humana."}
+        description={supplier ? "Consulte os documentos da fornecedora neste contrato, inclusive os enviados por outros operadores. A seleção de contrato limita a lista e a busca." : "Consulte os documentos do contrato. Revise itens pendentes ou abra qualquer documento apto para iniciar uma revisão manual justificada."}
       />
       <SearchBox key={contract} contract={contract} />
       <div className="list-toolbar">
@@ -85,6 +86,12 @@ export default function DocumentsPage() {
                   <td>#{d.batch_id} · {pageList(d.paginas)}</td>
                   <td><DocumentBadge status={d.status} /></td>
                   <td>
+                    {analyst && ["REVISAO_HUMANA", "PENDENTE_CORRECAO"].includes(d.status) && (
+                      <Link className="table-action" href={`/painel/revisao/detalhe?id=${d.id}`}
+                        onClick={() => setContract(d.contract_id)}>
+                        Revisar <ArrowUpRight size={14} />
+                      </Link>
+                    )}
                     <Link className="table-action" href={`/painel/documentos/detalhe?id=${d.id}`}>
                       Abrir <ArrowUpRight size={14} />
                     </Link>
