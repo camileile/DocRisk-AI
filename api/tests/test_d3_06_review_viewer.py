@@ -186,7 +186,7 @@ def test_manual_review_of_apt_document_is_audited_and_recalculates(document, mon
             "SELECT acao, alvo, resultado FROM audit WHERE acao='DOCUMENTO_INICIAR_REVISAO' "
             "AND alvo=?", (str(document["id"]),)).fetchall()
         assert len(events) == 1
-        assert events[0]["resultado"] == "PERMITIDO"
+        assert events[0]["resultado"] == "OK"
 
 
 @pytest.mark.parametrize("role", ["u-admin", "u-gestor-alfa", "u-gestor-beta", "u-oper-beta"])
