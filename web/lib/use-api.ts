@@ -1,17 +1,17 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { api, getToken } from "./api";
-import { getDemoRole } from "./offline-demo";
+import { api, ApiError } from "./api";
+import { getSessionVersion } from "./api-session";
 
 /* Cada resposta pertence ao recurso e à sessão que iniciaram a requisição. */
 export function useApi<T>(
   path: string | null,
   options: { pollMs?: number; shouldPoll?: (data: T) => boolean } = {},
 ) {
-  const key = JSON.stringify([path, getDemoRole(), getToken()]);
+  const key = JSON.stringify([path, getSessionVersion()]);
   const currentKey = useRef(key);
   currentKey.current = key;
-  const [state, setState] = useState<{ key: string; data: T | null; error: string | null; loading: boolean }>({ key, data: null, error: null, loading: Boolean(path) });
+  const [state, setState] = useState<{ key: string; data: T | null; error: string | null; loading: boolean; retryable?: boolean }>({ key, data: null, error: null, loading: Boolean(path) });
   const [attempt, setAttempt] = useState(0);
   const request = useRef<{ sequence: number; controller?: AbortController }>({ sequence: 0 });
   const optionsRef = useRef(options);
@@ -28,7 +28,7 @@ export function useApi<T>(
       const result = await api<T>(path, { signal: controller.signal });
       if (current()) setState({ key, data: result, error: null, loading: false });
     } catch (err) {
-      if (current()) setState((previous) => ({ key, data: previous.key === key ? previous.data : null, error: err instanceof Error ? err.message : "Falha ao carregar", loading: false }));
+      if (current()) setState((previous) => ({ key, data: previous.key === key ? previous.data : null, error: err instanceof Error ? err.message : "Falha ao carregar", loading: false, retryable: !(err instanceof ApiError) || err.retryable }));
     } finally {
       if (current()) setAttempt((value) => value + 1);
     }
@@ -42,7 +42,7 @@ export function useApi<T>(
 
   useEffect(() => {
     const { pollMs, shouldPoll } = optionsRef.current;
-    if (state.key !== key || !pollMs || !state.data || !shouldPoll?.(state.data)) return;
+    if ((state.error && state.retryable === false) || state.key !== key || !pollMs || !state.data || !shouldPoll?.(state.data)) return;
     const timer = window.setTimeout(() => void reload(), pollMs);
     return () => window.clearTimeout(timer);
   }, [state, attempt, key, reload]);
