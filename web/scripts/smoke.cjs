@@ -78,7 +78,7 @@ async function run() {
     await page.getByRole("button", { name: "Fechar detalhes" }).click();
     await page.getByRole("button", { name: "Limpar filtros" }).click();
     await page.getByText("12 de 12 eventos").waitFor();
-    await page.getByRole("textbox", { name: "Pesquisar eventos de auditoria" }).fill("DOC-010");
+    await page.getByRole("searchbox", { name: "Pesquisar eventos de auditoria" }).fill("DOC-010");
     await page.getByText("1 de 12 eventos").waitFor();
 
     console.log("[6/6] Navegação administrativa no celular");
