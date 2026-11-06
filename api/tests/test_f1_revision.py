@@ -149,13 +149,15 @@ def test_approve_substitutes_existing_document_for_corrected_pair(banco):
 def test_request_correction_rejects_pending_document(banco):
     batch_id = _api_lote()
     doc = _doc_with_pages(batch_id, [7])
+    # A F3 já abre a pendência de ilegível na consolidação; o pedido recusado não pode criar outra.
+    antes = q("SELECT COUNT(*) AS n FROM issues WHERE document_id=?", doc["id"])[0]["n"]
     with TestClient(app) as client:
         response = client.patch(
             f"/api/documents/{doc['id']}/review", headers=_headers(),
             json={"acao": "solicitar_correcao", "motivo": "Outra", "acao_solicitada": "Reenviar"},
         )
     assert response.status_code == 409
-    assert q("SELECT COUNT(*) AS n FROM issues WHERE document_id=?", doc["id"])[0]["n"] == 0
+    assert q("SELECT COUNT(*) AS n FROM issues WHERE document_id=?", doc["id"])[0]["n"] == antes
 
 
 def test_review_routes_use_f2_split_and_merge(banco):

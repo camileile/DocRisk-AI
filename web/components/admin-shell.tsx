@@ -1,32 +1,25 @@
 "use client";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { usePathname } from "next/navigation";
-import {
-  ArrowUpRight, ChevronRight, ClipboardList, FlaskConical,
-  LockKeyhole, LogOut, Menu, ShieldCheck, X,
-} from "lucide-react";
-import { useDemo } from "./demo-provider";
+import { useRouter } from "next/navigation";
+import { ArrowUpRight, ChevronRight, ClipboardList, FlaskConical, LockKeyhole, LogOut, Menu, ShieldCheck, X } from "lucide-react";
+import { useSession } from "./demo-provider";
+import { SessionGate } from "./workspace-shell";
+import { roleLabels } from "@/lib/api";
 
 export function AdminShell({ children }: { children: ReactNode }) {
-  const { role, setRole } = useDemo();
+  return (
+    <SessionGate allowed={["ADMIN_BH"]}>
+      <Admin>{children}</Admin>
+    </SessionGate>
+  );
+}
+
+function Admin({ children }: { children: ReactNode }) {
+  const { me, logout } = useSession();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const path = usePathname();
-
-  if (role !== "ADMIN_BH") {
-    return (
-      <main className="demo-gate">
-        <img src="/brand/logo-horizontal-claro.svg" alt="DocRisk AI" width="200" height="52" />
-        <span className="pill light">ESPAÇO ADMINISTRATIVO · DEMO</span>
-        <h1>Escolha o perfil administrador.</h1>
-        <p>Esta tela mostra registros de auditoria sintéticos. A seleção de perfil não concede acesso à API nem substitui autenticação.</p>
-        <Link className="button" href="/acesso">
-          Escolher perspectiva <ArrowUpRight size={17} />
-        </Link>
-      </main>
-    );
-  }
-
+  if (!me) return null;
   return (
     <div className="workspace admin-workspace">
       <aside className={open ? "workspace-sidebar visible" : "workspace-sidebar"}>
@@ -41,29 +34,36 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <span className="sidebar-caption">ADMINISTRAÇÃO BERNHOEFT</span>
         <div className="workspace-module">
           <span>Governança e rastreabilidade</span>
-          <small>Acesso administrativo · exemplo</small>
+          <small>Somente consulta</small>
         </div>
         <nav aria-label="Navegação administrativa">
-          <Link href="/administracao" className={path.startsWith("/administracao") ? "active" : ""} aria-current="page" onClick={() => setOpen(false)}>
+          <Link href="/administracao" className="active" aria-current="page" onClick={() => setOpen(false)}>
             <ClipboardList size={19} /> Auditoria de ações
           </Link>
         </nav>
         <div className="sidebar-bottom">
           <div className="sidebar-demo">
             <FlaskConical size={18} />
-            <p><strong>Modo demonstração</strong><span>Registros exclusivamente sintéticos</span></p>
+            <p>
+              <strong>Ambiente de demonstração</strong>
+              <span>Somente dados sintéticos</span>
+            </p>
           </div>
-          <Link href="/acesso" onClick={() => setRole(null)}>
-            <LogOut size={17} /> Trocar perspectiva
-          </Link>
+          <button
+            className="sidebar-link"
+            onClick={() => {
+              logout();
+              router.push("/acesso");
+            }}
+          >
+            <LogOut size={17} /> Sair
+          </button>
           <Link href="/">
             Voltar ao site <ArrowUpRight size={15} />
           </Link>
         </div>
       </aside>
-      {open && (
-        <button className="sidebar-backdrop" aria-label="Fechar navegação" onClick={() => setOpen(false)} />
-      )}
+      {open && <button className="sidebar-backdrop" aria-label="Fechar navegação" onClick={() => setOpen(false)} />}
       <div className="workspace-main">
         <header className="workspace-header">
           <div className="workspace-breadcrumb">
@@ -75,24 +75,22 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <strong>Auditoria</strong>
           </div>
           <div className="workspace-person">
-            <span className="avatar"><LockKeyhole size={17} /></span>
+            <span className="avatar">
+              <LockKeyhole size={17} />
+            </span>
             <div>
-              <strong>Administrador Bernhoeft</strong>
-              <small>Perfil de demonstração</small>
+              <strong>{me.nome}</strong>
+              <small>{roleLabels[me.papel]}</small>
             </div>
           </div>
         </header>
-        <div className="workspace-demo-bar">
-          <FlaskConical size={15} />
-          <span>Eventos fictícios para apresentação. Nenhum log real foi consultado ou alterado.</span>
-        </div>
         <main className="workspace-body" id="conteudo-admin">
           <div className="admin-context">
             <div>
               <ShieldCheck size={21} aria-hidden="true" />
               <span>Visão interna Bernhoeft</span>
             </div>
-            <span className="admin-readonly">Somente consulta · demonstração</span>
+            <span className="admin-readonly">Somente consulta</span>
           </div>
           {children}
         </main>

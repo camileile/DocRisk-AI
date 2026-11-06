@@ -17,7 +17,7 @@ from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT, PAPEIS_FORNECEDOR
                          StatusLote, TipoDocumento)
 from ..pipeline.render import ArquivoInvalido
 from ..pipeline import integracao_f3 as f3, revisao, worker
-from ..rules import metricas, parecer
+from ..rules import metricas, parecer, pendencias
 
 router = APIRouter()
 
@@ -140,6 +140,16 @@ def list_contracts(user: Usuario = Depends(usuario_atual),
         f"FROM contracts WHERE id IN ({marks}) ORDER BY id", ids).fetchall())
 
 
+@router.get("/api/contracts/{contract_id}/workers")
+def list_workers(contract_id: str, user: Usuario = Depends(usuario_atual),
+                 conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
+    """Trabalhadores (sintéticos) do contrato — Bernhoeft e fornecedora do contrato."""
+    _require_batch_reader(user)
+    _contract_or_404(conn, user, contract_id)
+    return _rows(conn.execute("SELECT id, nome FROM workers WHERE contract_id=? ORDER BY id",
+                              (contract_id,)).fetchall())
+
+
 @router.post("/api/supplier/batches", status_code=202)
 async def upload_batch(contract_id: str = Form(...), file: UploadFile = File(...),
                        user: Usuario = Depends(usuario_atual),
@@ -190,21 +200,7 @@ def batch_documents(batch_id: int, user: Usuario = Depends(usuario_atual),
     _require_batch_reader(user)
     _batch_or_404(conn, user, batch_id)
     rows = conn.execute("SELECT * FROM documents WHERE batch_id=? ORDER BY id", (batch_id,)).fetchall()
-    results = []
-    for row in rows:
-        item = dict(row)
-        item["paginas"] = _document_pages(conn, int(item["id"]))
-        item["motivos_pendencia"] = _json_list(item["motivos_pendencia"])
-        item["motivos_revisao"] = _json_list(item["motivos_revisao"])
-        item["campos"] = _json_object(item.pop("campos_json"))
-        if user.org_tipo == "FORNECEDORA":
-            if item["status"] == StatusDocumento.REVISAO_HUMANA.value:
-                item["status"] = "EM_ANALISE"
-            item.pop("motivos_revisao", None)
-            item["campos"] = {}
-            item.pop("confianca", None)
-        results.append(item)
-    return results
+    return [_document_view(conn, user, row) for row in rows]
 
 
 @router.get("/api/pages/{page_id}/image")
@@ -295,21 +291,8 @@ def review_document(document_id: int, payload: dict[str, Any],
                 (StatusDocumento.SUBSTITUIDO.value, user.id, now, doc["contract_id"], tipo_final.value,
                  trabalhador_id, competencia, StatusDocumento.APTO.value, document_id),
             )
+        pendencias.resolver_do_documento(conn, document_id, "resolvida na revisão")
         _reconcile_pairs(conn, doc["contract_id"], par_antes, par_depois)
-        if doc["status"] == StatusDocumento.PENDENTE_CORRECAO.value:
-            pendencias = conn.execute(
-                "SELECT id, historico_json FROM issues WHERE document_id=? AND status IN (?, ?, ?)",
-                (document_id, StatusPendencia.ABERTA.value, StatusPendencia.NOTIFICADA.value,
-                 StatusPendencia.REABERTA.value),
-            ).fetchall()
-            for pendencia in pendencias:
-                historico = _json_list(pendencia["historico_json"])
-                historico.append({"status": StatusPendencia.RESOLVIDA.value, "em": now,
-                                  "motivo": "resolvida na revisão"})
-                conn.execute(
-                    "UPDATE issues SET status=?, resolved_at=?, updated_at=?, historico_json=? WHERE id=?",
-                    (StatusPendencia.RESOLVIDA.value, now, now,
-                     json.dumps(historico, ensure_ascii=False), pendencia["id"]))
     elif action == "solicitar_correcao":
         if doc["status"] not in {StatusDocumento.REVISAO_HUMANA.value, StatusDocumento.APTO.value}:
             raise HTTPException(409, "Somente documentos em revisão ou aptos podem receber pedido de correção")
@@ -320,14 +303,12 @@ def review_document(document_id: int, payload: dict[str, Any],
         par_antes = _document_pair(doc)
         conn.execute("UPDATE documents SET status=?, revisado_por=?, updated_at=? WHERE id=?",
                      (StatusDocumento.PENDENTE_CORRECAO.value, user.id, now, document_id))
-        conn.execute(
-            "INSERT INTO issues (contract_id, document_id, worker_id, competencia, tipo_documento, "
-            "categoria, motivo, evidencia, acao, status, prazo, created_at, updated_at) "
-            "SELECT contract_id, id, worker_id, competencia, tipo, ?, ?, ?, ?, ?, "
-            "datetime('now', '+' || (SELECT prazo_correcao_dias FROM contracts WHERE id=?) || ' days'), ?, ? "
-            "FROM documents WHERE id=?",
-            (CategoriaPendencia.SOLICITADA_NA_REVISAO.value, motivo, f"documento:{document_id}",
-             acao, StatusPendencia.NOTIFICADA.value, doc["contract_id"], now, now, document_id))
+        paginas = ", ".join(str(p["ordem"]) for p in _document_pages(conn, document_id))
+        pendencias.criar_pendencia(
+            conn, contract_id=doc["contract_id"], document_id=document_id, worker_id=doc["worker_id"],
+            competencia=doc["competencia"], tipo_documento=doc["tipo"],
+            categoria=CategoriaPendencia.SOLICITADA_NA_REVISAO, motivo=motivo[:1000],
+            evidencia=f"Lote {doc['batch_id']}, página(s) {paginas}", acao=acao[:500])
         _reconcile_pairs(conn, doc["contract_id"], par_antes,
                          _document_pair({"tipo": doc["tipo"], "worker_id": doc["worker_id"],
                                          "competencia": doc["competencia"]}))
@@ -353,9 +334,16 @@ def supplier_issues(user: Usuario = Depends(usuario_atual),
     ids = contratos_do_usuario(conn, user)
     if not ids:
         return []
+    return _issue_rows(conn, ids)
+
+
+def _issue_rows(conn: sqlite3.Connection, ids: list[str]) -> list[dict[str, Any]]:
     marks = ",".join("?" for _ in ids)
-    return _rows(conn.execute(f"SELECT * FROM issues WHERE contract_id IN ({marks}) ORDER BY id DESC",
+    rows = _rows(conn.execute(f"SELECT * FROM issues WHERE contract_id IN ({marks}) ORDER BY id DESC",
                               ids).fetchall())
+    for row in rows:
+        row["historico"] = _json_list(row.pop("historico_json"))
+    return rows
 
 
 @router.get("/api/issues")
@@ -365,21 +353,85 @@ def issues(user: Usuario = Depends(usuario_atual),
     ids = contratos_do_usuario(conn, user)
     if not ids:
         return []
-    marks = ",".join("?" for _ in ids)
-    return _rows(conn.execute(f"SELECT * FROM issues WHERE contract_id IN ({marks}) ORDER BY id DESC",
-                              ids).fetchall())
+    return _issue_rows(conn, ids)
 
 
 @router.get("/api/analyses")
-def analyses(user: Usuario = Depends(usuario_atual),
+def analyses(historico: bool = False, user: Usuario = Depends(usuario_atual),
              conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
+    """Análises por par trabalhador+competência. Padrão: só a atual; historico=true traz as versões."""
     _require_ber_user(user)
     ids = contratos_do_usuario(conn, user)
     if not ids:
         return []
     marks = ",".join("?" for _ in ids)
-    return _rows(conn.execute(f"SELECT * FROM analyses WHERE contract_id IN ({marks}) ORDER BY id DESC",
-                              ids).fetchall())
+    filtro = "" if historico else " AND atual=1"
+    rows = _rows(conn.execute(
+        f"SELECT * FROM analyses WHERE contract_id IN ({marks}){filtro} "
+        "ORDER BY contract_id, competencia, worker_id, id DESC", ids).fetchall())
+    for row in rows:
+        row["resultado"] = _json_object(row.pop("resultado_json"))
+        row["insumos"] = _json_list(row.pop("insumos_json"))
+    return rows
+
+
+@router.get("/api/documents")
+def list_documents(status: str | None = None, tipo: str | None = None,
+                   user: Usuario = Depends(usuario_atual),
+                   conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
+    """Documentos classificados dos contratos do usuário (Bernhoeft e fornecedora)."""
+    _require_batch_reader(user)
+    ids = contratos_do_usuario(conn, user)
+    if not ids:
+        return []
+    marks = ",".join("?" for _ in ids)
+    sql = f"SELECT * FROM documents WHERE contract_id IN ({marks})"
+    params: list[Any] = list(ids)
+    if status:
+        sql += " AND status=?"
+        params.append(status.upper())
+    if tipo:
+        sql += " AND tipo=?"
+        params.append(tipo.upper())
+    rows = conn.execute(sql + " ORDER BY id DESC LIMIT 500", params).fetchall()
+    return [_document_view(conn, user, row) for row in rows]
+
+
+@router.get("/api/documents/{document_id}")
+def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
+                 conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Documento com as páginas e o texto (OCR) de cada uma, vinculados à imagem original."""
+    _require_batch_reader(user)
+    row = _document_or_404(conn, user, document_id)
+    item = _document_view(conn, user, row)
+    paginas = conn.execute(
+        "SELECT p.id, p.ordem, p.texto FROM doc_pages dp JOIN pages p ON p.id=dp.page_id "
+        "WHERE dp.document_id=? ORDER BY dp.posicao", (document_id,)).fetchall()
+    item["paginas_detalhe"] = [
+        {"page_id": int(p["id"]), "ordem": int(p["ordem"]), "texto": p["texto"] or ""} for p in paginas]
+    versoes = []
+    if row["worker_id"] and row["competencia"]:
+        versoes = _rows(conn.execute(
+            "SELECT id, versao, status, batch_id, created_at FROM documents WHERE contract_id=? AND tipo=? "
+            "AND worker_id=? AND competencia=? ORDER BY versao, id",
+            (row["contract_id"], row["tipo"], row["worker_id"], row["competencia"])).fetchall())
+    item["versoes"] = versoes
+    return item
+
+
+def _document_view(conn: sqlite3.Connection, user: Usuario, row: sqlite3.Row) -> dict[str, Any]:
+    item = dict(row)
+    item["paginas"] = _document_pages(conn, int(item["id"]))
+    item["motivos_pendencia"] = _json_list(item["motivos_pendencia"])
+    item["motivos_revisao"] = _json_list(item["motivos_revisao"])
+    item["campos"] = _json_object(item.pop("campos_json"))
+    if user.org_tipo == "FORNECEDORA":
+        if item["status"] == StatusDocumento.REVISAO_HUMANA.value:
+            item["status"] = "EM_ANALISE"
+        item.pop("motivos_revisao", None)
+        item["campos"] = {}
+        item.pop("confianca", None)
+    return item
 
 
 @router.post("/api/issues/{issue_id}/resubmit", status_code=202)
@@ -400,25 +452,23 @@ async def resubmit_issue(issue_id: int, file: UploadFile = File(...),
     try:
         batch_id = worker.criar_lote(user, issue["contract_id"], file.filename or "arquivo", data,
                                      issue_id=issue_id)
-        worker.enfileirar(batch_id)
     except ArquivoInvalido as exc:
         raise HTTPException(422, str(exc)) from exc
+    # REENVIADA é gravada e confirmada ANTES de enfileirar: o worker pode resolver ou
+    # reabrir a pendência logo em seguida, e essa decisão não pode ser sobrescrita.
+    historico = _json_list(issue["historico_json"])
+    now = db.agora()
+    historico.append({"status": StatusPendencia.REENVIADA.value, "em": now, "motivo": "reenvio recebido",
+                      "lote": batch_id})
+    conn.execute("UPDATE issues SET status=?, updated_at=?, historico_json=? WHERE id=?",
+                 (StatusPendencia.REENVIADA.value, now,
+                  json.dumps(historico, ensure_ascii=False), issue_id))
+    auditar(conn, user, "PENDENCIA_REENVIADA", str(issue_id))
+    conn.commit()
+    try:
+        worker.enfileirar(batch_id)
     except NotImplementedError as exc:
         raise HTTPException(503, "Reenvio ainda não está disponível (F2)") from exc
-    now = db.agora()
-    cursor = conn.execute(
-        "UPDATE issues SET status=?, updated_at=? WHERE id=? AND status IN (?, ?, ?)",
-        (StatusPendencia.REENVIADA.value, now, issue_id,
-         StatusPendencia.ABERTA.value, StatusPendencia.NOTIFICADA.value,
-         StatusPendencia.REABERTA.value),
-    )
-    if cursor.rowcount:
-        current = conn.execute("SELECT historico_json FROM issues WHERE id=?", (issue_id,)).fetchone()
-        historico = _json_list(current["historico_json"])
-        historico.append({"status": StatusPendencia.REENVIADA.value, "em": now, "lote": batch_id})
-        conn.execute("UPDATE issues SET historico_json=? WHERE id=?",
-                     (json.dumps(historico, ensure_ascii=False), issue_id))
-    auditar(conn, user, "PENDENCIA_REENVIADA", str(issue_id))
     return {"batch_id": batch_id, "issue_id": issue_id, "status": "RECEBIDO"}
 
 
@@ -433,10 +483,17 @@ def search(q: str = Query(min_length=1, max_length=250),
         return []
     marks = ",".join("?" for _ in ids)
     try:
+        # Cada palavra vira um termo entre aspas: o texto do usuário nunca é sintaxe FTS5.
+        termos = " ".join('"' + t.replace('"', '""') + '"' for t in q.split())
+        if not termos:
+            return []
         rows = conn.execute(
-            f"SELECT f.page_id, f.contract_id, snippet(page_fts, 0, '[[', ']]', '…', 12) AS trecho "
-            f"FROM page_fts f WHERE page_fts MATCH ? AND f.contract_id IN ({marks}) LIMIT 100",
-            (q, *ids)).fetchall()
+            f"SELECT f.page_id, f.contract_id, snippet(page_fts, 0, '[[', ']]', '…', 12) AS trecho, "
+            f"dp.document_id, p.ordem, p.batch_id "
+            f"FROM page_fts f JOIN pages p ON p.id=f.page_id "
+            f"LEFT JOIN doc_pages dp ON dp.page_id=f.page_id "
+            f"WHERE page_fts MATCH ? AND f.contract_id IN ({marks}) ORDER BY rank LIMIT 100",
+            (termos, *ids)).fetchall()
     except sqlite3.OperationalError as exc:
         raise HTTPException(400, "Consulta de busca inválida") from exc
     return _rows(rows)
@@ -478,6 +535,22 @@ def list_reports(user: Usuario = Depends(usuario_atual),
          StatusParecer.APROVADO_PUBLICADO.value, StatusParecer.SUBSTITUIDO_POR_VERSAO.value),
     ).fetchall()
     return [_report_result(row) for row in rows]
+
+
+@router.get("/api/reports/{report_id}/preview")
+def preview_report(report_id: int, user: Usuario = Depends(usuario_atual),
+                   conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Prévia do parecer com as análises ATUAIS (nada é gravado). Só Bernhoeft."""
+    _require_ber_user(user)
+    report = conn.execute("SELECT * FROM reports WHERE id=?", (report_id,)).fetchone()
+    if report is None:
+        raise HTTPException(404, "Parecer não encontrado")
+    _contract_or_404(conn, user, report["contract_id"])
+    if report["status"] != StatusParecer.RASCUNHO.value:
+        return _report_result(report)
+    result = _report_result(report)
+    result["conteudo_json"] = parecer.snapshot_parecer(conn, report["contract_id"], report["competencia"])
+    return result
 
 
 @router.post("/api/reports/{report_id}/publish")

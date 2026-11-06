@@ -204,9 +204,16 @@ def test_contrato_nao_mistura_lotes_de_outra_fornecedora(banco):
         assert conn.execute("SELECT contract_id FROM page_fts").fetchone()[0] == "CT-001"
 
 
-def test_integracao_f3_pendente_nao_simula_resultado(banco, caplog):
+def test_integracao_f3_pendente_nao_simula_resultado(banco, caplog, monkeypatch):
     caplog.set_level(logging.WARNING, logger="docrisk.pipeline.f3")
     from docrisk_core.pipeline import integracao_f3
+    from docrisk_core.rules import conciliacao, pendencias
+
+    def stub(*_a, **_k):
+        raise NotImplementedError("Frente 3")
+    for modulo, nome in ((conciliacao, "conciliar"), (pendencias, "criar_pendencia"),
+                         (pendencias, "atualizar_por_nova_versao")):
+        monkeypatch.setattr(modulo, nome, stub)
     integracao_f3._avisados.clear()
     bid = worker.criar_lote(BETA, "CT-001", "f.pdf", pdf(*LOTE))
     worker.processar_lote(bid, provedor=TextLayerProvider())
