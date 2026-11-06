@@ -1,3 +1,4 @@
+import { demoPageImage, demoRead, getDemoRole } from "./offline-demo";
 /* Cliente da API DocRisk (FastAPI em api/). O token fica só em sessionStorage e
  * vai no cabeçalho Authorization; imagens de página são baixadas como blob. */
 
@@ -224,6 +225,12 @@ async function errorMessage(response: Response): Promise<string> {
 }
 
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const demoRole = getDemoRole();
+  if (demoRole) {
+    if ((init.method ?? "GET").toUpperCase() !== "GET")
+      throw new ApiError(403, "Demonstração somente para consulta: nenhuma alteração foi enviada ao servidor.");
+    return demoRead(path, demoRole) as T;
+  }
   const headers = new Headers(init.headers);
   const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
@@ -240,6 +247,11 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 export async function apiBlob(path: string): Promise<Blob> {
+  if (getDemoRole()) {
+    const match = path.match(/^\/api\/pages\/(\d+)\/image$/);
+    if (!match) throw new ApiError(404, "Imagem indisponível na demonstração.");
+    return demoPageImage(Number(match[1]));
+  }
   const token = getToken();
   const response = await fetch(`${API_URL}${path}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
