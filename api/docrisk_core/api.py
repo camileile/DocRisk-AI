@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import db
+from . import db, runtime
 from .aej import AEJError
 from .documents import DocumentError
 from .routes.platform_management import router as platform_router
@@ -21,24 +21,27 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    db.init_db()
+    # D4-04: configuração validada e instância única por DATA_DIR antes do banco.
+    runtime.preparar_inicio()
     worker_started = False
     try:
-        worker_started = worker.iniciar_worker()
-    except NotImplementedError:
-        logger.info("Worker F2 ainda não implementado; API iniciada sem processamento assíncrono")
-    try:
+        db.init_db()
+        try:
+            worker_started = worker.iniciar_worker()
+        except NotImplementedError:
+            logger.info("Worker F2 ainda não implementado; API iniciada sem processamento assíncrono")
         yield
     finally:
         if worker_started:
             worker.parar_worker()
+        runtime.liberar_instancia()
+        logger.info("docrisk encerrado")
 
 
 app = FastAPI(title="DocRisk AI", version="0.2.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in os.getenv(
-        "CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",") if o.strip()],
+    allow_origins=runtime.origens_cors(),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
