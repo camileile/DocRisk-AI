@@ -82,3 +82,5 @@ Comando: api/.venv/Scripts/python.exe -m pytest api/tests -q.
 Verificações: git diff --check origin/main e compileall aprovados.
 Não houve publicação nem chamadas pagas.
 `nResultado final: 361 aprovados, 1 ignorado (76,99 s). CONCLUÍDA LOCALMENTE.
+
+Revalidação após PR #46: base a1f6109; 391 aprovados, 1 ignorado (91,95s). Ambiente exclusivo no worktree Dev4; sem APIs pagas.
