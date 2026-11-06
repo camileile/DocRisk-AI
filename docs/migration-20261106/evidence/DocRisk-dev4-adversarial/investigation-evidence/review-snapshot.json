@@ -1,0 +1,35 @@
+[
+  {
+    "id": "01",
+    "original": "test/d4-01-pr22-integration",
+    "originalSha": "d55689baa98c2276750df04f53ade7ea0ba757ff",
+    "branch": "codex/d4-01-review-1148",
+    "sha": "47c3ff998e5d92cbc624662478247a4c09e0eb34",
+    "sourceTestedSha": "71ada1780a8ce4acbf9650a8ea3bcc055b9737d3",
+    "files": "api/docrisk_core/routes/admin_management.py\napi/tests/test_d4_01_roles_reactivation.py\ndocs/dev4/D4-01_PR22_INTEGRACAO.md",
+    "result": "420",
+    "trackedStatus": ""
+  },
+  {
+    "id": "02",
+    "original": "test/d4-02-demo-isolation",
+    "originalSha": "6a6ce6cd0c66015719e17654b7c7e6f0428c487e",
+    "branch": "codex/d4-02-review-1148",
+    "sha": "b81b4a0652445ac8ea35ca9a9a429b1fc40b615d",
+    "sourceTestedSha": "73182b62023c39bd1558080f1e400be0cbc0443a",
+    "files": ".github/workflows/frontend-validation.yml\ndocs/dev4/D4-02_ISOLAMENTO_DEMO.md\nweb/scripts/demo-isolation.cjs",
+    "result": "399 + isolamento 26/26",
+    "trackedStatus": ""
+  },
+  {
+    "id": "04",
+    "original": "fix/d4-04-local-runtime",
+    "originalSha": "345ff4733fb2e6ccf830666a2bf271d82c9888b7",
+    "branch": "codex/d4-04-review-1148",
+    "sha": "33d17d71742bcc5ab2b03682303b91f047afff6c",
+    "sourceTestedSha": "15fba02ac1c8a9a46218889e938b4c2c788de779",
+    "files": ".env.example\n.github/workflows/backend-tests.yml\napi/docrisk_core/api.py\napi/docrisk_core/config.py\napi/docrisk_core/runtime.py\napi/scripts/runtime_check.py\napi/tests/test_d4_04_runtime.py\ndocs/dev4/D4-04_AMBIENTE_CONECTADO.md",
+    "result": "424 + runtime 11/11",
+    "trackedStatus": ""
+  }
+]

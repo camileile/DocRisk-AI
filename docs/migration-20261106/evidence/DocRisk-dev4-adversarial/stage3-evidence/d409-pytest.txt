@@ -1,0 +1,48 @@
+........................................................................ [ 16%]
+........................................................................ [ 32%]
+.........................................................F..s........... [ 49%]
+........................................................................ [ 65%]
+........................................................................ [ 81%]
+........................................................................ [ 98%]
+........                                                                 [100%]
+================================== FAILURES ===================================
+_______ test_same_aej_concurrently_does_not_duplicate_derived_documents _______
+
+banco = WindowsPath('C:/Users/Pichau/AppData/Local/Temp/pytest-of-Pichau/pytest-216/test_same_aej_concurrently_doe0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000025BD813B8C0>
+
+    def test_same_aej_concurrently_does_not_duplicate_derived_documents(banco, monkeypatch):
+        from test_f1_aej import AEJ_LIMPO
+        bid = worker.criar_lote(BETA, "CT-001", "concurrent.aej", AEJ_LIMPO)
+        barrier = threading.Barrier(4)
+        parse = worker.parse_aej_detalhado
+        def coordinated_parse(data):
+            result = parse(data)
+            barrier.wait(timeout=10)  # todos j� passaram pela checagem de documentos do AEJ
+            return result
+        monkeypatch.setattr(worker, "parse_aej_detalhado", coordinated_parse)
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            futures = [pool.submit(worker.processar_lote, bid, TextLayerProvider()) for _ in range(4)]
+            for future in futures:
+                future.result(timeout=30)
+        with db.tx() as conn:
+            docs = conn.execute("SELECT id FROM documents WHERE batch_id=?", (bid,)).fetchall()
+            derived = conn.execute("SELECT COUNT(*) FROM aej_documents WHERE batch_id=?", (bid,)).fetchone()[0]
+>           assert len(docs) == derived == 1, {"documents": len(docs), "aej_documents": derived}
+E           AssertionError: {'documents': 4, 'aej_documents': 4}
+E           assert 4 == 1
+
+api\tests\test_d4_09_transaction_review.py:167: AssertionError
+============================== warnings summary ===============================
+..\DocRisk-dev4-reconcile\.venv-main\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\.venv-main\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_d4_09_adversarial.py::test_UP_arquivos_hostis_sao_recusados_sem_efeito[UP07 tiff com cabe\xe7alho e lixo]
+  C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\.venv-main\Lib\site-packages\PIL\TiffImagePlugin.py:950: UserWarning: Corrupt EXIF data.  Expecting to read 2 bytes but only got 0. 
+    warnings.warn(str(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED api\tests\test_d4_09_transaction_review.py::test_same_aej_concurrently_does_not_duplicate_derived_documents
+1 failed, 438 passed, 1 skipped, 2 warnings in 144.09s (0:02:24)

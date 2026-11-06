@@ -1,0 +1,14 @@
+| Tarefa | SHA original | Novo SHA | Conflitos/adaptações | Testes finais | Status |
+|---|---|---|---|---|---|
+| D4-01 | 22f294c | d55689b | Não | 408 passed, 1 skipped, 1 warning in 233.85s (0:03:53) | CONCLUÍDA LOCALMENTE |
+| D4-02 | 185b4ae | 6a6ce6c | Não | 387 passed, 1 skipped, 1 warning in 225.87s (0:03:45) | CONCLUÍDA LOCALMENTE |
+| D4-03 | 96bb15c | fd97fd3 | Não; adaptação do ensaio | 387 passed, 1 skipped, 1 warning in 183.51s (0:03:03) | PARCIAL |
+| D4-04 | 98166a2 | 345ff47 | api.py e config.py | 412 passed, 1 skipped, 1 warning in 234.98s (0:03:54) | CONCLUÍDA LOCALMENTE |
+| D4-05 | dcb749f | 780d92b | Não; lock atualizado | 387 passed, 1 skipped, 1 warning in 185.96s (0:03:05) | PARCIAL |
+| D4-06 | e043d75 | 7ee3139 | Não; diagnóstico atualizado | 387 passed, 1 skipped, 1 warning in 160.16s (0:02:40) | BLOQUEADA |
+| D4-07 | b3d186d | 04eef5f | api.py | 395 passed, 1 skipped, 1 warning in 181.18s (0:03:01) | PARCIAL |
+| D4-08 | 8583c00 | 90852d3 | Não | 398 passed, 1 skipped, 1 warning in 176.04s (0:02:56) | PARCIAL |
+| D4-09 | 1cab173 | 7961bc6 (cópia); original d591967 | routes/__init__.py | 1 failed, 419 passed, 1 skipped, 2 warnings in 201.76s (0:03:21) | FALHOU |
+| D4-10 | 5d09bc9 | 2f3d282 | Não | 387 passed, 1 skipped, 1 warning in 154.39s (0:02:34) | NÃO INICIADA |
+
+Tracked changes: 

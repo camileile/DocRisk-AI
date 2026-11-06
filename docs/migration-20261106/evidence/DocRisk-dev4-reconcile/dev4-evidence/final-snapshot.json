@@ -1,0 +1,112 @@
+[
+  {
+    "id": "01",
+    "branch": "test/d4-01-pr22-integration",
+    "sha": "d55689b",
+    "original": "22f294c",
+    "backup": "22f294c",
+    "cwd": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-auth",
+    "result": "408 passed, 1 skipped, 1 warning in 233.85s (0:03:53)",
+    "status": "CONCLUÍDA LOCALMENTE",
+    "trackedStatus": ""
+  },
+  {
+    "id": "02",
+    "branch": "test/d4-02-demo-isolation",
+    "sha": "6a6ce6c",
+    "original": "185b4ae",
+    "backup": "185b4ae",
+    "cwd": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-demo",
+    "result": "387 passed, 1 skipped, 1 warning in 225.87s (0:03:45)",
+    "status": "CONCLUÍDA LOCALMENTE",
+    "trackedStatus": ""
+  },
+  {
+    "id": "03",
+    "branch": "chore/d4-03-release-readiness",
+    "sha": "fd97fd3",
+    "original": "96bb15c",
+    "backup": "96bb15c",
+    "cwd": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-release",
+    "result": "387 passed, 1 skipped, 1 warning in 183.51s (0:03:03)",
+    "status": "PARCIAL",
+    "trackedStatus": ""
+  },
+  {
+    "id": "04",
+    "branch": "fix/d4-04-local-runtime",
+    "sha": "345ff47",
+    "original": "98166a2",
+    "backup": "98166a2",
+    "cwd": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-runtime",
+    "result": "412 passed, 1 skipped, 1 warning in 234.98s (0:03:54)",
+    "status": "CONCLUÍDA LOCALMENTE",
+    "trackedStatus": ""
+  },
+  {
+    "id": "05",
+    "branch": "chore/d4-05-dependency-security",
+    "sha": "780d92b",
+    "original": "dcb749f",
+    "backup": "dcb749f",
+    "cwd": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-security",
+    "result": "387 passed, 1 skipped, 1 warning in 185.96s (0:03:05)",
+    "status": "PARCIAL",
+    "trackedStatus": ""
+  },
+  {
+    "id": "06",
+    "branch": "feat/d4-06-private-pilot",
+    "sha": "7ee3139",
+    "original": "e043d75",
+    "backup": "e043d75",
+    "cwd": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-pilot",
+    "result": "387 passed, 1 skipped, 1 warning in 160.16s (0:02:40)",
+    "status": "BLOQUEADA",
+    "trackedStatus": ""
+  },
+  {
+    "id": "07",
+    "branch": "feat/d4-07-observability",
+    "sha": "04eef5f",
+    "original": "b3d186d",
+    "backup": "b3d186d",
+    "cwd": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-ops",
+    "result": "395 passed, 1 skipped, 1 warning in 181.18s (0:03:01)",
+    "status": "PARCIAL",
+    "trackedStatus": ""
+  },
+  {
+    "id": "08",
+    "branch": "feat/d4-08-backup-recovery",
+    "sha": "90852d3",
+    "original": "8583c00",
+    "backup": "8583c00",
+    "cwd": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-backup",
+    "result": "398 passed, 1 skipped, 1 warning in 176.04s (0:02:56)",
+    "status": "PARCIAL",
+    "trackedStatus": ""
+  },
+  {
+    "id": "09",
+    "branch": "codex/d4-09-validated-snapshot",
+    "sha": "7961bc6",
+    "original": "1cab173",
+    "backup": "1cab173",
+    "cwd": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial",
+    "result": "1 failed, 419 passed, 1 skipped, 2 warnings in 201.76s (0:03:21)",
+    "status": "FALHOU",
+    "trackedStatus": ""
+  },
+  {
+    "id": "10",
+    "branch": "feat/d4-10-distributed-processing",
+    "sha": "2f3d282",
+    "original": "5d09bc9",
+    "backup": "5d09bc9",
+    "cwd": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile",
+    "result": "387 passed, 1 skipped, 1 warning in 154.39s (0:02:34)",
+    "status": "NÃO INICIADA",
+    "trackedStatus": ""
+  }
+]

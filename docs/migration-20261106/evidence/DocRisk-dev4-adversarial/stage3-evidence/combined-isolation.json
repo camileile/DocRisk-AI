@@ -1,0 +1,2111 @@
+{
+  "base": "http://127.0.0.1:4191",
+  "apiOrigin": "http://127.0.0.1:8000",
+  "generatedAt": "2026-11-06T10:04:17.840Z",
+  "scenarios": [
+    {
+      "scenario": "S01 página inicial e institucional",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S02 perfil ADMIN_PLATAFORMA: navegação completa + refresh",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S02 perfil ADMIN_BH: navegação completa + refresh",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S02 perfil ANALISTA_BH: navegação completa + refresh",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S02 perfil GESTOR_FORN: navegação completa + refresh",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S02 perfil OPERADOR_FORN: navegação completa + refresh",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S02 perfil GESTOR_CONTR: navegação completa + refresh",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S05 sessão demo inválida",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S06 storage indisponível ADMIN_PLATAFORMA",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S06 storage indisponível ADMIN_BH",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S06 storage indisponível ANALISTA_BH",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S06 storage indisponível GESTOR_FORN",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S06 storage indisponível OPERADOR_FORN",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S06 storage indisponível GESTOR_CONTR",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S07 tentativa de upload (operador)",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [
+        "envio: 0 input(s) de arquivo",
+        "pendências: 0 input(s) de arquivo"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S08 consulta de análise/lote/documento (analista)",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S09 acesso direto a URL operacional é bloqueado",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S10 falha de rede simulada (offline após carga)",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "S11 saída e reentrada",
+      "ok": true,
+      "violations": 0,
+      "failure": null,
+      "notes": [],
+      "pageErrors": []
+    }
+  ],
+  "attempts": [],
+  "staticExternalBlocked": [
+    {
+      "scenario": "AUTOTESTE-detector",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S01 página inicial e institucional",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S01 página inicial e institucional",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contato/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S01 página inicial e institucional",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ADMIN_PLATAFORMA: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ADMIN_PLATAFORMA: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ADMIN_PLATAFORMA: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/auditoras/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ADMIN_PLATAFORMA: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/configuracoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ADMIN_BH: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ADMIN_BH: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ADMIN_BH: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/empresas/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ADMIN_BH: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/usuarios/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ADMIN_BH: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/auditoria/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ANALISTA_BH: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ANALISTA_BH: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ANALISTA_BH: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ANALISTA_BH: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ANALISTA_BH: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/conciliacoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil ANALISTA_BH: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil GESTOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil GESTOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil GESTOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/envio/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil GESTOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil GESTOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil GESTOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pendencias/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil GESTOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/operadores/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil OPERADOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil OPERADOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil OPERADOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/envio/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil OPERADOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil OPERADOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil OPERADOR_FORN: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pendencias/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil GESTOR_CONTR: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil GESTOR_CONTR: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S02 perfil GESTOR_CONTR: navegação completa + refresh",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/envio/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pendencias/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/operadores/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/conciliacoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/auditoras/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/configuracoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/empresas/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/usuarios/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S03 links diretos sem sessão (storage vazio)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/auditoria/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/envio/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pendencias/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/operadores/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/conciliacoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/auditoras/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/configuracoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/empresas/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/usuarios/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/auditoria/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/envio/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pendencias/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/operadores/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/conciliacoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/auditoras/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/configuracoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/empresas/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/usuarios/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/auditoria/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/envio/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pendencias/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/operadores/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/conciliacoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/auditoras/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/configuracoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/empresas/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/usuarios/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/auditoria/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/envio/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pendencias/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/operadores/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/conciliacoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/auditoras/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/configuracoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/empresas/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/usuarios/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/auditoria/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/envio/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pendencias/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/operadores/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/conciliacoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/auditoras/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/configuracoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/empresas/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/usuarios/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/auditoria/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/envio/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pendencias/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/operadores/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/conciliacoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/auditoras/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/configuracoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/empresas/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/usuarios/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S04 links diretos com sessão demo GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/auditoria/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S05 sessão demo inválida",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S05 sessão demo inválida",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S05 sessão demo inválida",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S05 sessão demo inválida",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível ADMIN_PLATAFORMA",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/plataforma/configuracoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível ADMIN_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/administracao/auditoria/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível ANALISTA_BH",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível GESTOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/operadores/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível OPERADOR_FORN",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pendencias/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S06 storage indisponível GESTOR_CONTR",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/contratante/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S07 tentativa de upload (operador)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S07 tentativa de upload (operador)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/envio/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S07 tentativa de upload (operador)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pendencias/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S08 consulta de análise/lote/documento (analista)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S08 consulta de análise/lote/documento (analista)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/conciliacoes/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S08 consulta de análise/lote/documento (analista)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/lotes/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S08 consulta de análise/lote/documento (analista)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/documentos/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S08 consulta de análise/lote/documento (analista)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/revisao/detalhe/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S08 consulta de análise/lote/documento (analista)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/painel/pareceres/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S09 acesso direto a URL operacional é bloqueado",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S10 falha de rede simulada (offline após carga)",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    },
+    {
+      "scenario": "S11 saída e reentrada",
+      "transport": "network:stylesheet",
+      "origin": "network",
+      "destination": "https://fonts.googleapis.com/css2",
+      "route": "/acesso/",
+      "result": "BLOQUEADO",
+      "component": "-"
+    }
+  ]
+}

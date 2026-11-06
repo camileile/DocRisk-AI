@@ -1,0 +1,66 @@
+1cbd57f Merge pull request #43 from camileile/fix/d2-12-comprovante-metricas
+e25783f Merge pull request #38 from camileile/feat/d3-06-revisao-visualizador
+2d5c56d fix: preserva bytes do holdout congelado entre plataformas
+9b0ef1d Merge main e reconcilia revisão D3-06 com contrato D1-06
+60a05a9 Merge PR #45: corpus de desenvolvimento e holdout congelado
+e55ad03 Merge PR #44: intervalos e anomalias de período AEJ
+a6d7006 Merge PR #42: contratos OIDC e isolamento da autenticação demo
+dcc33b9 Merge pull request #41 from camileile/feat/d1-06-structured-field-review
+1d6764d Merge main em feat/d1-06-structured-field-review
+b437993 feat(d2-09): define contratos OIDC e sessoes
+6f2d0ca test: add representative corpus and frozen holdout
+0925f5b feat(d2-12): define states e formulas de comprovantes
+7401521 test(d2-08): publicar depois da prévia não depende do horário de geração
+0f9449c fix(d2-08): hash da prévia ignora gerado_em e corrige tipos da publicação
+89c7000 Merge pull request #39 from camileile/fix/d2-08-publish-snapshot
+d35542e fix(d2-08): publica o snapshot conferido na previa
+5b47eb4 Merge pull request #37 from camileile/fix/d1-05-identity-ambiguity
+63b6919 fix(d1-05): reenvio idêntico vira versão e aprovar duplicidade substitui a anterior
+984e36b fix: handle AEJ intervals and period anomalies
+4545c13 Merge main em fix/d1-05-identity-ambiguity
+7edfdd5 Merge pull request #36 from camileile/fix/d2-07-resubmit-recovery
+12df35c Merge pull request #35 from camileile/fix/d1-04-field-validation
+3ac82a1 fix(d1-04): texto vazio é campo ausente, sem aviso de validação
+23fc3b3 Merge D3-05 revisado e preserva detalhes seguros da API
+52b9cfd feat: add auditable structured field review
+bf044f6 Merge D3-05 atualizado com os contratos D2-05 da main
+ba785cc Merge main e preserva contratos D2-05 nos tipos compartilhados
+fc41c95 Merge pull request #34 from camileile/fix/d3-05-transporte-contratos
+3aea9c4 fix(d3-05): exibir mensagens detail seguras da API
+bc0c7f8 Merge main em fix/d3-05-transporte-contratos
+867e6a3 feat: D3-06 revisão rastreável e visualizador por página
+683ba69 fix: send duplicate documents to human review
+4c0d2fb fix(d2-07): protege transicao concorrente no reenvio
+912f66f Merge pull request #33 from camileile/fix/d2-05-api-contracts
+a480133 test(validation): cover durations and finite values
+7ae0b3c fix(validation): reject invalid durations and flag review
+10f7f7c Merge pull request #32 from camileile/test/d1-02-gemini-visual-evaluation
+108a8be Merge remote-tracking branch 'origin/main' into fix/d3-05-transporte-contratos
+f037242 refactor: unifica transporte, sessão e contratos do frontend
+2f98e8f Merge pull request #31 from camileile/fix/d2-04-admin-transactions
+252c6dc Merge pull request #30 from camileile/fix/d2-03-cors-aej-revisao
+d22d12c test(d2-05): valida contratos da API de pareceres
+9509f6b feat(d2-05): define contratos Pydantic da API para pareceres
+53ec7de web(d2-05): alinha tipos aos retornos da API
+296cb26 web(d2-05): tipa a criação de parecer
+599f857 fix(d2-05): valida contrato e uniformiza resposta de parecer
+8c37cab fix(d2-03): remove texto truncado das rotas e mantém 127.0.0.1 no CORS
+9b2df56 Merge pull request #29 from camileile/fix/d1-03-aej-compensation
+b2c5753 test(d2-04): verifica consistência de mutações administrativas
+100e117 Merge pull request #28 from camileile/fix/d2-01-credenciais-seed
+afadb80 docs(gemini): record missing credential blocker
+0b41fb5 test(gemini): add visual evaluation harness
+8b5d5a2 fix(d2-01): scripts de benchmark e seed_100 sem depender do .env
+02a75f2 test(d2-03): cobre CORS e permissões AEJ
+2b5c41a refactor(d2-03): separa permissões de associação e revisão AEJ
+825058a fix(d2-03): restringe CORS e libera preflight AEJ
+88960eb Merge pull request #26 from camileile/fix/p0-demo-navegacao-polling
+18dfda3 test(d2-01): cobre startup demo e operacional
+3a4daa5 test(d2-01): define modo demo para testes
+ac70813 fix(d2-01): confina dados demo ao modo de demonstração
+56f765e Merge main em fix/p0-demo-navegacao-polling
+da3811b test(aej): cover compensation traceability
+a04578d fix(aej): preserve compensation records
+d3f71fc Merge pull request #27 from camileile/docs/d1-01-benchmark-evidence
+b4b6cdf docs(benchmark): distinguish TextLayer and Gemini evidence
+04f0b3c fix: isolar demo, melhorar navegacao e recuperar polling

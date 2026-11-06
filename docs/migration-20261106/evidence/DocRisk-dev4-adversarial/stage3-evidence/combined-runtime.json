@@ -1,0 +1,90 @@
+{
+  "python": "3.13.14",
+  "plataforma": "win32",
+  "resultados": [
+    {
+      "id": "C01",
+      "cenario": "configuração inválida recusada",
+      "ok": true,
+      "saida": 3,
+      "segundos": 3.5,
+      "mensagem_encontrada": true
+    },
+    {
+      "id": "C02",
+      "cenario": "DATA_DIR inutilizável recusado",
+      "ok": true,
+      "saida": 3,
+      "segundos": 1.36,
+      "mensagem_encontrada": true
+    },
+    {
+      "id": "C03",
+      "cenario": "banco corrompido recusado",
+      "ok": true,
+      "saida": 3,
+      "segundos": 1.14,
+      "mensagem_encontrada": true
+    },
+    {
+      "id": "C03b",
+      "cenario": "banco corrompido preservado",
+      "ok": true
+    },
+    {
+      "id": "C04",
+      "cenario": "inicialização limpa",
+      "ok": true,
+      "segundos_ate_health": 1.32
+    },
+    {
+      "id": "C05",
+      "cenario": "segunda instância recusada",
+      "ok": true,
+      "saida": 3
+    },
+    {
+      "id": "C06",
+      "cenario": "CORS permitido e negado",
+      "ok": true,
+      "permitido": 200,
+      "negado": 400
+    },
+    {
+      "id": "C07",
+      "cenario": "job sintético ponta a ponta",
+      "ok": true,
+      "lote": 1,
+      "status": "CONCLUIDO",
+      "segundos": 1.72,
+      "documentos": 14,
+      "upload_ate_concluido": 2.12
+    },
+    {
+      "id": "C08",
+      "cenario": "queda abrupta + retomada sem duplicidade",
+      "ok": true,
+      "estado_ao_matar": "PROCESSANDO",
+      "paginas_ok_ao_matar": 0,
+      "status_final": "CONCLUIDO",
+      "documentos": 14,
+      "paginas": 16,
+      "paginas_distintas": 16,
+      "segundos_reinicio_ate_concluido": 2.28
+    },
+    {
+      "id": "C09",
+      "cenario": "encerramento controlado",
+      "ok": true,
+      "saida": 3,
+      "shutdown_limpo": true
+    },
+    {
+      "id": "C10",
+      "cenario": "reinicialização preserva dados",
+      "ok": true,
+      "segundos_ate_health": 1.97,
+      "lotes_concluidos": 2
+    }
+  ]
+}

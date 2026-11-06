@@ -1,0 +1,3 @@
+const {spawn}=require('node:child_process');const fs=require('node:fs');const path=require('node:path');
+const root=process.cwd(),e=path.join(root,'investigation-evidence'),py=path.resolve('../DocRisk-dev4-reconcile/.venv-main/Scripts/python.exe');
+Promise.all(['01','02','04'].map(id=>new Promise(resolve=>{const cwd=path.resolve('../DocRisk-dev4-review'+id),out=fs.openSync(path.join(e,'review'+id+'-pytest.txt'),'w');const p=spawn(py,['-m','pytest','api/tests','-q'],{cwd,env:{...process.env,PYTHONPATH:path.join(cwd,'api'),AI_PROVIDER:'textlayer'},stdio:['ignore',out,out],windowsHide:true});p.on('close',code=>{fs.closeSync(out);fs.writeFileSync(path.join(e,'review'+id+'-exit.txt'),String(code));resolve();});}))).then(()=>console.log('Finished'));

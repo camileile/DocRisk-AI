@@ -1,0 +1,23 @@
+924a31cdc56d014b828b6657b02fe99a9bc50dca fix(admin): reject non-boolean user status payloads
+0885696d9802680f3e5ee3882d856025a8359c66 test(auth): cover six-role matrix and reactivation lifecycle
+245b9b6b15be765ab5b69a2d2c1cf4f638ad1585 test(dev4): reconcile role checks with current OIDC contract
+157af44ec31333be4106639be3c090c2bb2e2c63 docs(auth): record validation after Clerk integration
+670323a5c5bcb42651246b4aeaedf32317f28fea docs(auth): record final PR47 regression results
+220172253984b988b1356784fe0aa26084dd21b9 docs(review): prepare role validation against current main
+5e18b794396f307e77c9d785f151adc16443bcd2 test(demo): enforce universal offline isolation
+8fd1eb121c2a10ed512d77d0e5c1377724235d43 docs(dev4): record current demo isolation validation
+356357eb7e3d40fd9f26f4a0eced959c8a03279d docs(demo): record final regression and isolation evidence
+acb15fbad895110257641a95582b46c239ad22ea docs(review): record current demo isolation and PR preparation
+c7a7b177a1138a38341ef1d248b32bd5a78e8fec fix(runtime): validate config and enforce single API instance
+2f35d12ab70d9dc0a5056bec99ba11d4f5304165 test(runtime): verify connected environment with real processes
+33bf0330429b33a0a806a0bc508a0f65c51cf2ed docs(dev4): record runtime reconciliation and process validation
+e0851fde6063559293799095ebc9f2f4a6e0406c docs(runtime): record validation after Clerk integration
+d5185a291c4c7ded39107b91e93aad2607159460 docs(runtime): validate current worker settings and restart checks
+1d525c92de4a29c78f8cc638aae2391c78ec1977 docs(review): prepare runtime changes and shared ownership notes
+b23c7374e777273439de69c57f8b40dea530dcfc fix(api): run blocking upload work off the event loop
+53b8c2238b5e1cb9db4ff57dd3b65fd713da25f3 test(security): cover multi-tenant, upload, concurrency and privacy abuse
+61371bcc2dd584d3cfb9b57a406ce888c273ea50 test(concurrency): validate sixteen uploads with current resubmit guards
+a53801916aeb01f63f11c79eee4ef97bdb68b6bb docs(concurrency): record reproducible duplicate page regression on PR47
+26b32b799a90f0e3328f40a620c7557e1df1bb33 fix(worker): reserve SQLite writer before idempotency checks
+4c6a767d2bbf590068938d4e58756ad375616b8a test(worker): expose AEJ concurrency gap and verify transaction boundaries
+cf9b09cefb0f9cf5d120012dd7a7f330c99569c8 test(worker): cover stale failure downgrade and consolidation timeout
