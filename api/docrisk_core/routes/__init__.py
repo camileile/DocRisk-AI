@@ -1,22 +1,25 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import re
 import sqlite3
 import unicodedata
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import pymupdf
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse, Response
+from pydantic import ValidationError
 
 from .. import config, db
-from ..api_models import ReportCreate, ReportResponse
+from ..api_models import FieldReviewRequest, ReportCreate, ReportPublish, ReportResponse
 from ..auth import (Usuario, auditar, contratos_do_usuario, exigir_contrato,
                     exigir_papel, usuario_atual)
-from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT,
+from ..contracts import (CamposPagina, CategoriaPendencia, PAPEIS_BERNHOEFT,
                          PAPEIS_FORNECEDORA, TIPOS_FOCO, Papel, StatusDocumento,
                          StatusParecer, StatusPendencia, StatusLote, TipoDocumento)
 from ..pipeline.render import ArquivoInvalido
@@ -88,7 +91,16 @@ def _reconcile_pairs(conn: sqlite3.Connection, contract_id: str,
 def _report_result(row: sqlite3.Row | dict[str, Any]) -> dict[str, Any]:
     result = dict(row)
     result["conteudo_json"] = _json_object(result.get("conteudo_json"))
+    result["conteudo_sha256"] = _hash_report_content(result["conteudo_json"])
     return result
+
+
+def _hash_report_content(content: dict[str, Any]) -> str:
+    # "gerado_em" muda a cada geração (segundos): fora do hash, senão publicar mais de 1 s
+    # depois da prévia daria sempre "conteúdo alterado". O hash cobre só o que o analista confere.
+    conferido = {k: v for k, v in content.items() if k != "gerado_em"}
+    canonical = json.dumps(conferido, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def _contract_or_404(conn: sqlite3.Connection, user: Usuario, contract_id: str) -> None:
@@ -425,13 +437,23 @@ def review_document(document_id: int, payload: dict[str, Any],
              user.id, now, document_id))
         par_depois = _document_pair({"tipo": tipo_final.value, "worker_id": trabalhador_id,
                                      "competencia": competencia})
-        if dados_corrigidos and tipo_final in TIPOS_FOCO:
+        # Aprovar uma "possível duplicidade" confirma o documento novo como versão vigente.
+        duplicidade = any("Possível duplicidade" in m for m in _json_list(doc["motivos_revisao"]))
+        if (dados_corrigidos or duplicidade) and tipo_final in TIPOS_FOCO:
+            anteriores = conn.execute(
+                "SELECT id, versao FROM documents WHERE contract_id=? AND tipo=? AND worker_id=? "
+                "AND competencia=? AND status=? AND id<>? ORDER BY versao DESC, id DESC",
+                (doc["contract_id"], tipo_final.value, trabalhador_id, competencia,
+                 StatusDocumento.APTO.value, document_id)).fetchall()
             conn.execute(
                 "UPDATE documents SET status=?, revisado_por=?, updated_at=? "
                 "WHERE contract_id=? AND tipo=? AND worker_id=? AND competencia=? AND status=? AND id<>?",
                 (StatusDocumento.SUBSTITUIDO.value, user.id, now, doc["contract_id"], tipo_final.value,
                  trabalhador_id, competencia, StatusDocumento.APTO.value, document_id),
             )
+            if duplicidade and anteriores:
+                conn.execute("UPDATE documents SET versao=?, substitui_id=? WHERE id=?",
+                             (int(anteriores[0]["versao"]) + 1, anteriores[0]["id"], document_id))
         pendencias.resolver_do_documento(conn, document_id, "resolvida na revisão")
         _reconcile_pairs(conn, doc["contract_id"], par_antes, par_depois)
     elif action == "solicitar_correcao":
@@ -453,6 +475,62 @@ def review_document(document_id: int, payload: dict[str, Any],
         _reconcile_pairs(conn, doc["contract_id"], par_antes,
                          _document_pair({"tipo": doc["tipo"], "worker_id": doc["worker_id"],
                                          "competencia": doc["competencia"]}))
+    elif action == "corrigir_campos":
+        if doc["status"] == StatusDocumento.SUBSTITUIDO.value:
+            raise HTTPException(409, "Documento substituído não pode receber correções")
+        try:
+            request = FieldReviewRequest.model_validate(payload)
+        except ValidationError as exc:
+            raise HTTPException(422, "Informe campos, motivo e fonte válidos para a correção") from exc
+        corrections = request.campos
+        reason = request.motivo
+        source = request.fonte
+        allowed_fields = set(CamposPagina.model_fields)
+        unknown_fields = set(corrections) - allowed_fields
+        if unknown_fields:
+            raise HTTPException(422, f"Campo(s) não reconhecido(s): {', '.join(sorted(unknown_fields))}")
+
+        atuais = _json_object(doc["campos_json"])
+        corrigidos: dict[str, Any] = {}
+        for field_name, raw_value in corrections.items():
+            if raw_value is None:
+                raise HTTPException(422, f"Informe um valor para {field_name}")
+            try:
+                valor = getattr(CamposPagina.model_validate({field_name: raw_value}), field_name)
+            except ValidationError as exc:
+                raise HTTPException(422, f"Valor inválido para {field_name}") from exc
+            if valor is None or (isinstance(valor, (int, float)) and not math.isfinite(valor)):
+                raise HTTPException(422, f"Valor inválido para {field_name}")
+            if field_name == "data_pagamento":
+                if not isinstance(valor, str):
+                    raise HTTPException(422, "data_pagamento deve estar no formato DD/MM/AAAA")
+                try:
+                    datetime.strptime(valor, "%d/%m/%Y")
+                except ValueError as exc:
+                    raise HTTPException(422, "data_pagamento deve estar no formato DD/MM/AAAA") from exc
+            corrigidos[field_name] = valor
+
+        revision = int(conn.execute(
+            "SELECT COALESCE(MAX(revision_number), 0) + 1 FROM document_field_reviews WHERE document_id=?",
+            (document_id,),
+        ).fetchone()[0])
+        for field_name, valor in corrigidos.items():
+            original = atuais.get(field_name)
+            conn.execute(
+                "INSERT INTO document_field_reviews (document_id, field_name, original_value_json, "
+                "corrected_value_json, author_id, reason, source, document_version, revision_number, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (document_id, field_name, json.dumps(original, ensure_ascii=False, allow_nan=False),
+                 json.dumps(valor, ensure_ascii=False, allow_nan=False), user.id, reason[:1000], source[:500],
+                 int(doc["versao"]), revision, now),
+            )
+            atuais[field_name] = valor
+            revision += 1
+        conn.execute(
+            "UPDATE documents SET campos_json=?, revisado_por=?, updated_at=? WHERE id=?",
+            (json.dumps(atuais, ensure_ascii=False, allow_nan=False), user.id, now, document_id),
+        )
+        _reconcile_pairs(conn, doc["contract_id"], _document_pair(doc))
     elif action in {"dividir", "unir_proximo"}:
         try:
             if action == "dividir":
@@ -567,6 +645,19 @@ def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
             if version["status"] == StatusDocumento.REVISAO_HUMANA.value:
                 version["status"] = "EM_ANALISE"
     item["versoes"] = versoes
+    if user.org_tipo == "BERNHOEFT":
+        field_reviews = conn.execute(
+            "SELECT fr.field_name, fr.original_value_json, fr.corrected_value_json, fr.author_id, "
+            "u.nome AS author_name, fr.reason, fr.source, fr.document_version, fr.revision_number, "
+            "fr.created_at FROM document_field_reviews fr JOIN users u ON u.id=fr.author_id "
+            "WHERE fr.document_id=? ORDER BY fr.revision_number",
+            (document_id,),
+        ).fetchall()
+        item["revisoes_campos"] = [
+            {**dict(review), "valor_original": json.loads(review["original_value_json"]),
+             "valor_corrigido": json.loads(review["corrected_value_json"])}
+            for review in field_reviews
+        ]
     aej = conn.execute("SELECT calculation_json FROM aej_documents WHERE document_id=?", (document_id,)).fetchone()
     if aej is not None and user.org_tipo == "BERNHOEFT":
         item["aej"] = _json_object(aej["calculation_json"])
@@ -753,9 +844,19 @@ async def resubmit_issue(issue_id: int, file: UploadFile = File(...),
     now = db.agora()
     historico.append({"status": StatusPendencia.REENVIADA.value, "em": now, "motivo": "reenvio recebido",
                       "lote": batch_id})
-    conn.execute("UPDATE issues SET status=?, updated_at=?, historico_json=? WHERE id=?",
-                 (StatusPendencia.REENVIADA.value, now,
-                  json.dumps(historico, ensure_ascii=False), issue_id))
+    alterada = conn.execute(
+        "UPDATE issues SET status=?, updated_at=?, historico_json=? WHERE id=? AND status=? "
+        "AND updated_at=? AND historico_json=?",
+        (StatusPendencia.REENVIADA.value, now, json.dumps(historico, ensure_ascii=False), issue_id,
+         issue["status"], issue["updated_at"], issue["historico_json"]),
+    )
+    if alterada.rowcount != 1:
+        lote = conn.execute("SELECT arquivo FROM batches WHERE id=?", (batch_id,)).fetchone()
+        conn.execute("DELETE FROM batches WHERE id=?", (batch_id,))
+        conn.commit()
+        if lote is not None and lote["arquivo"]:
+            Path(lote["arquivo"]).unlink(missing_ok=True)
+        raise HTTPException(409, "Pendência alterada durante o reenvio; atualize e tente novamente")
     auditar(conn, user, "PENDENCIA_REENVIADA", str(issue_id))
     conn.commit()
     try:
@@ -810,6 +911,7 @@ def search(q: str = Query(min_length=1, max_length=250),
 def create_report(payload: ReportCreate, user: Usuario = Depends(usuario_atual),
                   conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     exigir_papel(user, [Papel.ANALISTA_BH])
+    conn.execute("BEGIN IMMEDIATE")
     contract_id = payload.contract_id
     competencia = payload.competencia
     _contract_or_404(conn, user, contract_id)
@@ -857,28 +959,47 @@ def preview_report(report_id: int, user: Usuario = Depends(usuario_atual),
         return _report_result(report)
     result = _report_result(report)
     result["conteudo_json"] = parecer.snapshot_parecer(conn, report["contract_id"], report["competencia"])
+    result["conteudo_sha256"] = _hash_report_content(result["conteudo_json"])
     return result
 
 
 @router.post("/api/reports/{report_id}/publish", response_model=ReportResponse,
              response_model_exclude_unset=True)
-def publish_report(report_id: int, user: Usuario = Depends(usuario_atual),
+def publish_report(report_id: int, payload: ReportPublish | None = None, user: Usuario = Depends(usuario_atual),
                    conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     exigir_papel(user, [Papel.ANALISTA_BH])
+    conn.execute("BEGIN IMMEDIATE")
     report = conn.execute("SELECT * FROM reports WHERE id=?", (report_id,)).fetchone()
     if report is None:
         raise HTTPException(404, "Parecer não encontrado")
     _contract_or_404(conn, user, report["contract_id"])
     if report["status"] != StatusParecer.RASCUNHO.value:
         raise HTTPException(409, "Somente rascunhos podem ser publicados")
+    if payload is None:
+        raise HTTPException(422, "Hash da prévia é obrigatório para publicar")
+    publicada = conn.execute(
+        "SELECT MAX(versao) FROM reports WHERE contract_id=? AND competencia=? AND status IN (?, ?)",
+        (report["contract_id"], report["competencia"], StatusParecer.APROVADO_PUBLICADO.value,
+         StatusParecer.SUBSTITUIDO_POR_VERSAO.value),
+    ).fetchone()[0]
+    if publicada is not None and int(publicada) >= int(report["versao"]):
+        raise HTTPException(409, "Já existe versão publicada igual ou mais recente")
     try:
         snapshot = parecer.snapshot_parecer(conn, report["contract_id"], report["competencia"])
     except NotImplementedError as exc:
         raise HTTPException(503, "Geração de parecer ainda não está disponível (F3)") from exc
+    conteudo_sha256 = _hash_report_content(snapshot)
+    if conteudo_sha256 != payload.conteudo_sha256:
+        raise HTTPException(409, "Conteúdo alterado desde a prévia; atualize e confira antes de publicar")
     now = db.agora()
-    conn.execute("UPDATE reports SET status=?, conteudo_json=?, publicado_em=?, publicado_por=? WHERE id=?",
-                 (StatusParecer.APROVADO_PUBLICADO.value, json.dumps(snapshot, ensure_ascii=False),
-                  now, user.id, report_id))
+    updated = conn.execute(
+        "UPDATE reports SET status=?, conteudo_json=?, publicado_em=?, publicado_por=? "
+        "WHERE id=? AND status=?",
+        (StatusParecer.APROVADO_PUBLICADO.value, json.dumps(snapshot, ensure_ascii=False),
+         now, user.id, report_id, StatusParecer.RASCUNHO.value),
+    )
+    if updated.rowcount != 1:
+        raise HTTPException(409, "O rascunho foi alterado durante a publicação")
     conn.execute("UPDATE reports SET status=? WHERE contract_id=? AND competencia=? AND id<>? "
                  "AND status=?", (StatusParecer.SUBSTITUIDO_POR_VERSAO.value, report["contract_id"],
                                   report["competencia"], report_id,
