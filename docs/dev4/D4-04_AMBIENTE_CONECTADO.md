@@ -110,3 +110,5 @@ processos duplicados, queda abrupta, retomada e reinício com persistência.
 Windows/Python 3.13.14; TextLayer offline; banco sintético temporário.
 O sentinela em parar_worker permanece no código de Dev1; não alterado aqui.
 Suíte completa: 365 aprovados, 1 ignorado em 74,83 s. compileall e diff --check aprovados. Status: CONCLUÍDA LOCALMENTE para runtime local.
+
+Revalidação após PR #46: base a1f6109; conflito de lifespan resolvido mantendo validate_configuration e db.init_db(seed=config.AUTH_MODE == token e DEMO_MODE). Suíte: 395 aprovados, 1 ignorado (115,37s).
