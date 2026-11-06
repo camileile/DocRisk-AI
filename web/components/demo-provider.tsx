@@ -43,8 +43,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       const user = demoUser(offline);
       setMe(user);
       setIsDemo(true);
-      setContracts(DEMO_CONTRACTS);
-      setContract((current) => DEMO_CONTRACTS.some((c) => c.id === current) ? current : DEMO_CONTRACTS[0].id);
+      setContracts(offline === "ADMIN_PLATAFORMA" ? [] : DEMO_CONTRACTS);
+      setContract((current) => offline === "ADMIN_PLATAFORMA" ? "" : DEMO_CONTRACTS.some((c) => c.id === current) ? current : DEMO_CONTRACTS[0].id);
       setError(null);
       setLoading(false);
       return user;
@@ -95,8 +95,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     const user = demoUser(role);
     setMe(user);
     setIsDemo(true);
-    setContracts(DEMO_CONTRACTS);
-    setContract(DEMO_CONTRACTS[0].id);
+    setContracts(role === "ADMIN_PLATAFORMA" ? [] : DEMO_CONTRACTS);
+    setContract(role === "ADMIN_PLATAFORMA" ? "" : DEMO_CONTRACTS[0].id);
     setError(null);
     setLoading(false);
     return user;

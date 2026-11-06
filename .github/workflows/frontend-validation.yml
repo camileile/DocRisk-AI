@@ -53,6 +53,10 @@ jobs:
           test -f out/painel/pareceres/index.html
           test -f out/contratante/index.html
           test -f out/contratante/pareceres/index.html
+          test -f out/plataforma/index.html
+          test -f out/plataforma/auditoras/index.html
+          test -f out/plataforma/configuracoes/index.html
+          test -f out/painel/operadores/index.html
           test -f out/administracao/index.html
           test -f out/administracao/empresas/index.html
           test -f out/administracao/usuarios/index.html
@@ -70,7 +74,7 @@ jobs:
           done
           cat /tmp/docrisk-static.log
           exit 1
-      - name: Demonstracao offline (5 perfis sem backend)
+      - name: Demonstracao offline (6 perfis sem backend)
         run: |
           node scripts/offline-smoke.cjs
           node scripts/contractor-smoke.cjs

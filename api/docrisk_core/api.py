@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from . import db
 from .aej import AEJError
 from .documents import DocumentError
+from .routes.platform_management import router as platform_router
 from .importer import UnsupportedFile, import_bytes
 from .pipeline import worker
 from .routes import router
@@ -60,3 +61,6 @@ async def inspect(file: UploadFile = File(...)) -> dict:
         return import_bytes(file.filename or "arquivo", data)
     except (UnsupportedFile, DocumentError, AEJError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+app.include_router(platform_router)

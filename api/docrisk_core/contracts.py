@@ -47,6 +47,7 @@ ROTULOS_SPRINT01: dict[str, TipoDocumento] = {
 
 
 class Papel(StrEnum):
+    ADMIN_PLATAFORMA = "ADMIN_PLATAFORMA"
     ADMIN_BH = "ADMIN_BH"
     ANALISTA_BH = "ANALISTA_BH"
     GESTOR_FORN = "GESTOR_FORN"

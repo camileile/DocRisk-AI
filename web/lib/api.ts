@@ -8,8 +8,8 @@ export const API_URL = (
   "http://127.0.0.1:8000"
 ).replace(/\/$/, "");
 
-export type Papel = "ADMIN_BH" | "ANALISTA_BH" | "GESTOR_FORN" | "OPERADOR_FORN" | "GESTOR_CONTR";
-export type OrgTipo = "BERNHOEFT" | "FORNECEDORA" | "CONTRATANTE";
+export type Papel = "ADMIN_PLATAFORMA" | "ADMIN_BH" | "ANALISTA_BH" | "GESTOR_FORN" | "OPERADOR_FORN" | "GESTOR_CONTR";
+export type OrgTipo = "PLATAFORMA" | "BERNHOEFT" | "FORNECEDORA" | "CONTRATANTE";
 
 export type Me = { id: string; nome: string; org_id: string; org_tipo: OrgTipo; papel: Papel };
 export type DemoUser = Me & { role: Papel; token: string };
@@ -382,6 +382,7 @@ export async function apiBlob(path: string): Promise<Blob> {
 
 /* ------------------------------------------------------------------ rótulos */
 export const roleLabels: Record<Papel, string> = {
+  ADMIN_PLATAFORMA: "Administrador geral da plataforma",
   ADMIN_BH: "Administrador Bernhoeft",
   ANALISTA_BH: "Analista Bernhoeft",
   GESTOR_FORN: "Gestor da fornecedora",
@@ -463,6 +464,7 @@ export function pageList(pages: PageRef[] | number[]): string {
 }
 
 export function homeFor(role: Papel): string {
+  if (role === "ADMIN_PLATAFORMA") return "/plataforma";
   if (role === "GESTOR_CONTR") return "/contratante";
   if (role === "ADMIN_BH") return "/administracao";
   return "/painel";

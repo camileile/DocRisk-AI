@@ -31,6 +31,11 @@ def usuario_atual(authorization: str = Header(default="")) -> Usuario:
             "WHERE u.token=? AND u.ativo=1",
             (token.strip(),),
         ).fetchone()
+        platform = None if row is not None else conn.execute(
+            "SELECT id,nome FROM platform_accounts WHERE token=? AND ativo=1", (token.strip(),)
+        ).fetchone()
+    if platform is not None:
+        return Usuario(platform["id"], platform["nome"], "DOCRISK", "PLATAFORMA", Papel.ADMIN_PLATAFORMA)
     if row is None:
         raise HTTPException(status_code=401, detail="Token inválido ou usuário inativo",
                             headers={"WWW-Authenticate": "Bearer"})
