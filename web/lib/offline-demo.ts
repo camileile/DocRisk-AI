@@ -130,11 +130,70 @@ function visibleDoc(doc: Doc, role: Papel): Doc {
   };
 }
 
+function demoAnalystDashboard(url: URL) {
+  const contratante = url.searchParams.get("contratante_id");
+  const fornecedora = url.searchParams.get("fornecedora_id");
+  const contrato = url.searchParams.get("contract_id");
+  const mes = url.searchParams.get("competencia");
+  const todos = DEMO_CONTRACTS.filter((c) =>
+    (!contratante || contratante === c.contratante_id) &&
+    (!fornecedora || fornecedora === c.fornecedora_id) &&
+    (!contrato || contrato === c.id)
+  );
+  const existe = todos.length > 0;
+  const competencias = existe ? ["10/2026"] : [];
+  const selecionada = mes || competencias[0] || null;
+  const analises = existe && selecionada === "10/2026" ? ANALYSES : [];
+  const avaliadas = analises.filter((a) =>
+    a.status === "ANALISADA" &&
+    ["DIVERGENCIA_A_VERIFICAR", "SEM_DIVERGENCIA_NOS_CAMPOS_COMPARADOS"].includes(a.resultado.tipo)
+  );
+  const divergencias = avaliadas.filter((a) => a.resultado.tipo === "DIVERGENCIA_A_VERIFICAR");
+  const critical = analises.filter((a) =>
+    ["BLOQUEADA_PENDENCIA", "REVISAO_HUMANA"].includes(a.status)
+  ).length;
+  const total = existe ? 4 : 0;
+  const taxa = avaliadas.length ? divergencias.length / avaliadas.length : null;
+  const cobertura = total ? avaliadas.length / total : null;
+  const horas = divergencias.reduce((v, a) => v + Math.abs(a.resultado.diferenca_h ?? 0), 0);
+  const resumo = {
+    cadastrados: total, avaliados: avaliadas.length, divergencias: divergencias.length,
+    taxa_divergencias: taxa, cobertura,
+    horas_divergentes: horas, divergencias_sem_horas: divergencias.filter((a) => a.resultado.diferenca_h == null).length,
+    pendencias_criticas: critical,
+    pendencias_abertas: existe && selecionada === "10/2026"
+      ? ISSUES.filter((i) => i.competencia === selecionada && i.status !== "RESOLVIDA").length : 0,
+  };
+  return {
+    filtros: {
+      contratantes: [{ id: "demo-contr", nome: "Contratante Fictícia Alfa" }],
+      fornecedoras: !contratante || contratante === "demo-contr"
+        ? [{ id: "demo-forn", nome: "Fornecedora Fictícia Beta" }] : [],
+      contratos: todos.map((c) => ({ id: c.id, nome: c.nome })),
+      competencias,
+      competencia_selecionada: selecionada,
+    },
+    resumo,
+    evolucao: existe ? [{
+      competencia: "10/2026",
+      avaliados: selecionada === "10/2026" ? avaliadas.length : 2,
+      divergencias: 1, taxa_divergencias: 0.5, cobertura: 0.5,
+    }] : [],
+    comparacao: existe ? [{
+      id: "demo-forn", nome: "Fornecedora Fictícia Beta",
+      avaliados: avaliadas.length, divergencias: divergencias.length,
+      taxa_divergencias: taxa, cobertura,
+    }] : [],
+    observacao: "Taxa: divergências entre análises válidas. Cobertura: análises válidas entre trabalhadores cadastrados. Pendências críticas: bloqueios ou revisões. Todos os dados são fictícios e divergência não comprova irregularidade.",
+  };
+}
+
 export function demoRead(path: string, role: Papel): unknown {
   const url = new URL(path, "https://demo.invalid");
   const route = url.pathname;
   if (route === "/api/me") return USERS[role];
   if (route === "/api/contracts") return DEMO_CONTRACTS;
+  if (route === "/api/analyst/overview" && role === "ANALISTA_BH") return demoAnalystDashboard(url);
   if (route === "/api/bernhoeft/metrics" && (role === "ADMIN_BH" || role === "ANALISTA_BH")) return METRICS;
   if (route === "/api/audit" && role === "ADMIN_BH") return AUDIT;
   if (role === "GESTOR_CONTR") {
