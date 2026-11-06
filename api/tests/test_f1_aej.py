@@ -1,7 +1,11 @@
 """AEJ de ponta a ponta pela API: envio, mapeamento do vínculo, versões, revisão manual e acesso."""
+import json
+
 from fastapi.testclient import TestClient
 
+from docrisk_core import db
 from docrisk_core.api import app
+from docrisk_core.rules.parecer import snapshot_parecer
 from test_aej import example_aej
 from test_f1_revision import _api_lote, _headers
 from test_f2_worker import banco, q  # noqa: F401  (fixture)
@@ -82,6 +86,34 @@ def test_compensacao_exige_revisao_manual_com_justificativa(banco):
         detalhe = client.get(f"/api/documents/{doc['id']}", headers=_headers()).json()["aej"]
         assert detalhe["calculation_status"] == "HUMAN_CONFIRMED"
         assert detalhe["human_review"]["reviewer_id"] == "u-analista"
+
+
+def test_linha_de_compensacao_a_evidencia_do_parecer(banco):
+    """Rastreia a linha 07 do AEJ até as evidências da análise e do parecer."""
+    with TestClient(app) as client:
+        batch_id = _enviar(client, example_aej())
+        assert _mapear(client).status_code == 200
+
+    [origem] = q("SELECT line_number FROM aej_records WHERE batch_id=? AND record_type='07'", batch_id)
+    linha_compensacao = origem["line_number"]
+    [documento] = q("SELECT id FROM documents WHERE batch_id=? AND tipo='ESPELHO_PONTO'", batch_id)
+    [calculo] = q("SELECT calculation_json FROM aej_documents WHERE document_id=?", documento["id"])
+    compensacoes = json.loads(calculo["calculation_json"])["compensations"]
+    assert [item["line_number"] for item in compensacoes] == [linha_compensacao]
+
+    [analise] = q("SELECT insumos_json FROM analyses WHERE worker_id='T001' AND atual=1")
+    insumos = json.loads(analise["insumos_json"])
+    evidencia_aej = next(item for item in insumos if item.get("origem") == "AEJ")
+    assert evidencia_aej["doc_id"] == documento["id"]
+    assert evidencia_aej["worker_link_id"] == "1"
+    assert linha_compensacao in evidencia_aej["linhas_origem"]
+
+    with db.tx() as conn:
+        parecer = snapshot_parecer(conn, "CT-001", "10/2026")
+    item_t001 = next(item for item in parecer["itens"] if item["trabalhador_id"] == "T001")
+    evidencia_parecer = next(item for item in item_t001["evidencias"] if item.get("origem") == "AEJ")
+    assert evidencia_parecer["documento"] == documento["id"]
+    assert linha_compensacao in evidencia_parecer["linhas_origem"]
 
 
 def test_permissoes_do_aej(banco):

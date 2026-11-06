@@ -269,12 +269,15 @@ def _processar_lote_aej(batch_id: int) -> None:
                     horas = round(mins / 60, 2)
                 status = (StatusDocumento.APTO if horas is not None else StatusDocumento.REVISAO_HUMANA)
                 confianca = 1.0 if horas is not None else 0.0
+                compensacoes = [item for item in calculation.get("compensations", [])
+                                if str(item.get("date", "")).startswith(f"{yyyy}-{mm}-")]
                 calculo_doc = {
                     "origem": "AEJ", "worker_link_id": link_id, "worker_id": worker_id,
                     "competencia": competencia, "calculation_status": calculation["calculation_status"],
                     "hours": horas, "method": calculation["method"], "warnings": list(dict.fromkeys(warnings)),
                     "validation_warnings": calculation["validation_warnings"],
-                    "days": dias, "worker_record_line": calculation["worker_record_line"],
+                    "days": dias, "compensations": compensacoes,
+                    "worker_record_line": calculation["worker_record_line"],
                     "p7s_validated": False,
                 }
                 cur = conn.execute(
