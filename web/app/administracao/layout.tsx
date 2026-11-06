@@ -3,7 +3,7 @@ import { AdminShell } from "@/components/admin-shell";
 import "./admin.css";
 
 export const metadata: Metadata = {
-  title: "Auditoria administrativa | DocRisk AI",
+  title: "Administração Bernhoeft | DocRisk AI",
   robots: { index: false, follow: false },
 };
 

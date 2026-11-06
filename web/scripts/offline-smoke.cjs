@@ -31,6 +31,21 @@ async function run() {
       await page.getByRole("button", { name: "Explorar demonstração" }).click();
       await page.waitForURL((url) => url.pathname === route, { timeout: 15000 });
       await page.getByText("Demonstração offline:", { exact: false }).first().waitFor();
+      if (role === "Administrador Bernhoeft") {
+        const labels = await page.locator('nav[aria-label="Navegação administrativa"] a').allTextContents();
+        assert.deepEqual(labels.map((text) => text.trim()), [
+          "Visão Geral", "Empresas e Contratos", "Gestão de Usuários", "Auditoria",
+        ]);
+        await page.getByRole("heading", { name: "Visão geral da organização." }).waitFor();
+        await page.goto(base + "/administracao/empresas/", { waitUntil: "domcontentloaded" });
+        await page.getByRole("heading", { name: "Empresas e Contratos." }).waitFor();
+        assert.equal(await page.getByRole("button", { name: "Cadastrar empresa" }).isDisabled(), true);
+        await page.goto(base + "/administracao/usuarios/", { waitUntil: "domcontentloaded" });
+        await page.getByRole("heading", { name: "Gestão de Usuários." }).waitFor();
+        assert.equal(await page.getByRole("button", { name: "Criar acesso de teste" }).isDisabled(), true);
+        await page.goto(base + "/administracao/auditoria/", { waitUntil: "domcontentloaded" });
+        await page.getByRole("heading", { name: "Quem fez o quê, e quando." }).waitFor();
+      }
       if (role === "Operador da fornecedora" || role === "Gestor da fornecedora") {
         await page.goto(base + "/painel/envio/", { waitUntil: "domcontentloaded" });
         await page.getByText("Envio desativado nesta demonstração").waitFor();

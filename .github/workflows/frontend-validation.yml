@@ -53,6 +53,9 @@ jobs:
           test -f out/painel/pareceres/index.html
           test -f out/contratante/index.html
           test -f out/administracao/index.html
+          test -f out/administracao/empresas/index.html
+          test -f out/administracao/usuarios/index.html
+          test -f out/administracao/auditoria/index.html
       - name: Playwright e Chromium (somente testes)
         run: |
           npm install --no-save --package-lock=false playwright@1.58.2

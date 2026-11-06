@@ -201,3 +201,26 @@ CREATE VIRTUAL TABLE IF NOT EXISTS page_fts USING fts5(
   texto, page_id UNINDEXED, contract_id UNINDEXED,
   tokenize = 'unicode61 remove_diacritics 2'
 );
+
+
+-- Cadastro administrativo gradual: entidades globais, escopo por organização auditora.
+-- Tabelas novas, compatíveis com bancos de MVP já inicializados.
+CREATE TABLE IF NOT EXISTS organization_profiles (
+  org_id TEXT PRIMARY KEY REFERENCES organizations(id),
+  cnpj TEXT UNIQUE,
+  criado_em TEXT
+);
+
+CREATE TABLE IF NOT EXISTS organization_auditors (
+  org_id TEXT NOT NULL REFERENCES organizations(id),
+  auditor_id TEXT NOT NULL REFERENCES organizations(id),
+  PRIMARY KEY (org_id, auditor_id)
+);
+
+CREATE TABLE IF NOT EXISTS contract_metadata (
+  contract_id TEXT PRIMARY KEY REFERENCES contracts(id),
+  inicio TEXT,
+  fim TEXT,
+  status TEXT NOT NULL DEFAULT 'ATIVO'
+    CHECK(status IN ('ATIVO', 'ENCERRADO'))
+);
