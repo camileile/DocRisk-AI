@@ -8,7 +8,7 @@ import { api, formatDate, reportStatusLabels, type Report, type ReportContent } 
 import { useApi } from "@/lib/use-api";
 
 export default function ReportsPage() {
-  const { contract, contracts } = useSession();
+  const { contract, contracts, isDemo } = useSession();
   const { data, error, loading, reload } = useApi<Report[]>("/api/reports");
   const [competencia, setCompetencia] = useState("10/2026");
   const [observacoes, setObservacoes] = useState("");
@@ -42,6 +42,7 @@ export default function ReportsPage() {
         title="Revisado por pessoas, publicado com versão."
         description="O rascunho usa as análises atuais. A publicação grava um retrato imutável; correções geram nova versão e a anterior fica marcada como substituída. A contratante só vê o publicado."
       />
+      {isDemo && <Notice>Exemplo fictício: criar ou publicar pareceres exige um ambiente operacional e aprovação humana.</Notice>}
       {feedback && <Notice tone={feedback.tone}>{feedback.text}</Notice>}
       <section className="workspace-card">
         <h2>Novo rascunho</h2>
@@ -58,7 +59,7 @@ export default function ReportsPage() {
             Observações internas
             <input value={observacoes} onChange={(e) => setObservacoes(e.target.value)} maxLength={2000} />
           </label>
-          <button className="button" disabled={busy || !contract || !/^(0[1-9]|1[0-2])\/\d{4}$/.test(competencia)} onClick={create}>
+          <button className="button" disabled={isDemo || busy || !contract || !/^(0[1-9]|1[0-2])\/\d{4}$/.test(competencia)} onClick={create}>
             <FilePlus2 size={16} /> Criar rascunho
           </button>
         </div>
@@ -114,6 +115,7 @@ export default function ReportsPage() {
 }
 
 function ReportPanel({ id, onPublished }: { id: number; onPublished: () => void }) {
+  const { isDemo } = useSession();
   const { data, error, loading, reload } = useApi<Report>(`/api/reports/${id}/preview`);
   const [busy, setBusy] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
@@ -144,7 +146,7 @@ function ReportPanel({ id, onPublished }: { id: number; onPublished: () => void 
           Parecer #{data.id} · versão {data.versao} · {reportStatusLabels[data.status]}
         </h2>
         {draft && (
-          <button className="button" disabled={busy} onClick={publish}>
+          <button className="button" disabled={isDemo || busy} onClick={publish}>
             <Send size={16} /> {busy ? "Publicando…" : "Publicar"}
           </button>
         )}

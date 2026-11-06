@@ -70,7 +70,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
 function Workspace({ children }: { children: ReactNode }) {
   const path = usePathname().replace(/\/$/, "") || "/";
   const router = useRouter();
-  const { me, logout, contracts, contract, setContract } = useSession();
+  const { me, logout, contracts, contract, setContract, isDemo } = useSession();
   const [open, setOpen] = useState(false);
   if (!me) return null;
   const items = navigation.filter((item) => item.roles.includes(me.papel));
@@ -117,8 +117,8 @@ function Workspace({ children }: { children: ReactNode }) {
           <div className="sidebar-demo">
             <FlaskConical size={18} />
             <p>
-              <strong>Ambiente de demonstração</strong>
-              <span>Somente dados sintéticos</span>
+              <strong>{isDemo ? "Demonstração offline" : "Ambiente conectado"}</strong>
+              <span>{isDemo ? "Dados fictícios · somente consulta" : "API de testes"}</span>
             </p>
           </div>
           <button
@@ -155,6 +155,7 @@ function Workspace({ children }: { children: ReactNode }) {
           </div>
         </header>
         <main className="workspace-body" id="conteudo-painel">
+          {isDemo && <div className="api-notice" role="status"><strong>Demonstração offline:</strong> informações e documentos são inteiramente fictícios. Nenhuma alteração é enviada à API.</div>}
           {contracts.length > 0 && (
             <div className="workspace-context">
               <span>CONTRATO</span>
