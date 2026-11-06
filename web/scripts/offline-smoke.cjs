@@ -36,7 +36,7 @@ async function run() {
         await page.getByRole("heading", { name: "Estrutura do DocRisk AI." }).waitFor();
         await page.getByRole("link", { name: "Organizações Auditoras", exact: true }).click();
         await page.getByRole("heading", { name: "Organizações auditoras.", exact: true }).waitFor();
-        assert.equal(await page.getByRole("button", { name: "Cadastrar auditora", exact: true }).isDisabled(), true);
+        assert.equal(await page.getByRole("button", { name: "Cadastrar organização auditora", exact: true }).isDisabled(), true);
         await page.getByRole("link", { name: "Dados da Plataforma", exact: true }).click();
         await page.getByRole("heading", { name: "Dados institucionais da plataforma.", exact: true }).waitFor();
         await page.goto(base + "/administracao/");
