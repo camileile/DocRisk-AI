@@ -135,3 +135,12 @@ passaram; reinício até health cerca de 0,9s. Sem vídeo ou release congelada.
 Suíte backend: 340 aprovados, 1 ignorado; TypeScript, P0 e transporte aprovados.
 Status: FALHOU no ensaio completo. Necessita investigação da troca de sessão
 com Dev3, revalidação com Clerk recém-integrado e novo ensaio antes de release.
+
+### Revalidação após Clerk (a1f6109)
+O ensaio completo passou em 7/7 etapas, total 46,1s, TextLayer offline e banco
+novo sintético. Inclui build, demo sem API, fluxo conectado por perfil, portal
+contratante, queda/reinício e navegador real após reinício. A falha anterior de
+troca de sessão não se reproduziu nesta base. Não houve alteração do frontend.
+Relatório: dev4-evidence/d4-03-latest-rehearsal.json no worktree de reconciliação.
+Status atual: PARCIAL para release (ensaio aprovado; sem vídeo e sem SHA congelado).
+Suíte a1f6109: 370 aprovados, 1 ignorado (99,23s).
