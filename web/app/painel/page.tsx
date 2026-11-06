@@ -55,7 +55,7 @@ function BernhoeftOverview() {
         description="Números calculados a partir dos documentos e análises efetivamente processados. Divergência é indício a conferir, não passivo."
         action={
           <Link className="button" href="/painel/revisao">
-            <ClipboardCheck size={17} /> Abrir fila de revisão
+            <ClipboardCheck size={17} /> Abrir fila de exceções
           </Link>
         }
       />
@@ -69,7 +69,7 @@ function BernhoeftOverview() {
         <section className="workspace-card">
           <div className="card-title">
             <h2>Conciliação por trabalhador e competência</h2>
-            <Link href="/painel/conciliacoes" className="text-link">Ver análises <ArrowUpRight size={14} /></Link>
+            <Link href="/painel/revisao" className="text-link">Ver análises <ArrowUpRight size={14} /></Link>
           </div>
           <table className="data-table compact">
             <tbody>
@@ -86,7 +86,7 @@ function BernhoeftOverview() {
         <section className="workspace-card">
           <div className="card-title">
             <h2>Documentos por tipo</h2>
-            <Link href="/painel/documentos" className="text-link">Ver documentos <ArrowUpRight size={14} /></Link>
+            <Link href="/painel/revisao" className="text-link">Ver documentos <ArrowUpRight size={14} /></Link>
           </div>
           {Object.keys(m.documentos.por_tipo).length === 0 ? (
             <EmptyState title="Nenhum documento processado." text="Envie um lote pela área da fornecedora." />
@@ -107,7 +107,7 @@ function BernhoeftOverview() {
       </div>
       <div className="next-step-card">
         <GitCompareArrows size={20} />
-        <p>Com a fila de revisão e as pendências tratadas, gere o rascunho do parecer em <Link href="/painel/pareceres">Pareceres</Link> <FileCheck2 size={14} />.</p>
+        <p>Com a fila de exceções e as pendências tratadas, gere o rascunho do parecer em <Link href="/painel/pareceres">Pareceres</Link> <FileCheck2 size={14} />.</p>
       </div>
     </>
   );
