@@ -1,0 +1,272 @@
+-- DocRisk AI — esquema SQLite (MVP). Dono: frente 1; mudanças combinadas com as frentes 2 e 3.
+-- Estados válidos: ver docrisk_core/contracts.py. Datas em ISO 8601 (texto).
+
+CREATE TABLE IF NOT EXISTS organizations (
+  id     TEXT PRIMARY KEY,
+  nome   TEXT NOT NULL,
+  tipo   TEXT NOT NULL CHECK (tipo IN ('BERNHOEFT', 'CONTRATANTE', 'FORNECEDORA'))
+);
+
+CREATE TABLE IF NOT EXISTS users (
+  id      TEXT PRIMARY KEY,
+  nome    TEXT NOT NULL,
+  org_id  TEXT NOT NULL REFERENCES organizations(id),
+  role    TEXT NOT NULL,             -- contracts.Papel
+  token   TEXT NOT NULL UNIQUE,      -- só demo; produção = SSO/OIDC
+  ativo   INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS contracts (
+  id                   TEXT PRIMARY KEY,
+  nome                 TEXT NOT NULL,
+  contratante_id       TEXT NOT NULL REFERENCES organizations(id),
+  fornecedora_id       TEXT NOT NULL REFERENCES organizations(id),
+  bernhoeft_id         TEXT NOT NULL REFERENCES organizations(id),
+  prazo_correcao_dias  INTEGER NOT NULL DEFAULT 3
+);
+
+-- Trabalhador = registro sintético, sem login (spec 2.1)
+CREATE TABLE IF NOT EXISTS workers (
+  id           TEXT PRIMARY KEY,     -- ex.: T001 (nunca depender do nome)
+  nome         TEXT NOT NULL,
+  contract_id  TEXT NOT NULL REFERENCES contracts(id)
+);
+
+CREATE TABLE IF NOT EXISTS batches (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  contract_id  TEXT NOT NULL REFERENCES contracts(id),
+  uploaded_by  TEXT NOT NULL REFERENCES users(id),
+  filename     TEXT NOT NULL,
+  arquivo      TEXT NOT NULL,        -- caminho privado em DATA_DIR/uploads
+  sha256       TEXT NOT NULL,
+  tipo_arquivo TEXT NOT NULL,        -- PDF | IMAGE | AEJ
+  status       TEXT NOT NULL,        -- contracts.StatusLote
+  total_pages  INTEGER NOT NULL DEFAULT 0,
+  issue_id     INTEGER,              -- preenchido quando o lote é um reenvio de pendência
+  erro         TEXT,
+  created_at   TEXT NOT NULL,
+  finished_at  TEXT
+);
+
+CREATE TABLE IF NOT EXISTS pages (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  batch_id      INTEGER NOT NULL REFERENCES batches(id),
+  ordem         INTEGER NOT NULL,    -- 1..N no lote
+  image_path    TEXT NOT NULL,
+  sha256        TEXT NOT NULL,       -- hash do PNG (chave do cache da IA)
+  texto_camada  TEXT,                -- texto digital do PDF, se houver
+  status        TEXT NOT NULL DEFAULT 'PENDENTE',  -- contracts.StatusPagina
+  texto         TEXT,                -- OCR final (indexado em page_fts)
+  analise_json  TEXT,                -- contracts.AnalisePagina serializado
+  ms            INTEGER,             -- tempo de leitura
+  erro          TEXT,
+  UNIQUE (batch_id, ordem)
+);
+
+CREATE TABLE IF NOT EXISTS documents (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  batch_id           INTEGER NOT NULL REFERENCES batches(id),
+  contract_id        TEXT NOT NULL REFERENCES contracts(id),
+  tipo               TEXT NOT NULL,  -- contracts.TipoDocumento
+  worker_id          TEXT,
+  competencia        TEXT,           -- MM/AAAA
+  status             TEXT NOT NULL,  -- contracts.StatusDocumento
+  confianca          REAL NOT NULL,
+  motivos_pendencia  TEXT NOT NULL DEFAULT '[]',  -- JSON; visível à fornecedora
+  motivos_revisao    TEXT NOT NULL DEFAULT '[]',  -- JSON; só Bernhoeft
+  campos_json        TEXT NOT NULL DEFAULT '{}',  -- contracts.CamposPagina
+  versao             INTEGER NOT NULL DEFAULT 1,
+  substitui_id       INTEGER REFERENCES documents(id),
+  revisado_por       TEXT REFERENCES users(id),
+  created_at         TEXT NOT NULL,
+  updated_at         TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_documents_par
+  ON documents (contract_id, worker_id, competencia, tipo, status);
+
+CREATE TABLE IF NOT EXISTS doc_pages (
+  document_id  INTEGER NOT NULL REFERENCES documents(id),
+  page_id      INTEGER NOT NULL UNIQUE REFERENCES pages(id),
+  posicao      INTEGER NOT NULL      -- 1..n dentro do documento
+);
+
+-- Histórico imutável de correções manuais de campos extraídos.
+CREATE TABLE IF NOT EXISTS document_field_reviews (
+  id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+  document_id          INTEGER NOT NULL REFERENCES documents(id),
+  field_name           TEXT NOT NULL,
+  original_value_json  TEXT NOT NULL,
+  corrected_value_json TEXT NOT NULL,
+  author_id            TEXT NOT NULL REFERENCES users(id),
+  reason               TEXT NOT NULL,
+  source               TEXT NOT NULL,
+  document_version     INTEGER NOT NULL,
+  revision_number      INTEGER NOT NULL,
+  created_at           TEXT NOT NULL,
+  UNIQUE (document_id, revision_number)
+);
+CREATE INDEX IF NOT EXISTS ix_document_field_reviews_document
+  ON document_field_reviews (document_id, revision_number);
+
+CREATE TABLE IF NOT EXISTS issues (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  contract_id     TEXT NOT NULL REFERENCES contracts(id),
+  document_id     INTEGER,           -- nulo em DOCUMENTO_AUSENTE
+  worker_id       TEXT,
+  competencia     TEXT,
+  tipo_documento  TEXT,
+  categoria       TEXT NOT NULL,     -- contracts.CategoriaPendencia
+  motivo          TEXT NOT NULL,     -- objetivo, sem diagnóstico jurídico
+  evidencia       TEXT,              -- lote/páginas
+  acao            TEXT NOT NULL,     -- ação solicitada à fornecedora
+  status          TEXT NOT NULL,     -- contracts.StatusPendencia
+  prazo           TEXT,
+  created_at      TEXT NOT NULL,
+  updated_at      TEXT NOT NULL,
+  resolved_at     TEXT,
+  historico_json  TEXT NOT NULL DEFAULT '[]'
+);
+
+CREATE TABLE IF NOT EXISTS analyses (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  contract_id     TEXT NOT NULL REFERENCES contracts(id),
+  worker_id       TEXT NOT NULL,
+  competencia     TEXT NOT NULL,
+  status          TEXT NOT NULL,     -- contracts.StatusConciliacao
+  resultado_json  TEXT NOT NULL,     -- tipo (ResultadoConciliacao), detalhe, horas, motivos
+  insumos_json    TEXT NOT NULL,     -- [{doc_id, tipo, versao, batch_id, paginas}]
+  regra_versao    TEXT NOT NULL,     -- contracts.REGRA_CONCILIACAO
+  atual           INTEGER NOT NULL DEFAULT 1,  -- só 1 atual por par
+  created_at      TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_analyses_par ON analyses (contract_id, worker_id, competencia, atual);
+
+CREATE TABLE IF NOT EXISTS reports (
+  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+  contract_id    TEXT NOT NULL REFERENCES contracts(id),
+  competencia    TEXT NOT NULL,
+  versao         INTEGER NOT NULL,
+  status         TEXT NOT NULL,      -- contracts.StatusParecer
+  conteudo_json  TEXT,               -- snapshot imutável gravado na publicação
+  observacoes    TEXT,
+  autor_id       TEXT NOT NULL REFERENCES users(id),
+  created_at     TEXT NOT NULL,
+  publicado_em   TEXT,
+  publicado_por  TEXT REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS audit (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id    TEXT,
+  org_id     TEXT,
+  acao       TEXT NOT NULL,
+  alvo       TEXT,
+  resultado  TEXT NOT NULL,          -- OK | NEGADO | ERRO (nunca conteúdo de documento)
+  instante   TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ai_cache (
+  chave           TEXT PRIMARY KEY,  -- provedor:modelo:versao_prompt:sha256_png
+  resultado_json  TEXT NOT NULL,
+  created_at      TEXT NOT NULL
+);
+
+-- AEJ: fonte original permanece em batches.arquivo, com hash em batches.sha256.
+-- Estas tabelas guardam linhas sem perda e a derivação usada pelo ESPELHO_PONTO.
+CREATE TABLE IF NOT EXISTS aej_worker_mappings (
+  contract_id     TEXT NOT NULL REFERENCES contracts(id),
+  worker_link_id  TEXT NOT NULL,
+  worker_id       TEXT NOT NULL REFERENCES workers(id),
+  created_by      TEXT REFERENCES users(id),
+  created_at      TEXT NOT NULL,
+  PRIMARY KEY (contract_id, worker_link_id),
+  UNIQUE (contract_id, worker_id)
+);
+
+CREATE TABLE IF NOT EXISTS aej_imports (
+  batch_id       INTEGER PRIMARY KEY REFERENCES batches(id),
+  schema_version TEXT NOT NULL,
+  period_start   TEXT NOT NULL,
+  period_end     TEXT NOT NULL,
+  validation_json TEXT NOT NULL,
+  p7s_present    INTEGER NOT NULL DEFAULT 0,
+  parser_version TEXT NOT NULL,
+  created_at     TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS aej_records (
+  batch_id       INTEGER NOT NULL REFERENCES batches(id),
+  line_number    INTEGER NOT NULL,
+  record_type    TEXT NOT NULL,
+  worker_link_id TEXT,
+  raw_line       TEXT NOT NULL,
+  PRIMARY KEY (batch_id, line_number)
+);
+CREATE INDEX IF NOT EXISTS ix_aej_records_worker
+  ON aej_records (batch_id, worker_link_id, record_type);
+
+CREATE TABLE IF NOT EXISTS aej_documents (
+  document_id     INTEGER PRIMARY KEY REFERENCES documents(id),
+  batch_id        INTEGER NOT NULL REFERENCES batches(id),
+  worker_link_id  TEXT NOT NULL,
+  competencia     TEXT NOT NULL,
+  calculation_json TEXT NOT NULL,
+  created_at      TEXT NOT NULL
+);
+
+-- Busca no OCR, sem acentos; filtrar SEMPRE por contract_id dos contratos do usuário
+CREATE VIRTUAL TABLE IF NOT EXISTS page_fts USING fts5(
+  texto, page_id UNINDEXED, contract_id UNINDEXED,
+  tokenize = 'unicode61 remove_diacritics 2'
+);
+
+
+-- Cadastro administrativo gradual: entidades globais, escopo por organização auditora.
+-- Tabelas novas, compatíveis com bancos de MVP já inicializados.
+CREATE TABLE IF NOT EXISTS organization_profiles (
+  org_id TEXT PRIMARY KEY REFERENCES organizations(id),
+  cnpj TEXT UNIQUE,
+  criado_em TEXT
+);
+
+CREATE TABLE IF NOT EXISTS organization_auditors (
+  org_id TEXT NOT NULL REFERENCES organizations(id),
+  auditor_id TEXT NOT NULL REFERENCES organizations(id),
+  PRIMARY KEY (org_id, auditor_id)
+);
+
+CREATE TABLE IF NOT EXISTS contract_metadata (
+  contract_id TEXT PRIMARY KEY REFERENCES contracts(id),
+  inicio TEXT,
+  fim TEXT,
+  status TEXT NOT NULL DEFAULT 'ATIVO'
+    CHECK(status IN ('ATIVO', 'ENCERRADO'))
+);
+
+-- Identidade institucional independente das empresas operacionais.
+-- Tabelas aditivas: não altera nem recria organizations ou seus vínculos.
+CREATE TABLE IF NOT EXISTS platform_accounts (
+  id TEXT PRIMARY KEY,
+  nome TEXT NOT NULL,
+  token TEXT NOT NULL UNIQUE,
+  ativo INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS platform_settings (
+  id INTEGER PRIMARY KEY CHECK (id=1),
+  nome TEXT NOT NULL,
+  contato TEXT NOT NULL DEFAULT ''
+);
+INSERT OR IGNORE INTO platform_settings (id,nome) VALUES (1,'DocRisk AI');
+
+-- Histórico interno de correções humanas: nunca exposto em auditoria administrativa.
+CREATE TABLE IF NOT EXISTS document_field_reviews (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  document_id INTEGER NOT NULL REFERENCES documents(id),
+  user_id TEXT NOT NULL REFERENCES users(id),
+  antes_json TEXT NOT NULL,
+  depois_json TEXT NOT NULL,
+  fontes_json TEXT NOT NULL,
+  justificativa TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_document_field_reviews ON document_field_reviews(document_id, id);
