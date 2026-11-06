@@ -28,13 +28,14 @@ Validação: `npm run build` e `npm run typecheck`. A exportação estática fic
 | `/painel/pareceres/[id]` | Conteúdo, revisão e preparação local de encaminhamento |
 | `/contratante` | Pareceres publicados do contrato da contratante |
 | `/contratante/[id]` | Consulta da versão publicada com conteúdo específico |
+| `/administracao` | Auditoria demonstrativa do perfil ADMIN_BH (eventos sintéticos) |
 | `/painel/pendencias` | Busca, filtros e orientações de correção |
 | `/painel/envio` | Prévia local de seleção de arquivos sintéticos |
 
 ## Explorar
 
 1. Abra `/acesso` ou use “Acessar demonstração” na landing.
-2. Selecione Analista Bernhoeft, Operador da fornecedora ou Gestor da contratante.
+2. Selecione Analista Bernhoeft, Operador da fornecedora, Gestor da contratante ou Administrador Bernhoeft.
 3. No painel, altere contrato/competência e navegue entre documentos e pendências.
 4. Busque `DOC-002` nos documentos e abra os detalhes para ver a referência de evidência.
 5. Consulte a orientação de `PEN-001` nas pendências.
@@ -51,10 +52,10 @@ Os exemplos sintéticos estão em `lib/demo.ts`; os estados seguem os nomes de `
 - Detalhes de evidência usam referências sintéticas; não exibem um PDF original inexistente.
 - Busca e filtros funcionam localmente. Revisão, aprovação, notificações e publicação não são simuladas como ações concluídas.
 - Perfil, arquivos selecionados e filtros não são persistidos.
-- Administrador e auditoria ficam para a próxima etapa. Pareceres e portal da contratante estão disponíveis como demonstração. A fila e a conferência documental estão disponíveis como demonstração.
+- Administração e auditoria, pareceres e portal da contratante estão disponíveis como demonstração. A fila e a conferência documental estão disponíveis como demonstração.
 - Os três módulos futuros continuam apenas como visão de expansão na landing.
 
-Rotas de backend planejadas estão em `api/docrisk_core/routes/__init__.py`. Autenticação e rotas operacionais ainda precisam ser implementadas antes de integrar dados reais. O formulário de contato continua sem canal comercial fictício e sem envio.
+O backend expõe rotas de autenticação e operações em `api/docrisk_core/routes/__init__.py`, mas a interface ainda não está integrada à API e parte dos serviços de processamento/regras depende das frentes F2/F3. O formulário de contato continua sem canal comercial fictício e sem envio.
 
 ## Verificações desta etapa
 
@@ -114,3 +115,12 @@ Os pareceres incluem contratante, fornecedora, contrato, competência, regra, ve
 A preparação do encaminhamento exige três conferências e observação interna. Uma prévia de publicação só pode ser preparada no exemplo EM_REVISAO. Nenhuma ação altera o status, publica, cria versão ou registra auditoria. A publicação real deve ser implementada na API com autorização do analista, snapshot imutável e nova versão para correções posteriores.
 
 Verificação: build e TypeScript; integridade das versões, referências documentais e denominadores; exclusão de rascunhos, campos financeiros e texto de OCR do retrato de consulta; conferência desktop da listagem interna, rascunho, preparação de encaminhamento, troca de perspectiva e consulta da versão 2 após preparar a versão 3. Visualização móvel ainda não verificada.
+
+
+## Administração e auditoria — etapa demonstrativa
+
+O perfil `ADMIN_BH` foi incluído em `/acesso` e encaminha para `/administracao`, com layout independente do painel trabalhista e do portal da contratante. A perspectiva administrativa não monta as telas operacionais. A navegação por perfil é apenas uma experiência de demonstração: não autentica, não autoriza e não protege dados reais.
+
+`lib/audit.ts` fornece eventos **inteiramente sintéticos** com os campos compatíveis com a estrutura de `GET /api/audit`: `id`, `user_id`, `org_id`, `acao`, `alvo`, `resultado` e `instante`. O painel oferece indicadores derivados desses registros, pesquisa por ação, alvo, organização ou usuário, filtros por ação/resultado/organização e detalhes somente de leitura. Não existem atualização em tempo real, registro de eventos, exportação oficial, gestão de usuários, permissões editáveis, conteúdo de documentos, OCR ou valores financeiros nesta tela.
+
+A API da frente F1 disponibiliza `GET /api/audit` para `ADMIN_BH`, mas **o frontend não chama a API**; substituir os eventos sintéticos pela resposta autenticada é uma etapa futura de integração. Os dados demonstrativos não comprovam auditoria real, integridade ou retenção dos logs. Recomenda-se verificar o comportamento móvel e a integração ponta a ponta antes de considerar a tela pronta para produção.
