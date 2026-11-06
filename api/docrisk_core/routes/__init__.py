@@ -506,67 +506,12 @@ def review_document(document_id: int, payload: dict[str, Any],
                          _document_pair({"tipo": doc["tipo"], "worker_id": doc["worker_id"],
                                          "competencia": doc["competencia"]}))
     elif action == "corrigir_campos":
-        if "fontes" in payload:
-            if doc["status"] not in {StatusDocumento.REVISAO_HUMANA.value, StatusDocumento.PENDENTE_CORRECAO.value}:
-                raise HTTPException(409, "A edição exige documento em revisão ou pendente de correção")
-            field_review.corrigir(conn, doc, payload, user.id)
-            _reconcile_pairs(conn, doc["contract_id"], _document_pair(doc))
-            auditar(conn, user, "DOCUMENTO_CORRIGIR_CAMPOS", str(document_id))
-            return {"document_id": document_id, "acao": action, "status": doc["status"]}
-        if doc["status"] == StatusDocumento.SUBSTITUIDO.value:
-            raise HTTPException(409, "Documento substituído não pode receber correções")
-        try:
-            request = FieldReviewRequest.model_validate(payload)
-        except ValidationError as exc:
-            raise HTTPException(422, "Informe campos, motivo e fonte válidos para a correção") from exc
-        corrections = request.campos
-        reason = request.motivo
-        source = request.fonte
-        allowed_fields = set(CamposPagina.model_fields)
-        unknown_fields = set(corrections) - allowed_fields
-        if unknown_fields:
-            raise HTTPException(422, f"Campo(s) não reconhecido(s): {', '.join(sorted(unknown_fields))}")
-
-        atuais = _json_object(doc["campos_json"])
-        corrigidos: dict[str, Any] = {}
-        for field_name, raw_value in corrections.items():
-            if raw_value is None:
-                raise HTTPException(422, f"Informe um valor para {field_name}")
-            try:
-                valor = getattr(CamposPagina.model_validate({field_name: raw_value}), field_name)
-            except ValidationError as exc:
-                raise HTTPException(422, f"Valor inválido para {field_name}") from exc
-            if valor is None or (isinstance(valor, (int, float)) and not math.isfinite(valor)):
-                raise HTTPException(422, f"Valor inválido para {field_name}")
-            if field_name == "data_pagamento":
-                if not isinstance(valor, str):
-                    raise HTTPException(422, "data_pagamento deve estar no formato DD/MM/AAAA")
-                try:
-                    datetime.strptime(valor, "%d/%m/%Y")
-                except ValueError as exc:
-                    raise HTTPException(422, "data_pagamento deve estar no formato DD/MM/AAAA") from exc
-            corrigidos[field_name] = valor
-
-        revision = int(conn.execute(
-            "SELECT COALESCE(MAX(revision_number), 0) + 1 FROM document_field_reviews WHERE document_id=?",
-            (document_id,),
-        ).fetchone()[0])
-        for field_name, valor in corrigidos.items():
-            original = atuais.get(field_name)
-            conn.execute(
-                "INSERT INTO document_field_reviews (document_id, field_name, original_value_json, "
-                "corrected_value_json, author_id, reason, source, document_version, revision_number, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (document_id, field_name, json.dumps(original, ensure_ascii=False, allow_nan=False),
-                 json.dumps(valor, ensure_ascii=False, allow_nan=False), user.id, reason[:1000], source[:500],
-                 int(doc["versao"]), revision, now),
-            )
-            atuais[field_name] = valor
-            revision += 1
-        conn.execute(
-            "UPDATE documents SET campos_json=?, revisado_por=?, updated_at=? WHERE id=?",
-            (json.dumps(atuais, ensure_ascii=False, allow_nan=False), user.id, now, document_id),
-        )
+        # H07: uma única forma de correção, com justificativa, página de origem
+        # de cada campo e controle de concorrência. O contrato legado sem
+        # esperado_em/fontes não é aceito por esta API.
+        if doc["status"] not in {StatusDocumento.REVISAO_HUMANA.value, StatusDocumento.PENDENTE_CORRECAO.value}:
+            raise HTTPException(409, "A edição exige documento em revisão ou pendente de correção")
+        field_review.corrigir(conn, doc, payload, user.id)
         _reconcile_pairs(conn, doc["contract_id"], _document_pair(doc))
     elif action in {"dividir", "unir_proximo"}:
         try:
