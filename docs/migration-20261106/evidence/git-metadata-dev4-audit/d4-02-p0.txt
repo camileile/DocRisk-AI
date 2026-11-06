@@ -1,0 +1,27 @@
+
+> docrisk-web@0.1.0 test:p0
+> node scripts/p0-regression.cjs
+
+PASS: six offline profiles, blocked storage, forbidden writes/files and logout: zero network calls
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+TypeError: Cannot read properties of null (reading 'useRef')
+    at process.env.NODE_ENV.exports.useRef (C:\Users\Pichau\Documents\GitHub\DocRisk-AI\web\node_modules\react\cjs\react.development.js:1260:33)
+    at useApi (C:\Users\Pichau\Documents\GitHub\DocRisk-AI\web\lib\use-api.ts:11:43)
+    at Probe (C:\Users\Pichau\Documents\GitHub\DocRisk-AI\web\scripts\p0-regression.cjs:38:14)
+    at Object.react_stack_bottom_frame (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\node_modules\react-test-renderer\cjs\react-test-renderer.development.js:15670:20)
+    at renderWithHooks (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\node_modules\react-test-renderer\cjs\react-test-renderer.development.js:4863:22)
+    at updateFunctionComponent (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\node_modules\react-test-renderer\cjs\react-test-renderer.development.js:7018:19)
+    at beginWork (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\node_modules\react-test-renderer\cjs\react-test-renderer.development.js:8499:18)
+    at runWithFiberInDEV (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\node_modules\react-test-renderer\cjs\react-test-renderer.development.js:2312:30)
+    at performUnitOfWork (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\node_modules\react-test-renderer\cjs\react-test-renderer.development.js:13224:22)
+    at workLoopSync (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\node_modules\react-test-renderer\cjs\react-test-renderer.development.js:13068:41)

@@ -1,0 +1,7 @@
+
+> docrisk-web@0.1.0 test:transport
+> node scripts/transport-regression.cjs
+
+PASS: JSON/blob/originals share HTTP/network errors, headers and path validation
+PASS: multipart, upload receipt, 120s/15s timeouts, late bodies and no automatic resend
+PASS: caller abort, session replacement and stale files discarded with/without storage

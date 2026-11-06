@@ -1,0 +1,31 @@
+OK   AUTOTESTE — detector captura: EventSource, WebSocket, beacon, fetch, form.submit, network:document, network:eventsource, network:fetch, network:ping, network:xhr, xhr
+OK   S01 página inicial e institucional
+OK   S02 perfil ADMIN_PLATAFORMA: navegação completa + refresh
+OK   S02 perfil ADMIN_BH: navegação completa + refresh
+OK   S02 perfil ANALISTA_BH: navegação completa + refresh
+OK   S02 perfil GESTOR_FORN: navegação completa + refresh
+OK   S02 perfil OPERADOR_FORN: navegação completa + refresh
+OK   S02 perfil GESTOR_CONTR: navegação completa + refresh
+OK   S03 links diretos sem sessão (storage vazio)
+OK   S04 links diretos com sessão demo ADMIN_PLATAFORMA
+OK   S04 links diretos com sessão demo ADMIN_BH
+OK   S04 links diretos com sessão demo ANALISTA_BH
+OK   S04 links diretos com sessão demo GESTOR_FORN
+OK   S04 links diretos com sessão demo OPERADOR_FORN
+OK   S04 links diretos com sessão demo GESTOR_CONTR
+OK   S05 sessão demo inválida
+OK   S06 storage indisponível ADMIN_PLATAFORMA
+OK   S06 storage indisponível ADMIN_BH
+OK   S06 storage indisponível ANALISTA_BH
+OK   S06 storage indisponível GESTOR_FORN
+OK   S06 storage indisponível OPERADOR_FORN
+OK   S06 storage indisponível GESTOR_CONTR
+OK   S07 tentativa de upload (operador) [envio: 0 input(s) de arquivo; pendências: 0 input(s) de arquivo]
+OK   S08 consulta de análise/lote/documento (analista)
+OK   S09 acesso direto a URL operacional é bloqueado
+OK   S10 falha de rede simulada (offline após carga)
+OK   S11 saída e reentrada
+
+Recursos estáticos externos (bloqueados, não operacionais): https://fonts.googleapis.com/css2
+
+26/26 cenários sem transporte operacional.
