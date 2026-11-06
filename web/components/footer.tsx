@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { authEntry } from "@/lib/auth-mode";
 export function Footer() {
   return (
     <footer className="footer">
@@ -27,7 +28,7 @@ export function Footer() {
         <div>
           <span>Vamos conversar</span>
           <Link href="/contato">Contato com a equipe</Link>
-          <Link href="/acesso">Conhecer a demonstração</Link>
+          <Link href={authEntry()}>Acesso à plataforma</Link>
           <a
             href="https://github.com/camileile/DocRisk-AI"
             target="_blank"
