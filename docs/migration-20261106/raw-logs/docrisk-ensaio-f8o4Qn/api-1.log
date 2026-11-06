@@ -1,0 +1,4 @@
+INFO:     127.0.0.1:49398 - "GET /health HTTP/1.1" 200 OK
+ for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:54062 (Press CTRL+C to quit)

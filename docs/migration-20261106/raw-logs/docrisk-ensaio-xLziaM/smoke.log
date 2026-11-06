@@ -1,0 +1,13 @@
+[1/7] Institucional e bloqueio sem sessão
+[equipe] Gestor gerencia operadores no backend conectado
+[2/7] Fornecedora envia o lote sintético e acompanha o processamento
+[3/7] Pendência ilegível do T002 e reenvio corrigido
+[4/7] Analista: conciliação, revisão humana e busca
+Frontend smoke: FALHOU
+ locator.selectOption: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('combobox', { name: /^Tipo/ })[22m
+
+    at run (C:\Users\Pichau\Documents\GitHub\DocRisk-AI\web\scripts\smoke.cjs:105:57) {
+  name: 'TimeoutError'
+}

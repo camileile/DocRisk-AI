@@ -1,0 +1,9 @@
+[live 1/5] Identidade e contratos do SQLite via FastAPI
+[live 2/5] Consulta lote/documentos processados pela F2
+Smoke F1 real: FALHOU locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByText('integracao-f1-sintetico.pdf') to be visible[22m
+
+    at run (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\scripts\live-api-smoke.cjs:55:57) {
+  name: 'TimeoutError'
+}

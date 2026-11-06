@@ -1,0 +1,59 @@
+
+> docrisk-web@0.1.0 build
+> next build
+
+▲ Next.js 16.4.5 (Turbopack)
+✓ Running next.config.ts took 87ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.7s
+  Running TypeScript ...
+  Finished TypeScript in 5.7s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/30) ...
+  Generating static pages using 11 workers (7/30) 
+  Generating static pages using 11 workers (14/30) 
+  Generating static pages using 11 workers (22/30) 
+✓ Generating static pages using 11 workers (30/30) in 811ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /acesso
+├ ○ /administracao
+├ ○ /administracao/auditoria
+├ ○ /administracao/empresas
+├ ○ /administracao/usuarios
+├ ○ /cadastro
+├ ○ /contato
+├ ○ /contratante
+├ ○ /contratante/pareceres
+├ ○ /entrar
+├ ○ /operacao
+├ ○ /painel
+├ ○ /painel/conciliacoes
+├ ○ /painel/documentos
+├ ○ /painel/documentos/detalhe
+├ ○ /painel/envio
+├ ○ /painel/lotes
+├ ○ /painel/lotes/detalhe
+├ ○ /painel/operadores
+├ ○ /painel/pareceres
+├ ○ /painel/pendencias
+├ ○ /painel/revisao
+├ ○ /painel/revisao/detalhe
+├ ○ /plataforma
+├ ○ /plataforma/auditoras
+├ ○ /plataforma/configuracoes
+└ ○ /vinculos
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)  prerendered as static content
+
+⚠ Statically exporting a Next.js application via `next export` disables API routes and middleware.
+This command is meant for static-only hosts, and is not necessary to make your application static.
+Pages in your application without server-side data dependencies will be automatically statically exported by `next build`, including pages powered by `getStaticProps`.
+Learn more: https://nextjs.org/docs/messages/api-routes-static-export

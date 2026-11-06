@@ -1,0 +1,25 @@
+[live 1/5] Identidade e contratos do SQLite via FastAPI
+[live 2/5] Consulta lote/documentos processados pela F2
+[live 3/5] Fornecedora vê apenas seu contrato real na API
+Smoke F1 real: FALHOU locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: 'Conectar API de testes' })[22m
+[2m    - locator resolved to <button disabled type="submit" class="button api-access-submit">…</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    57 × waiting for element to be visible, enabled and stable[22m
+[2m       - element is not enabled[22m
+[2m     - retrying click action[22m
+[2m       - waiting 500ms[22m
+
+    at enter (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\scripts\live-api-smoke.cjs:31:72)
+    at async run (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\scripts\live-api-smoke.cjs:61:5) {
+  name: 'TimeoutError'
+}

@@ -1,0 +1,49 @@
+
+> docrisk-web@0.1.0 build
+> next build
+
+▲ Next.js 16.4.5 (Turbopack)
+✓ Running next.config.ts took 48ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 651ms
+  Running TypeScript ...
+  Finished TypeScript in 2.1s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/26) ...
+  Generating static pages using 11 workers (6/26) 
+  Generating static pages using 11 workers (12/26) 
+  Generating static pages using 11 workers (19/26) 
+✓ Generating static pages using 11 workers (26/26) in 548ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /acesso
+├ ○ /administracao
+├ ○ /administracao/auditoria
+├ ○ /administracao/empresas
+├ ○ /administracao/usuarios
+├ ○ /contato
+├ ○ /contratante
+├ ○ /contratante/pareceres
+├ ○ /painel
+├ ○ /painel/conciliacoes
+├ ○ /painel/documentos
+├ ○ /painel/documentos/detalhe
+├ ○ /painel/envio
+├ ○ /painel/lotes
+├ ○ /painel/lotes/detalhe
+├ ○ /painel/operadores
+├ ○ /painel/pareceres
+├ ○ /painel/pendencias
+├ ○ /painel/revisao
+├ ○ /painel/revisao/detalhe
+├ ○ /plataforma
+├ ○ /plataforma/auditoras
+└ ○ /plataforma/configuracoes
+
+
+○  (Static)  prerendered as static content
+

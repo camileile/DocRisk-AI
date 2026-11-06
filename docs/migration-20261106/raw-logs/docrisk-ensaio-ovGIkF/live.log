@@ -1,0 +1,6 @@
+[live 1/5] Identidade e contratos do SQLite via FastAPI
+[live 2/5] Consulta lote/documentos processados pela F2
+[live 3/5] Fornecedora vê apenas seu contrato real na API
+[live 4/5] Upload real do navegador, processamento F2 e histórico
+[live 5/5] Upload de PNG sintético, sem camada de texto
+Smoke F1 real: PASSOU (FastAPI + SQLite + TextLayer + frontend)

@@ -1,0 +1,10 @@
+[1/7] Institucional e bloqueio sem sessão
+[equipe] Gestor gerencia operadores no backend conectado
+[2/7] Fornecedora envia o lote sintético e acompanha o processamento
+[3/7] Pendência ilegível do T002 e reenvio corrigido
+[4/7] Analista: conciliação, revisão humana e busca
+[5/7] Analista publica o parecer
+[6/7] Contratante vê somente o publicado
+[7/7] Administrador consulta gestao e auditoria; navegação no celular
+[plataforma] Admin Geral cadastra auditora e persiste dados institucionais
+Frontend smoke: PASSOU

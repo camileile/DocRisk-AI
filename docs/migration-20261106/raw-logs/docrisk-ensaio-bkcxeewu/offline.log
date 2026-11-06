@@ -1,0 +1,13 @@
+Offline demo smoke: FALHOU browserType.launch: Executable doesn't exist at C:\Users\Pichau\AppData\Local\ms-playwright\chromium_headless_shell-1208\chrome-headless-shell-win64\chrome-headless-shell.exe
+╔═════════════════════════════════════════════════════════════════════════╗
+║ Looks like Playwright Test or Playwright was just installed or updated. ║
+║ Please run the following command to download new browsers:              ║
+║                                                                         ║
+║     npx playwright install                                              ║
+║                                                                         ║
+║ <3 Playwright Team                                                      ║
+╚═════════════════════════════════════════════════════════════════════════╝
+    at run (C:\Users\Pichau\Documents\GitHub\DocRisk-AI\web\scripts\offline-smoke.cjs:17:34)
+    at Object.<anonymous> (C:\Users\Pichau\Documents\GitHub\DocRisk-AI\web\scripts\offline-smoke.cjs:113:1) {
+  name: 'Error'
+}

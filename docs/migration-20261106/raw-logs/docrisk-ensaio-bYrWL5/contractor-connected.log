@@ -1,0 +1,8 @@
+locator.waitFor: Error: strict mode violation: getByText('Sem parecer publicado nesta competência', { exact: true }) resolved to 2 elements:
+    1) <td>Sem parecer publicado nesta competência</td> aka getByRole('cell', { name: 'Sem parecer publicado nesta' }).first()
+    2) <td>Sem parecer publicado nesta competência</td> aka getByRole('cell', { name: 'Sem parecer publicado nesta' }).nth(1)
+
+Call log:
+[2m  - waiting for getByText('Sem parecer publicado nesta competência', { exact: true }) to be visible[22m
+
+    at run (C:\Users\Pichau\Documents\GitHub\DocRisk-AI\web\scripts\contractor-smoke.cjs:31:86)
