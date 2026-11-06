@@ -36,7 +36,7 @@ async function run() {
   try {
     console.log("[1/6] Institucional e contato");
     await navigate(page, "/");
-    await page.locator("body").getByText("DocRisk", { exact: false }).first().waitFor();
+    await page.getByRole("heading", { name: /Documentos complexos/ }).waitFor();
     await navigate(page, "/contato/");
     await page.locator("body").waitFor();
 
