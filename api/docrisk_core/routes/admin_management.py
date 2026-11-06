@@ -1,7 +1,8 @@
 """Administração de uma organização auditora no MVP.
 
-Todas as leituras e alterações são limitadas ao auditor do token. Cadastros
-mutáveis só funcionam no ambiente de testes, que ainda usa tokens Bearer de demo.
+Todas as leituras e alterações são limitadas à organização auditora do
+administrador autenticado. Empresas/contratos podem ser provisionados no Clerk;
+contas de teste por token permanecem exclusivas do modo demo.
 """
 from __future__ import annotations
 
@@ -40,9 +41,20 @@ def _authorize(user: Usuario) -> None:
 
 
 def _write_allowed(user: Usuario) -> None:
+    """Provisiona empresas/contratos com ADMIN_BH autenticado, nunca só com modo demo."""
     _authorize(user)
-    if not config.DEMO_MODE:
-        raise HTTPException(403, "Cadastros de teste indisponíveis fora do ambiente demo; configurar autenticação de produção.")
+    if (config.AUTH_MODE == "clerk" and not config.DEMO_MODE) or (
+        config.AUTH_MODE == "token" and config.DEMO_MODE
+    ):
+        return
+    raise HTTPException(403, "Configure a autenticação operacional antes de cadastrar empresas ou contratos.")
+
+
+def _demo_account_write_allowed(user: Usuario) -> None:
+    """Contas por token não podem ser criadas nem reativadas no ambiente Clerk."""
+    _authorize(user)
+    if config.AUTH_MODE != "token" or not config.DEMO_MODE:
+        raise HTTPException(403, "No acesso Clerk, gerencie usuários por convites e vínculos autenticados.")
 
 
 def _organizations(conn: sqlite3.Connection, user: Usuario) -> list[dict[str, Any]]:
@@ -240,7 +252,7 @@ def create_contract(payload: ContractInput, user: Usuario = Depends(usuario_atua
 @router.post("/users", status_code=201)
 def create_user(payload: UserInput, user: Usuario = Depends(usuario_atual),
                 conn: sqlite3.Connection = Depends(_conn)) -> dict[str, Any]:
-    _write_allowed(user)
+    _demo_account_write_allowed(user)
     if payload.papel in ("ADMIN_BH", "ANALISTA_BH"):
         if payload.org_id != user.org_id:
             raise HTTPException(422, "Perfil interno pertence à organização auditora.")
@@ -266,7 +278,7 @@ def create_user(payload: UserInput, user: Usuario = Depends(usuario_atual),
 def update_user_status(uid: str, payload: StatusInput,
                        user: Usuario = Depends(usuario_atual),
                        conn: sqlite3.Connection = Depends(_conn)) -> dict[str, Any]:
-    _write_allowed(user)
+    _demo_account_write_allowed(user)
     if uid == user.id and not payload.ativo:
         raise HTTPException(422, "Não é possível desativar seu próprio acesso.")
     visible = {u["id"] for u in _users(conn, user, _organizations(conn, user))}
