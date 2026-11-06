@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { clerkEnabled } from "@/lib/auth-mode";
 import { useSession } from "@/components/demo-provider";
 import { EmptyState, ErrorState, LoadingState, Notice, PageIntro } from "@/components/workspace-parts";
 import { api, type AdminRegistry, type AdminUser } from "@/lib/api";
@@ -84,42 +86,51 @@ export default function AdminUsersPage() {
       {isDemo && <Notice>Na demonstração offline, os acessos são fictícios e nenhuma conta pode ser criada ou alterada.</Notice>}
       {feedback && <Notice tone="success">{feedback}</Notice>}
       {error && <Notice tone="error">{error}</Notice>}
-      <section className="workspace-card">
-        <h2>Criar acesso</h2>
-        <div className="admin-form admin-user-form">
-          <label>Nome do usuário
-            <input aria-label="Nome do usuário" value={nome} maxLength={140} onChange={(e) => setNome(e.target.value)} placeholder="Nome completo" />
-          </label>
-          <label>Perfil
-            <select aria-label="Perfil do usuário" value={papel} onChange={(e) => { setPapel(e.target.value as PapelAdministrativo); setOrgId(""); }}>
-              {Object.entries(labels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
-            </select>
-          </label>
-          <label>Organização
-            {internal ? (
-              <input aria-label="Organização do usuário" readOnly value="Organização auditora (Bernhoeft)" />
-            ) : (
-              <select aria-label="Organização do usuário" value={orgId} onChange={(e) => setOrgId(e.target.value)}>
-                <option value="">Selecione a empresa vinculada</option>
-                {available.map((org) => <option key={org.id} value={org.id}>{org.nome}</option>)}
+      {clerkEnabled && !isDemo ? (
+        <section className="workspace-card">
+          <h2>Convidar usuários e administrar vínculos</h2>
+          <p>As contas reais são criadas após o destinatário aceitar um convite do Clerk e confirmar seu e-mail. O perfil e a organização são concedidos pela API, não por tokens de teste.</p>
+          <p>Cadastre primeiro as empresas e os contratos em <Link className="text-link" href="/administracao/empresas">Empresas e Contratos</Link>. Depois convide administradores, analistas e gestores pelo gerenciamento de vínculos.</p>
+          <Link className="button" href="/vinculos">Gerenciar convites e acessos</Link>
+        </section>
+      ) : (
+        <section className="workspace-card">
+          <h2>Criar acesso</h2>
+          <div className="admin-form admin-user-form">
+            <label>Nome do usuário
+              <input aria-label="Nome do usuário" value={nome} maxLength={140} onChange={(e) => setNome(e.target.value)} placeholder="Nome completo" />
+            </label>
+            <label>Perfil
+              <select aria-label="Perfil do usuário" value={papel} onChange={(e) => { setPapel(e.target.value as PapelAdministrativo); setOrgId(""); }}>
+                {Object.entries(labels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
               </select>
-            )}
-          </label>
-          <button className="button" disabled={isDemo || Boolean(busyId) || nome.trim().length < 2 || !selection} onClick={createUser}>
-            {busyId === "create" ? "Criando…" : "Criar acesso de teste"}
-          </button>
-        </div>
-        <p className="card-footnote">No MVP, os acessos usam tokens de teste. A autenticação corporativa e os convites por e-mail devem ser implementados antes de qualquer uso em produção.</p>
-        {issued && (
-          <div className="admin-issued-token">
-            <strong>Credencial de teste de {issued.name}</strong>
-            <p>Copie e guarde agora. Por segurança, este token não volta a aparecer na listagem.</p>
-            <code>{issued.token}</code>
-            <button className="button secondary" onClick={() => void navigator.clipboard.writeText(issued.token)}>Copiar token de teste</button>
-            <button className="button secondary" onClick={() => setIssued(null)}>Ocultar token</button>
+            </label>
+            <label>Organização
+              {internal ? (
+                <input aria-label="Organização do usuário" readOnly value="Organização auditora (Bernhoeft)" />
+              ) : (
+                <select aria-label="Organização do usuário" value={orgId} onChange={(e) => setOrgId(e.target.value)}>
+                  <option value="">Selecione a empresa vinculada</option>
+                  {available.map((org) => <option key={org.id} value={org.id}>{org.nome}</option>)}
+                </select>
+              )}
+            </label>
+            <button className="button" disabled={isDemo || Boolean(busyId) || nome.trim().length < 2 || !selection} onClick={createUser}>
+              {busyId === "create" ? "Criando…" : "Criar acesso de teste"}
+            </button>
           </div>
-        )}
-      </section>
+          <p className="card-footnote">No MVP, os acessos usam tokens de teste. A autenticação corporativa e os convites por e-mail devem ser implementados antes de qualquer uso em produção.</p>
+          {issued && (
+            <div className="admin-issued-token">
+              <strong>Credencial de teste de {issued.name}</strong>
+              <p>Copie e guarde agora. Por segurança, este token não volta a aparecer na listagem.</p>
+              <code>{issued.token}</code>
+              <button className="button secondary" onClick={() => void navigator.clipboard.writeText(issued.token)}>Copiar token de teste</button>
+              <button className="button secondary" onClick={() => setIssued(null)}>Ocultar token</button>
+            </div>
+          )}
+        </section>
+      )}
       {registry.loading ? <LoadingState /> : registry.error ? (
         <ErrorState message={registry.error} onRetry={registry.reload} />
       ) : (
@@ -139,9 +150,13 @@ export default function AdminUsersPage() {
                       <td>{u.org_nome}</td>
                       <td><span className={"status-badge " + (u.ativo ? "success" : "warning")}><i />{u.ativo ? "Ativo" : "Inativo"}</span></td>
                       <td>
-                        <button className="admin-row-button button secondary" disabled={isDemo || Boolean(busyId) || u.id === me?.id} onClick={() => void toggleStatus(u)}>
-                          {busyId === u.id ? "Atualizando…" : u.ativo ? "Desativar" : "Reativar"}
-                        </button>
+                        {clerkEnabled && !isDemo ? (
+                          <Link className="text-link" href="/vinculos">Gerenciar vínculo</Link>
+                        ) : (
+                          <button className="admin-row-button button secondary" disabled={isDemo || Boolean(busyId) || u.id === me?.id} onClick={() => void toggleStatus(u)}>
+                            {busyId === u.id ? "Atualizando…" : u.ativo ? "Desativar" : "Reativar"}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
