@@ -17,7 +17,7 @@ import { useApi } from "@/lib/use-api";
 const OPEN = ["ABERTA", "NOTIFICADA", "REABERTA"];
 
 export default function IssuesPage() {
-  const { me, contract } = useSession();
+  const { me, contract, isDemo } = useSession();
   const supplier = me?.org_tipo === "FORNECEDORA";
   const { data, error, loading, reload } = useApi<Issue[]>(supplier ? "/api/supplier/issues" : "/api/issues");
   const [filter, setFilter] = useState<"abertas" | "todas">("abertas");
@@ -32,6 +32,7 @@ export default function IssuesPage() {
         title={supplier ? "O que precisa ser corrigido." : "Devoluções à fornecedora."}
         description="Cada pendência traz motivo objetivo, evidência (lote e página), ação solicitada e prazo. O reenvio cria uma nova versão sem apagar o histórico."
       />
+      {isDemo && <Notice>Os reenvios são desativados nesta demonstração fictícia.</Notice>}
       <div className="list-toolbar">
         <div className="segmented" role="group" aria-label="Filtrar pendências">
           <button className={filter === "abertas" ? "selected" : ""} onClick={() => setFilter("abertas")}>Em aberto</button>
@@ -57,7 +58,7 @@ export default function IssuesPage() {
             <IssueCard
               key={i.id}
               issue={i}
-              canResubmit={supplier && OPEN.includes(i.status)}
+              canResubmit={!isDemo && supplier && OPEN.includes(i.status)}
               onSent={(batch) => {
                 setSent({ issue: i.id, batch });
                 void reload();
