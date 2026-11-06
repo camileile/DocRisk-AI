@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import config, db
+from . import config, db, observability
 from .clerk_identity import validate_configuration
 from .routes.identity import router as identity_router
 from .aej import AEJError
@@ -38,6 +38,7 @@ def _configured_cors_origins() -> list[str]:
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    observability.configurar_logs()
     validate_configuration()
     db.init_db(seed=config.AUTH_MODE == "token" and config.DEMO_MODE)
     worker_started = False
@@ -58,9 +59,11 @@ app.add_middleware(
     allow_origins=_configured_cors_origins(),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH"],
-    allow_headers=["Authorization", "Content-Type", "X-DocRisk-Link"],
-    expose_headers=["X-DocRisk-Link-Invalid"],
+    allow_headers=["Authorization", "Content-Type", "X-DocRisk-Link", "X-Request-ID"],
+    expose_headers=["X-DocRisk-Link-Invalid", "X-Request-ID"],
 )
+app.middleware("http")(observability.middleware_correlacao)
+app.include_router(observability.router)
 app.include_router(router)
 app.include_router(identity_router)
 app.include_router(supplier_management_router)
