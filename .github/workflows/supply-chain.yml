@@ -1,0 +1,63 @@
+name: Supply chain - vulnerabilidades e lock
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "api/pyproject.toml"
+      - "api/requirements.lock"
+      - "web/package.json"
+      - "web/package-lock.json"
+      - ".github/workflows/supply-chain.yml"
+  schedule:
+    - cron: "0 9 * * 1"   # segunda-feira: novas CVEs em versões já travadas
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: pip-audit (api/requirements.lock)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Lock coerente com pyproject.toml
+        run: |
+          python -m pip install --upgrade "pip>=26.2" pip-tools==7.6.2 pip-audit==2.10.1
+          pip-compile -q --generate-hashes --extra test --strip-extras --allow-unsafe \
+            -o /tmp/requirements.check pyproject.toml
+          # Mesmo conjunto de pacotes e versões (ignora comentários/ordem de hashes).
+          # colorama: só entra por marcador Windows (lock gerado no Windows); inócuo no Linux.
+          norm() { grep -E '^[a-z0-9]' "$1" | grep -v '^colorama==' | sort; }
+          diff <(norm requirements.lock) <(norm /tmp/requirements.check) \
+            || { echo "requirements.lock desatualizado: rode pip-compile (ver docs/dev4/D4-05)"; exit 1; }
+      - name: Vulnerabilidades conhecidas (falha em qualquer achado)
+        # Exceções exigem análise registrada em docs/dev4/D4-05 e --ignore-vuln explícito aqui.
+        run: pip-audit --require-hashes --disable-pip -r requirements.lock
+
+  web:
+    name: npm audit (web/package-lock.json)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Lockfile íntegro
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Vulnerabilidades em dependências de produção (high/critical bloqueiam)
+        run: npm audit --omit=dev --audit-level=high
+      - name: Relatório completo (inclui dev; informativo)
+        run: npm audit || true

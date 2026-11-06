@@ -29,8 +29,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Dependências
-        run: pip install -e ".[test]"
+      - name: Dependências (lock com hashes, D4-05)
+        run: |
+          python -m pip install --upgrade "pip>=26.2"
+          pip install --require-hashes -r requirements.lock
+          pip install --no-deps -e .
+          pip check
       - name: pytest (leitor offline; sem chamadas ao Gemini)
         env:
           AI_PROVIDER: textlayer
