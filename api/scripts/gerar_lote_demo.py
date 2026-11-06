@@ -46,6 +46,10 @@ AVISO = "DOCUMENTO FICTÍCIO — dados sintéticos para demonstração (Hack Gar
 EMPRESA = "Fornecedora Beta Serviços (fictícia) — CNPJ 00.000.000/0001-00 (fictício)"
 NOMES = {"T001": "Ana Fictícia Souza", "T002": "Bruno Fictício Lima", "T003": "Carla Fictícia Rocha",
          "T004": "Diego Fictício Alves", "T005": "Elisa Fictícia Melo"}
+# CPF/RG FICTÍCIOS (inválidos de propósito) só para exercitar a anonimização; ficam no cabeçalho do
+# holerite, em campo que a classificação e as regras não leem.
+CPFS = {t: f"000.000.00{i}-00" for i, t in enumerate(NOMES, 1)}
+RGS = {t: f"00.000.00{i}-0" for i, t in enumerate(NOMES, 1)}
 
 
 # ---------------------------------------------------------------------------
@@ -152,6 +156,7 @@ def _corpo_holerite(horas: int | None, valor_he: str, base: str, liquido: str) -
 def holerite(doc: fitz.Document, t: str, horas: int | None, valor_he: str, liquido: str,
              ilegivel: bool = False, base: str = "1.800,00") -> None:
     pg = _cabecalho(Pagina(doc).titulo("DEMONSTRATIVO DE PAGAMENTO DE SALÁRIO"), t)
+    pg.linha(f"CPF: {CPFS[t]}    RG: {RGS[t]}", 9)
     linhas = _corpo_holerite(horas, valor_he, base, liquido)
     if ilegivel:
         pg.imagem(_corpo_borrado(linhas + [("", "Líquido a receber", "", f"R$ {liquido}", "")]), 220)
