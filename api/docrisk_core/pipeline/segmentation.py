@@ -88,6 +88,8 @@ def _decidir(membros: Sequence[AnalisePagina], a: AnalisePagina, ordem: int) -> 
 def _resumir(membros: list[AnalisePagina], ordens: list[int], alertas: list[str],
              limiar_legibilidade: float) -> SegmentoDocumento:
     alertas = list(alertas)
+    for analise, ordem in zip(membros, ordens):
+        alertas.extend(f"Página {ordem}: {aviso}" for aviso in analise.avisos_validacao)
     tipo = _tipo(membros)
 
     trabs = _distintos([a.trabalhador_id for a in membros])

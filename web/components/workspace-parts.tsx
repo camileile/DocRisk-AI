@@ -119,11 +119,12 @@ export function PageImage({ pageId, alt, className }: { pageId: number; alt: str
   const [url, setUrl] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
   useEffect(() => {
+    const controller = new AbortController();
     let objectUrl: string | null = null;
     let active = true;
     setUrl(null);
     setFailed(false);
-    apiBlob(`/api/pages/${pageId}/image`)
+    apiBlob(`/api/pages/${pageId}/image`, { signal: controller.signal })
       .then((blob) => {
         if (!active) return;
         objectUrl = URL.createObjectURL(blob);
@@ -132,6 +133,7 @@ export function PageImage({ pageId, alt, className }: { pageId: number; alt: str
       .catch(() => active && setFailed(true));
     return () => {
       active = false;
+      controller.abort();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [pageId]);

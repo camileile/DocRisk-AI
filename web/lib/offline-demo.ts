@@ -7,33 +7,7 @@ import type {
 
 import { demoClientPortal } from "./client-portal";
 
-export const DEMO_ROLES: Papel[] = [
-  "ADMIN_PLATAFORMA", "ADMIN_BH", "ANALISTA_BH", "GESTOR_FORN", "OPERADOR_FORN", "GESTOR_CONTR",
-];
-
-const KEY = "docrisk.offline-demo-role";
-
-let activeRole: Papel | null | undefined;
-
-export function getDemoRole(): Papel | null {
-  if (activeRole !== undefined) return activeRole;
-  try {
-    const value = sessionStorage.getItem(KEY);
-    return activeRole = DEMO_ROLES.find((role) => role === value) ?? null;
-  } catch {
-    return null;
-  }
-}
-
-export function setDemoRole(role: Papel | null): void {
-  activeRole = role;
-  try {
-    if (role) sessionStorage.setItem(KEY, role);
-    else sessionStorage.removeItem(KEY);
-  } catch {
-    /* A demonstração ainda funciona na aba atual sem persistência. */
-  }
-}
+export { DEMO_ROLES, getDemoRole, setDemoRole } from "./api-session";
 
 const USERS: Record<Papel, Me> = {
   ADMIN_PLATAFORMA: { id: "demo-plataforma", nome: "Admin Geral (fictício)", org_id: "DOCRISK", org_tipo: "PLATAFORMA", papel: "ADMIN_PLATAFORMA" },

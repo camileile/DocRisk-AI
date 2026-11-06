@@ -12,7 +12,7 @@ import {
   PageIntro,
 } from "@/components/workspace-parts";
 import { api, formatDate, issueCategoryLabels, issueStatusLabels, typeLabels, type Issue } from "@/lib/api";
-import { validateApiUploadFile } from "@/lib/api-client";
+import { validateApiUploadFile } from "@/lib/api-upload";
 import { useApi } from "@/lib/use-api";
 
 const OPEN = ["ABERTA", "NOTIFICADA", "REABERTA"];
@@ -85,7 +85,7 @@ function IssueCard({ issue: i, canResubmit, onSent }: { issue: Issue; canResubmi
     const form = new FormData();
     form.append("file", file);
     try {
-      const r = await api<{ batch_id: number }>(`/api/issues/${i.id}/resubmit`, { method: "POST", body: form });
+      const r = await api<{ batch_id: number }>(`/api/issues/${i.id}/resubmit`, { method: "POST", body: form, timeoutMs: 120000 });
       setFile(null);
       onSent(r.batch_id);
     } catch (err) {

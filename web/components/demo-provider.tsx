@@ -19,7 +19,7 @@ type Session = {
   setCompetence: (value: string) => void;
   login: (token: string) => Promise<Me>;
   logout: () => void;
-  /** Compatibilidade com os componentes da integração F1 (api-upload, api-client). */
+  /** Compatibilidade com os componentes da integração F1 (api-upload). */
   apiSession: ApiSession | null;
   connectApi: (token: string) => Promise<void>;
 };
@@ -88,6 +88,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (token: string) => {
+      setSessionVersion((version) => version + 1);
       setMe(null);
       setContracts([]);
       setContract("");
