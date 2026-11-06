@@ -19,6 +19,7 @@ import {
 import { useSession } from "@/components/demo-provider";
 import { roleLabels, type Papel } from "@/lib/api";
 import { DEMO_ROLES } from "@/lib/offline-demo";
+import { publicDemoOnly } from "@/lib/auth-mode";
 
 const icons: Record<Papel, LucideIcon> = {
   ADMIN_PLATAFORMA: Layers3,
@@ -143,7 +144,7 @@ export default function Access({ operational = false }: { operational?: boolean 
             Perfis, documentos e indicadores são fictícios. A navegação funciona sem backend; envios, aprovações e publicações
             não são realizados neste modo.
           </p>
-          <Link className="text-link" href="/operacao">Conectar à API de testes <ArrowRight size={16} /></Link>
+          {!publicDemoOnly && <Link className="text-link" href="/operacao">Conectar à API de testes <ArrowRight size={16} /></Link>}
           </>}
           {operational && <section className="api-access" aria-labelledby="api-access-title">
             <span className="eyebrow">
