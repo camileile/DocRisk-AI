@@ -21,6 +21,9 @@ from ..rules import metricas, parecer, pendencias
 
 router = APIRouter()
 
+from .admin_management import router as admin_management_router
+router.include_router(admin_management_router)
+
 
 def get_conn():
     conn = db.connect()
