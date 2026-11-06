@@ -32,6 +32,32 @@ async function run() {
     await page.waitForURL((url) => url.pathname.startsWith("/painel"), { timeout: 30000 });
   }
 
+  async function verifyUploadSummary() {
+    const receipt = await page.getByText(/Recebimento confirmado — lote #/).textContent();
+    const batchId = Number(receipt?.match(/lote #(\d+)/)?.[1]);
+    assert(Number.isSafeInteger(batchId) && batchId > 0);
+    const response = await fetch(api + "/api/batches/" + batchId + "/documents", {
+      headers: { Authorization: "Bearer " + supplier.token },
+    });
+    assert.equal(response.status, 200, "Consulta de documentos autorizada falhou");
+    const docs = await response.json();
+    await page.getByRole("heading", { name: "Resumo do processamento" }).waitFor({ timeout: 15000 });
+    await page.locator(".api-upload-summary-grid > div").first().waitFor({ timeout: 15000 });
+    const shown = (await page.locator(".api-upload-summary-grid > div strong").allTextContents()).map(Number);
+    const expected = [
+      docs.filter(d => d.status === "APTO").length,
+      docs.filter(d => d.status === "PENDENTE_CORRECAO").length,
+      docs.filter(d => d.status === "EM_ANALISE" || d.status === "REVISAO_HUMANA").length,
+    ];
+    assert.deepEqual(shown.slice(0, 3), expected, "Resumo deve refletir exatamente os documentos do lote");
+    if (expected[1] > 0) {
+      assert.equal(await page.getByRole("link", { name: "Ver documentos para correção" }).count(), 1);
+    } else if (expected[2] > 0) {
+      assert.equal(await page.getByRole("link", { name: "Ver documentos em análise" }).count(), 1);
+    }
+    await page.getByRole("link", { name: "Ver detalhes deste lote" }).waitFor();
+  }
+
   try {
     console.log("[live 1/5] Identidade e contratos do SQLite via FastAPI");
     await enter(analyst.token);
@@ -77,6 +103,7 @@ async function run() {
     await page.getByRole("button", { name: "Enviar arquivo ao backend" }).click();
     await page.getByText(/Recebimento confirmado — lote #/).waitFor({ timeout: 30000 });
     await page.getByText(/Processamento documental concluído/).waitFor({ timeout: 60000 });
+    await verifyUploadSummary();
 
     console.log("[live 5/5] Upload de PNG sintético, sem camada de texto");
     await page.getByRole("button", { name: "Preparar outro arquivo" }).click();
@@ -89,6 +116,7 @@ async function run() {
     await page.getByRole("button", { name: "Enviar arquivo ao backend" }).click();
     await page.getByText(/Recebimento confirmado — lote #/).waitFor({ timeout: 30000 });
     await page.getByText(/Processamento documental concluído/).waitFor({ timeout: 60000 });
+    await verifyUploadSummary();
     await page.getByRole("link", { name: "Consultar histórico de lotes" }).click();
     await page.getByText("teste-browser-f2.pdf").waitFor({ timeout: 15000 });
     await page.getByText("teste-browser-f2.png").waitFor({ timeout: 15000 });
