@@ -167,3 +167,41 @@ def test_legacy_publication_is_exported_without_inventing_author(banco):
         with db.tx() as conn: conn.execute('UPDATE reports SET conteudo_json=? WHERE id=?',(json.dumps(legacy),rid))
         text=pdf_text(client.get(f'/api/reports/{rid}/pdf',headers=headers('u-gestor-alfa')))
         assert 'Não registrado nesta versão' in text and 'Recomendações não registradas nesta versão.' in text
+
+
+def test_three_consecutive_report_publications_persist_without_artificial_wait(banco):
+    with TestClient(app) as client:
+        for version in (1, 2, 3):
+            created = client.post('/api/reports', headers=headers(), json={
+                'contract_id': 'CT-001', 'competencia': '10/2026',
+                'recomendacoes': f'Recomendação sintética {version}',
+            })
+            assert created.status_code == 201, created.text
+            rid = created.json()['id']
+            with db.tx() as independent:
+                row = independent.execute('SELECT status,versao FROM reports WHERE id=?', (rid,)).fetchone()
+                assert row['status'] == 'RASCUNHO' and row['versao'] == version
+
+            checked = client.get(f'/api/reports/{rid}/preview', headers=headers())
+            assert checked.status_code == 200, checked.text
+            sha = checked.json()['conteudo_sha256']
+            with db.tx() as independent:
+                cached = independent.execute(
+                    'SELECT COUNT(*) FROM report_previews WHERE report_id=? AND conteudo_sha256=?',
+                    (rid, sha)).fetchone()[0]
+                assert cached == 1
+            published = client.post(f'/api/reports/{rid}/publish', headers=headers(),
+                                    json={'conteudo_sha256': sha})
+            assert published.status_code == 200, published.text
+            with db.tx() as independent:
+                row = independent.execute(
+                    'SELECT status,conteudo_json FROM reports WHERE id=?', (rid,)).fetchone()
+                assert row['status'] == 'APROVADO_PUBLICADO'
+                assert json.loads(row['conteudo_json']) == checked.json()['conteudo_json']
+            contractor = client.get('/api/client/reports', headers=headers('u-gestor-alfa'))
+            assert contractor.status_code == 200
+            assert any(item['id'] == rid for item in contractor.json())
+            pdf_response = client.get(f'/api/reports/{rid}/pdf', headers=headers('u-gestor-alfa'))
+            assert pdf_response.status_code == 200
+            assert pdf_response.content.startswith(b'%PDF')
+
