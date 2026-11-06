@@ -13,7 +13,8 @@ import {
   type ApiUploadReceipt,
 } from "@/lib/api-upload";
 
-import { ApiError, type Batch } from "@/lib/api";
+import { ApiError, type Batch, type Doc } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
 
 const TERMINAL = new Set(["CONCLUIDO", "FALHA_PROCESSAMENTO"]);
 const MAX_STATUS_CHECKS = 60;
@@ -80,6 +81,14 @@ function ProcessingStatus({ receipt, token, submittedContract, filename }: {
 
   const completed = batch?.status === "CONCLUIDO";
   const failed = batch?.status === "FALHA_PROCESSAMENTO";
+  // Contagem somente do lote enviado, consultando a API autorizada. Não inferir
+  // aptidão a partir do status CONCLUIDO (concluiu leitura, não conciliação).
+  const documents = useApi<Doc[]>(completed ? `/api/batches/${receipt.batch_id}/documents` : null);
+  const classified = documents.data ?? [];
+  const aptCount = classified.filter((d) => d.status === "APTO").length;
+  const correctionCount = classified.filter((d) => d.status === "PENDENTE_CORRECAO").length;
+  const reviewCount = classified.filter((d) => d.status === "EM_ANALISE" || d.status === "REVISAO_HUMANA").length;
+  const otherCount = classified.length - aptCount - correctionCount - reviewCount;
 
   return (
     <section className="workspace-card api-upload-result" aria-label="Acompanhamento do envio" aria-live="polite">
@@ -103,6 +112,59 @@ function ProcessingStatus({ receipt, token, submittedContract, filename }: {
         <p className="api-upload-notice api-upload-success">
           <CheckCircle2 size={17} /> Processamento documental concluído. Isso não significa conciliação trabalhista concluída.
         </p>
+      )}
+      {completed && (
+        <div className="api-upload-summary" aria-label="Resumo dos documentos do lote">
+          <h3>Resumo do processamento</h3>
+          {documents.loading ? (
+            <p className="api-status" role="status">Conferindo os documentos classificados neste lote…</p>
+          ) : documents.error ? (
+            <div className="api-upload-summary-error">
+              <p>Não foi possível consultar os resultados dos documentos: {documents.error}</p>
+              <button type="button" className="button secondary" onClick={() => void documents.reload()}>
+                <RefreshCw size={16} /> Consultar resumo novamente
+              </button>
+            </div>
+          ) : (
+            <>
+              <p className="api-upload-summary-lead">
+                {classified.length > 0
+                  ? `${classified.length} documento(s) identificado(s) neste lote. Verifique as ações abaixo.`
+                  : "Nenhum documento classificado neste lote. Confira os detalhes do processamento."}
+              </p>
+              <div className="api-upload-summary-grid">
+                <div><strong>{aptCount}</strong><span>Aptos para a próxima etapa</span></div>
+                <div className={correctionCount ? "needs-correction" : ""}><strong>{correctionCount}</strong><span>Pendentes de correção</span></div>
+                <div className={reviewCount ? "needs-review" : ""}><strong>{reviewCount}</strong><span>Em análise pela auditora</span></div>
+                {otherCount > 0 && <div><strong>{otherCount}</strong><span>Outros estados</span></div>}
+              </div>
+              {correctionCount > 0 ? (
+                <div className="api-upload-next-action">
+                  <CircleAlert size={18} />
+                  <p>Há documento(s) que exigem correção da fornecedora. Consulte o motivo e envie a versão corrigida na área de Pendências.</p>
+                  <Link href="/painel/pendencias" className="button">
+                    Ver documentos para correção
+                  </Link>
+                </div>
+              ) : reviewCount > 0 ? (
+                <div className="api-upload-next-action">
+                  <CircleAlert size={18} />
+                  <p>Não há correção identificada neste lote, mas alguns documentos ainda aguardam conferência da auditora.</p>
+                  <Link href="/painel/documentos" className="button secondary">Ver documentos em análise</Link>
+                </div>
+              ) : (
+                <p className="api-upload-summary-lead">
+                  {classified.length > 0
+                    ? "Nenhuma correção ou revisão documental pendente foi identificada neste lote. A conciliação e o parecer seguem etapas próprias."
+                    : "Consulte os detalhes do lote para verificar o resultado da identificação."}
+                </p>
+              )}
+              <Link className="text-link" href={`/painel/lotes/detalhe?id=${receipt.batch_id}`}>
+                Ver detalhes deste lote
+              </Link>
+            </>
+          )}
+        </div>
       )}
       {failed && (
         <p className="api-error" role="alert">
