@@ -70,3 +70,16 @@ infraestrutura nem credenciais disponíveis; nenhuma validação externa feita.*
 ## Status: BLOQUEADA
 
 Depende de D2-01/D2-09, da correção do seed (B2) e de decisão de licença (B4).
+
+## Atualização Codex — 2026-11-06 (substitui o diagnóstico antigo acima)
+Base a1f6109; backup backup/d4-06-20261106 (e043d75); rebase sem conflitos.
+B2 resolvido na main: seed_demo retorna fora do modo demo; lifespan condiciona
+seed ao modo token + demo. B1/B3 evoluíram: PR #46 implementa Clerk, vínculos,
+convites, revogação e autorização interna. Não são mais inexistentes.
+Modelo pilot.env.example atualizado para DOCRISK_AUTH_MODE=clerk, sem chaves.
+Testes Clerk usam assinaturas locais e provedor simulado, sem chamadas externas.
+Não houve provisionamento real, teste de TLS/VPN, integração externa Clerk,
+backup no host nem deploy. Licença do projeto/PyMuPDF exige decisão responsável.
+DOCRISK_SINGLE_INSTANCE/LOG_JSON dependem das branches D4-04/D4-07, não empilhadas.
+Status: BLOQUEADA para abertura do piloto; preparação documental PARCIAL.
+Validação local: pytest api/tests -q, 370 aprovados, 1 ignorado (97,20s), Windows/Python 3.13.14; diff --check aprovado.
