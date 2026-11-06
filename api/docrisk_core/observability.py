@@ -177,6 +177,6 @@ def metrics(user: Usuario = Depends(usuario_atual)) -> dict[str, Any]:
         "fila_memoria": worker._fila.qsize(),
         "worker": {"vivo": vivo, "modo": "sincrono" if config.SYNC else "thread"},
         "ia": {"provedor": config.AI_PROVIDER, "entradas_cache": cache,
-               # Não registrados pelo sistema hoje: não estimar.
+               # A telemetria de Dev1 existe; este endpoint ainda não agrega esses campos.
                "chamadas": None, "retries": None, "custo_estimado_usd": None},
     }

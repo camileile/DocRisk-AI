@@ -58,3 +58,7 @@ Windows/Python 3.13.14, TextLayer offline. Métricas de IA sem dados continuam n
 Sentinela: parar_worker ainda insere None após marcar parada; risco de sentinela
 remanescente no reinício permanece para Dev1. Não alterado nesta branch.
 Status: PARCIAL (limitações de IA e ciclo do worker permanecem).
+
+PR #47 (f085df4): schema e worker agora registram proveniência/telemetria de IA. O endpoint ops ainda retorna null para chamadas/retries/custo; agregação dessa telemetria é pendência de integração Dev1/Dev4, sem mudança unilateral do contrato.
+
+Base final f085df4: 395 aprovados, 1 ignorado (181,18s), Pillow12.3; readiness/worker/métricas compatíveis com schema atual. Status PARCIAL pelas lacunas registradas.
