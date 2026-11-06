@@ -36,6 +36,12 @@ async function run() {
         await page.getByText("Envio desativado nesta demonstração").waitFor();
       }
       if (role === "Analista Bernhoeft") {
+        await page.getByRole("heading", { name: "Visão geral das divergências." }).waitFor();
+        await page.getByRole("combobox", { name: "Contratante" }).selectOption("demo-contr");
+        await page.getByRole("combobox", { name: "Fornecedora" }).selectOption("demo-forn");
+        await page.getByRole("combobox", { name: "Competência" }).selectOption("10/2026");
+        await page.getByText("Cobertura da análise").waitFor();
+        await page.getByText("Evolução mensal das divergências").waitFor();
         await page.goto(base + "/painel/revisao/", { waitUntil: "domcontentloaded" });
         await page.getByRole("heading", { name: "Fila de Exceções" }).waitFor();
         const nav = await page.locator('nav[aria-label="Navegação do painel"] a').allTextContents();
