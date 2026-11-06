@@ -450,8 +450,8 @@ def consolidar_lote(conn: sqlite3.Connection, batch_id: int) -> set[tuple[str, s
     os pares existentes sem gravar nada nem chamar a F3 de novo.
 
     Para cada documento de foco com trabalhador+competência:
-    - versão vigente anterior (de OUTRO lote) do mesmo tipo/trabalhador/competência
-      vira SUBSTITUIDO; a nova recebe versao+1 e substitui_id
+    - duplicata sem vínculo a uma pendência reenviada vai para revisão; documento anterior preservado;
+    - reenvio ligado à pendência aberta do documento vigente cria nova versão
       (F3: rules.pendencias.atualizar_por_nova_versao);
     - PENDENTE_CORRECAO -> F3: rules.pendencias.criar_pendencia.
     Depois chama F3: rules.conciliacao.conciliar para cada par afetado e devolve esses pares.
@@ -459,7 +459,7 @@ def consolidar_lote(conn: sqlite3.Connection, batch_id: int) -> set[tuple[str, s
     if conn.execute("SELECT 1 FROM documents WHERE batch_id = ? LIMIT 1", (batch_id,)).fetchone():
         return _pares_do_lote(conn, batch_id)
 
-    lote = conn.execute("SELECT id, contract_id FROM batches WHERE id = ?", (batch_id,)).fetchone()
+    lote = conn.execute("SELECT id, contract_id, issue_id FROM batches WHERE id = ?", (batch_id,)).fetchone()
     if lote is None:
         raise LoteNaoEncontrado(f"Lote {batch_id} não existe.")
     contract_id = lote["contract_id"]
@@ -477,6 +477,32 @@ def consolidar_lote(conn: sqlite3.Connection, batch_id: int) -> set[tuple[str, s
     pares: set[tuple[str, str]] = set()
     for seg in segmentar(analises, ordens):
         rota = rotear(seg, trabalhadores, config.LIMIAR_CONFIANCA)
+        anterior = None
+        reenvio_autorizado = False
+        if seg.tipo in TIPOS_FOCO and seg.trabalhador_id and seg.competencia:
+            vigentes = conn.execute(
+                "SELECT id, versao FROM documents WHERE contract_id = ? AND tipo = ? AND worker_id = ?"
+                " AND competencia = ? AND status != ? AND batch_id != ? ORDER BY id DESC",
+                (contract_id, seg.tipo.value, seg.trabalhador_id, seg.competencia,
+                 StatusDocumento.SUBSTITUIDO.value, batch_id)).fetchall()
+            if len(vigentes) == 1:
+                anterior = vigentes[0]
+                if lote["issue_id"] is not None:
+                    issue = conn.execute(
+                        "SELECT id FROM issues WHERE id = ? AND contract_id = ? AND document_id = ?"
+                        " AND worker_id = ? AND competencia = ? AND tipo_documento = ? AND status = 'REENVIADA'",
+                        (lote["issue_id"], contract_id, anterior["id"], seg.trabalhador_id,
+                         seg.competencia, seg.tipo.value)).fetchone()
+                    reenvio_autorizado = issue is not None
+            if vigentes and not reenvio_autorizado:
+                detalhes = (f"{len(vigentes)} documentos vigentes" if len(vigentes) != 1
+                            else f"documento vigente #{vigentes[0]['id']}")
+                rota.motivos_revisao.append(
+                    f"Possível duplicidade para {seg.tipo.value}, trabalhador {seg.trabalhador_id}, "
+                    f"competência {seg.competencia}: {detalhes}; revisar antes de substituir."
+                )
+                rota.motivos_revisao = list(dict.fromkeys(rota.motivos_revisao))
+                rota.status = StatusDocumento.REVISAO_HUMANA
         cur = conn.execute(
             "INSERT INTO documents (batch_id, contract_id, tipo, worker_id, competencia, status, confianca,"
             " motivos_pendencia, motivos_revisao, campos_json, versao, created_at, updated_at)"
@@ -489,12 +515,7 @@ def consolidar_lote(conn: sqlite3.Connection, batch_id: int) -> set[tuple[str, s
                          [(doc_id, pagina_id[o], pos) for pos, o in enumerate(seg.paginas, start=1)])
 
         if seg.tipo in TIPOS_FOCO and seg.trabalhador_id and seg.competencia:
-            anterior = conn.execute(
-                "SELECT id, versao FROM documents WHERE contract_id = ? AND tipo = ? AND worker_id = ?"
-                " AND competencia = ? AND status != ? AND batch_id != ? ORDER BY id DESC LIMIT 1",
-                (contract_id, seg.tipo.value, seg.trabalhador_id, seg.competencia,
-                 StatusDocumento.SUBSTITUIDO.value, batch_id)).fetchone()
-            if anterior is not None:
+            if anterior is not None and reenvio_autorizado:
                 conn.execute("UPDATE documents SET status = ?, updated_at = ? WHERE id = ?",
                              (StatusDocumento.SUBSTITUIDO.value, agora, anterior["id"]))
                 conn.execute("UPDATE documents SET versao = ?, substitui_id = ? WHERE id = ?",

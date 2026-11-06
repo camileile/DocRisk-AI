@@ -186,12 +186,33 @@ def test_reenvio_cria_nova_versao_e_preserva_a_anterior(banco):
     [antigo] = documentos(b1)
     assert antigo["status"] == "PENDENTE_CORRECAO"
 
-    b2 = worker.criar_lote(GAMA, "CT-002", "h2.pdf", pdf(HOLERITE.format(t="T101", h="6,00")), issue_id=1)
+    [issue] = q("SELECT id FROM issues WHERE document_id = ?", antigo["id"])
+    with db.tx() as conn:
+        conn.execute("UPDATE issues SET status='REENVIADA' WHERE id=?", (issue["id"],))
+    b2 = worker.criar_lote(GAMA, "CT-002", "h2.pdf", pdf(HOLERITE.format(t="T101", h="6,00")),
+                           issue_id=issue["id"])
     worker.processar_lote(b2, provedor=TextLayerProvider())
     [novo] = documentos(b2)
     [antigo_depois] = documentos(b1)
     assert antigo_depois["status"] == "SUBSTITUIDO" and antigo_depois["campos_json"] == antigo["campos_json"]
     assert novo["status"] == "APTO" and novo["versao"] == 2 and novo["substitui_id"] == antigo["id"]
+
+
+def test_documento_duplicado_preserva_vigente_e_vai_para_revisao(banco):
+    primeiro = worker.criar_lote(BETA, "CT-001", "h1.pdf", pdf(HOLERITE.format(t="T001", h="6,00")))
+    worker.processar_lote(primeiro, provedor=TextLayerProvider())
+    [vigente] = documentos(primeiro)
+    assert vigente["status"] == "APTO"
+
+    segundo = worker.criar_lote(BETA, "CT-001", "h2.pdf", pdf(HOLERITE.format(t="T001", h="7,00")))
+    worker.processar_lote(segundo, provedor=TextLayerProvider())
+    [duplicado] = documentos(segundo)
+    [vigente_depois] = documentos(primeiro)
+
+    assert duplicado["status"] == "REVISAO_HUMANA"
+    assert duplicado["versao"] == 1 and duplicado["substitui_id"] is None
+    assert "Possível duplicidade" in duplicado["motivos_revisao"]
+    assert vigente_depois["status"] == "APTO" and vigente_depois["campos_json"] == vigente["campos_json"]
 
 
 def test_contrato_nao_mistura_lotes_de_outra_fornecedora(banco):

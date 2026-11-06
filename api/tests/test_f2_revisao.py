@@ -121,7 +121,14 @@ def test_conciliacao_refeita_para_pares_afetados(lote, monkeypatch):
 def test_documento_com_historico_de_versao_nao_e_unido(banco):
     b1 = worker.criar_lote(GAMA, "CT-002", "a.pdf", pdf(HOLERITE_ILEGIVEL.format(t="T101")))
     worker.processar_lote(b1, provedor=TextLayerProvider())
+    documento_antigo = doc_por_paginas(b1, [1])
+    [issue] = q("SELECT id FROM issues WHERE document_id = ?", documento_antigo["id"])
+    with db.tx() as conn:
+        conn.execute("UPDATE issues SET status='REENVIADA' WHERE id=?", (issue["id"],))
     b2 = worker.criar_lote(GAMA, "CT-002", "b.pdf", pdf(HOLERITE.format(t="T101", h="6,00"), LOTE[5]))
+    # A correção do histórico só é criada por um reenvio explicitamente ligado à pendência.
+    with db.tx() as conn:
+        conn.execute("UPDATE batches SET issue_id=? WHERE id=?", (issue["id"], b2))
     worker.processar_lote(b2, provedor=TextLayerProvider())
     nova_versao = doc_por_paginas(b2, [1])
     assert nova_versao["substitui_id"] is not None
