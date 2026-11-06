@@ -73,7 +73,7 @@ function ReviewDetail() {
   return (
     <>
       <Link href="/painel/revisao" className="batch-back">
-        <ArrowLeft size={16} /> Fila de revisão
+        <ArrowLeft size={16} /> Fila de exceções
       </Link>
       <PageIntro
         eyebrow={`DOCUMENTO #${d.id} · LOTE #${d.batch_id} · ${pageList(d.paginas)}`}
