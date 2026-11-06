@@ -105,6 +105,7 @@ async function run() {
 
     console.log("[6/7] Contratante vê somente o publicado");
     await login(page, "Gestor da contratante", "/contratante");
+    await page.getByRole("link", { name: "Pareceres publicados", exact: true }).click();
     await page.getByText("Com divergência a verificar").waitFor();
     assert.equal(await page.getByText("PRÉVIA DO RASCUNHO").count(), 0);
     await go(page, "/painel/");
