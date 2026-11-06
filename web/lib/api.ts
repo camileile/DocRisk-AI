@@ -233,6 +233,41 @@ export type Metrics = {
   paginas: { total: number; lidas: number; tempo_medio_ms: number | null };
   pareceres_publicados: number;
 };
+export type AdminCompany = {
+  id: string;
+  nome: string;
+  tipo: "CONTRATANTE" | "FORNECEDORA";
+  cnpj: string | null;
+};
+export type AdminContract = Contract & {
+  contratante_nome: string;
+  fornecedora_nome: string;
+  inicio: string | null;
+  fim: string | null;
+  status: "ATIVO" | "ENCERRADO";
+};
+export type AdminUser = {
+  id: string;
+  nome: string;
+  org_id: string;
+  org_nome: string;
+  papel: "ADMIN_BH" | "ANALISTA_BH" | "GESTOR_CONTR" | "GESTOR_FORN";
+  ativo: number;
+};
+export type AdminRegistry = {
+  empresas: AdminCompany[];
+  contratos: AdminContract[];
+  usuarios: AdminUser[];
+};
+export type AdminOverview = {
+  contratantes: number;
+  fornecedoras: number;
+  contratos_ativos: number;
+  contratos_vencendo_30d: number;
+  contratos_sem_prazo: number;
+  operacao: Metrics;
+};
+
 export type SearchHit = {
   page_id: number;
   contract_id: string;
