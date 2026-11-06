@@ -115,6 +115,7 @@ def test_structured_field_review_preserves_history_and_reconciles(banco, monkeyp
     doc = _doc_with_pages(batch_id, [3, 4])
     original = json.loads(doc["campos_json"])
     with db.tx() as conn:
+        conn.execute("UPDATE documents SET status='REVISAO_HUMANA' WHERE id=?", (doc["id"],))
         pages = [int(row[0]) for row in conn.execute(
             "SELECT page_id FROM doc_pages WHERE document_id=? ORDER BY posicao", (doc["id"],))]
     calls = []
@@ -160,6 +161,7 @@ def test_structured_field_review_validates_and_hides_history_from_supplier(banco
     doc = _doc_with_pages(batch_id, [3, 4])
     before = json.loads(doc["campos_json"])
     with db.tx() as conn:
+        conn.execute("UPDATE documents SET status='REVISAO_HUMANA' WHERE id=?", (doc["id"],))
         page = int(conn.execute("SELECT page_id FROM doc_pages WHERE document_id=? ORDER BY posicao",
                                 (doc["id"],)).fetchone()[0])
     url = f"/api/documents/{doc['id']}/review"

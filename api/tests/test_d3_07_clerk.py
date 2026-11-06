@@ -337,7 +337,7 @@ def test_controlled_synthetic_worker_provisioning_is_scoped_and_reversible(ident
     monkeypatch.setattr(config, 'DEMO_MODE', False)
     script = run_path(str(Path(__file__).resolve().parents[1] / 'scripts' / 'provision_mvp_workers.py'))
     csv = tmp_path / 'workers.csv'
-    csv.write_text('id,nome\\nT8001,Trabalhador Sintético\\n', encoding='utf-8')
+    csv.write_text('id,nome\nT8001,Trabalhador Sintético\n', encoding='utf-8')
     # O arquivo CSV é explicitamente fornecido; nenhum seed automático é usado.
     records = script['load_csv'](csv)
     with db.tx() as conn:
