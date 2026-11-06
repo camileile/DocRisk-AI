@@ -26,3 +26,13 @@ A inspeção responsiva automatizada não substitui auditoria manual de acessibi
 ## Reconciliação com D1-06 (#41)
 
 A revisão usa a ação `corrigir_campos` e o histórico por campo já existente em `document_field_reviews`, sem segunda tabela ou formulário duplicado. O visualizador envia `motivo`, `esperado_em` e `fontes` por campo; a fonte validada é registrada no histórico canônico. A revisão com página conferida aceita ausência explícita (`null`) e mantém o documento em revisão até aprovação. O contrato anterior com `motivo` e `fonte` textual continua compatível.
+
+## Complemento — revisão manual iniciada pelo Analista
+
+A revisão não deve ficar limitada à fila automática. Na área **Documentos**, somente o perfil ANALISTA_BH visualiza um atalho **Revisar** para documentos em REVISAO_HUMANA ou PENDENTE_CORRECAO, além de **Abrir** para consultar o detalhe. O documento pendente pode ser conferido na tela de revisão, sem revogar automaticamente a pendência junto à fornecedora.
+
+Em documento **APTO**, o detalhe exibe **Iniciar revisão manual**. O Analista informa motivo de 10 a 500 caracteres, e a API valida papel, escopo do contrato, status e o instante da leitura para impedir alterações sobre estado obsoleto. A operação muda o documento para REVISAO_HUMANA, conserva o motivo no histórico de motivos, registra evento de auditoria, recalcula a conciliação pertinente e redireciona ao formulário de revisão existente. O documento passa a aparecer na fila de exceções. Esse fluxo também vale para um AEJ apto: após iniciar, usa a tela de conferência estruturada do AEJ.
+
+Não é permitido reabrir uma versão **SUBSTITUIDO** nem transformar uma pendência de correção em revisão por esse comando. A ação não concede permissão à fornecedora, contratante ou administradores. A demonstração offline continua sem mutações. O histórico de campo corrigido é preservado; a abertura guarda autor, motivo e data na trilha administrativa.
+
+Validação: api/tests/test_d3_06_review_viewer.py, ações de revisão voluntária e controles de permissão/estado; web/scripts/smoke.cjs, navegação real pelo novo botão de abertura e aprovação subsequente.
