@@ -1,22 +1,53 @@
-"""API local de prova de conceito. Não habilitar em servidor público."""
+"""Aplicação FastAPI local para o protótipo DocRisk AI."""
 from __future__ import annotations
+
+import logging
 import os
-from fastapi import FastAPI, UploadFile, File, HTTPException
-from .importer import import_bytes, UnsupportedFile
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+
+from . import db
 from .aej import AEJError
 from .documents import DocumentError
+from .importer import UnsupportedFile, import_bytes
+from .pipeline import worker
+from .routes import router
 
-app = FastAPI(title="DocRisk AI | Ingestão POC", version="0.1.0")
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    db.init_db()
+    try:
+        worker.iniciar_worker()
+    except NotImplementedError:
+        logger.info("Worker F2 ainda não implementado; API iniciada sem processamento assíncrono")
+    yield
+
+
+app = FastAPI(title="DocRisk AI", version="0.2.0", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
+)
+app.include_router(router)
+
 
 @app.get("/health")
-def health() -> dict:
+def health() -> dict[str, bool | str]:
     return {"status": "ok", "production_ready": False}
+
 
 @app.post("/api/v1/inspect")
 async def inspect(file: UploadFile = File(...)) -> dict:
     if os.getenv("DOCRISK_DEMO_MODE") != "1":
         raise HTTPException(503, "Endpoint bloqueado: somente modo DEMO local")
-    # Limita RAM/carga; versão definitiva usará streaming, auth e jobs persistentes.
     data = await file.read(10 * 1024 * 1024 + 1)
     try:
         return import_bytes(file.filename or "arquivo", data)
