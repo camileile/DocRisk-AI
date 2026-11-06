@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="770" height="190" viewBox="0 0 770 190" role="img" aria-label="DocRisk AI"><defs>
+ <linearGradient id="layerBack" x1="0" x2="1" y1="1" y2="0"><stop stop-color="#1E1B4B"/><stop offset="1" stop-color="#3730A3"/></linearGradient>
+ <linearGradient id="layerMid" x1="0" x2="1" y1="1" y2="0"><stop stop-color="#4F46E5"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient>
+ <linearGradient id="layerFront" x1="0" x2="1" y1="1" y2="0"><stop stop-color="#5B21B6"/><stop offset="1" stop-color="#9333EA"/></linearGradient>
+ </defs><g transform="translate(18 28) scale(0.960526)"><path d="M13 82 Q13 77 18 74 L54 54 Q59 51 64 54 L88 68 Q93 71 93 77 L93 121 Q93 126 89 129 L69 141 Q63 145 57 142 L18 121 Q13 118 13 112 Z" fill="url(#layerBack)"/><path d="M36 57 Q36 52 41 49 L76 29 Q81 26 87 29 L112 43 Q118 46 118 52 L118 106 Q118 111 113 114 L95 125 Q90 128 85 125 L41 101 Q36 98 36 92 Z" fill="url(#layerMid)"/><path d="M64 19 Q64 13 70 13 L91 13 Q97 13 102 16 L133 33 Q139 36 139 42 L139 99 Q139 104 133 107 L114 117 Q110 119 105 116 L70 97 Q64 94 64 87 Z" fill="url(#layerFront)"/>
+<g stroke="#F3E8FF" stroke-width="5.8" stroke-linecap="round" opacity="0.97">
+<path d="M84 39 L120 58"/><path d="M84 54 L120 73"/><path d="M84 69 L106 81"/>
+</g></g><text x="195" y="135" font-family="Sora,Inter,DejaVu Sans,sans-serif" font-weight="700" font-size="70" letter-spacing="-2" fill="#1E1B4B"><tspan>DocRisk</tspan><tspan fill="#7C3AED"> AI</tspan></text></svg>
