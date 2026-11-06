@@ -19,6 +19,7 @@ import {
 import { useSession } from "@/components/demo-provider";
 import { roleLabels, type Papel } from "@/lib/api";
 import { DEMO_ROLES } from "@/lib/offline-demo";
+import { demoApiEnabled, demoApiToken } from "@/lib/demo-api";
 import { publicDemoOnly } from "@/lib/auth-mode";
 
 const icons: Record<Papel, LucideIcon> = {
@@ -57,11 +58,18 @@ export default function Access({ operational = false }: { operational?: boolean 
   const { login, enterDemo } = useSession();
   const router = useRouter();
 
-  function enter() {
+  async function enter() {
     if (entering || !hydrated) return;
     setEntering(true);
-    const user = enterDemo(selected);
-    router.push(destinationFor(user.papel));
+    setTokenError("");
+    try {
+      const user = demoApiEnabled ? await login(await demoApiToken(selected)) : enterDemo(selected);
+      router.push(destinationFor(user.papel));
+    } catch (err) {
+      setTokenError(err instanceof TypeError ? "Não foi possível conectar à API local. Confira se ela está rodando e se CORS_ORIGINS permite este site."
+        : err instanceof Error ? err.message : "Não foi possível conectar à API local.");
+      setEntering(false);
+    }
   }
 
   async function enterWithToken() {
@@ -113,7 +121,7 @@ export default function Access({ operational = false }: { operational?: boolean 
           <span className="pill light">{operational ? "API DE TESTES" : "AMBIENTE DE DEMONSTRAÇÃO"}</span>
           <h2>{operational ? "Conectar ao ambiente de testes." : "Explorar a demonstração."}</h2>
           {!operational && <>
-          <p>Escolha um dos seis perfis para explorar a plataforma com dados fictícios, sem token e sem conexão com a API.</p>
+          <p>{demoApiEnabled ? "Escolha um perfil de teste. A API local permite enviar arquivos e acompanhar os resultados com dados sintéticos." : "Escolha um dos seis perfis para explorar a plataforma com dados fictícios, sem token e sem conexão com a API."}</p>
           <fieldset className="persona-options" disabled={!hydrated}>
             <legend>Perfil de acesso fictício</legend>
             {DEMO_ROLES.map((role) => {
@@ -137,12 +145,13 @@ export default function Access({ operational = false }: { operational?: boolean 
               );
             })}
           </fieldset>
-          <button className="button access-enter" onClick={enter} disabled={entering || !hydrated}>
-            {entering ? "Entrando…" : "Explorar demonstração"} <ArrowRight size={18} />
+          <button className="button access-enter" onClick={() => { void enter(); }} disabled={entering || !hydrated}>
+            {entering ? "Entrando…" : demoApiEnabled ? "Entrar na demo com API" : "Explorar demonstração"} <ArrowRight size={18} />
           </button>
+          {tokenError && <p className="api-access-error" role="alert">{tokenError}</p>}
           <p className="demo-disclosure">
-            Perfis, documentos e indicadores são fictícios. A navegação funciona sem backend; envios, aprovações e publicações
-            não são realizados neste modo.
+            {demoApiEnabled ? "Ambiente local de testes. Envios e alterações são gravados na API. Utilize somente documentos sintéticos."
+              : "Perfis, documentos e indicadores são fictícios. A navegação funciona sem backend; envios, aprovações e publicações não são realizados neste modo."}
           </p>
           {!publicDemoOnly && <Link className="text-link" href="/operacao">Conectar à API de testes <ArrowRight size={16} /></Link>}
           </>}

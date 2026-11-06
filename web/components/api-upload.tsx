@@ -6,6 +6,7 @@ import {
   CheckCircle2, CircleAlert, FileText, RefreshCw, Upload, X,
 } from "lucide-react";
 import { useDemo } from "@/components/demo-provider";
+import { publicDemoOnly } from "@/lib/auth-mode";
 import { PageIntro } from "@/components/workspace-parts";
 import { BatchBadge } from "@/components/batch-badge";
 import {
@@ -217,6 +218,7 @@ export function ApiUpload() {
           <h2>Envio desativado nesta demonstração</h2>
           <p>O envio de PDFs e imagens está disponível exclusivamente no ambiente de testes com backend conectado. Para conhecer o fluxo sem enviar dados, explore um lote ilustrativo e suas pendências.</p>
           <Link className="button secondary" href="/painel/lotes">Ver lotes fictícios</Link>
+          {!publicDemoOnly && <Link className="button" href="/operacao">Conectar à API local para enviar arquivos</Link>}
         </section>
       </>
     );
