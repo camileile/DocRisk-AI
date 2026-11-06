@@ -1,0 +1,379 @@
+/* D4-02 — Regressão de isolamento universal da demonstração offline.
+ *
+ * Falha (exit 1) se, em qualquer cenário da demo, o navegador TENTAR qualquer
+ * transporte operacional: API DocRisk (NEXT_PUBLIC_API_URL), rotas /api/ na
+ * própria origem, ou qualquer origem externa fora do inventário de recursos
+ * estáticos. Toda tentativa é bloqueada antes de sair da máquina (route.abort),
+ * então o teste nunca depende de backend nem de credenciais.
+ *
+ * Camadas de detecção:
+ *  1. Rede do contexto (context.route): documentos, fetch, XHR, workers, beacons,
+ *     form posts, redirecionamentos — tudo que vira requisição HTTP.
+ *  2. Instrumentação da página (addInitScript): fetch, XMLHttpRequest, WebSocket,
+ *     EventSource, sendBeacon, form.submit/requestSubmit, Worker, SharedWorker,
+ *     serviceWorker.register e window.open, com a pilha que originou a chamada.
+ *  WebSocket/EventSource para a API também passam pela camada 1.
+ *
+ * Uso: exportação estática servida em DOCRISK_WEB_URL (padrão 127.0.0.1:4173),
+ * SEM API em execução. Relatório JSON em DOCRISK_ISOLATION_REPORT (opcional).
+ */
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const { chromium } = require("playwright");
+
+const BASE = (process.env.DOCRISK_WEB_URL || "http://127.0.0.1:4173").replace(/\/$/, "");
+const API = new URL(process.env.DOCRISK_API_ORIGIN || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").origin;
+const BASE_ORIGIN = new URL(BASE).origin;
+// Recursos estáticos de terceiros conhecidos (não operacionais). Bloqueados aqui
+// para simular sala sem internet; a página deve continuar funcional (fontes do sistema).
+const STATIC_EXTERNAL = new Set(["https://fonts.googleapis.com", "https://fonts.gstatic.com"]);
+
+const PROFILES = [
+  ["ADMIN_PLATAFORMA", "Administrador geral da plataforma", "/plataforma/"],
+  ["ADMIN_BH", "Administrador Bernhoeft", "/administracao/"],
+  ["ANALISTA_BH", "Analista Bernhoeft", "/painel/"],
+  ["GESTOR_FORN", "Gestor da fornecedora", "/painel/"],
+  ["OPERADOR_FORN", "Operador da fornecedora", "/painel/"],
+  ["GESTOR_CONTR", "Gestor da contratante", "/contratante/"],
+];
+// Todas as rotas exportadas que exigem sessão (links diretos).
+const DEEP_ROUTES = [
+  "/painel/", "/painel/envio/", "/painel/lotes/", "/painel/lotes/detalhe/?id=101",
+  "/painel/documentos/", "/painel/documentos/detalhe/?id=201", "/painel/revisao/",
+  "/painel/revisao/detalhe/?id=204", "/painel/pendencias/", "/painel/operadores/",
+  "/painel/pareceres/", "/painel/conciliacoes/", "/contratante/", "/contratante/pareceres/",
+  "/plataforma/", "/plataforma/auditoras/", "/plataforma/configuracoes/",
+  "/administracao/", "/administracao/empresas/", "/administracao/usuarios/", "/administracao/auditoria/",
+];
+const DEMO_KEY = "docrisk.offline-demo-role";
+const TOKEN_KEY = "docrisk.token";
+
+/* ------------------------------------------------------------- registro */
+const attempts = [];   // tentativas operacionais (violações)
+const statics = [];    // recursos estáticos externos bloqueados (inventário)
+let scenario = "-";
+const scenarioResults = [];
+let notes = [];
+
+function sanitize(raw) {
+  try {
+    const u = new URL(raw, BASE);
+    return u.origin + u.pathname; // nunca registrar query, fragmento ou credenciais
+  } catch {
+    return String(raw).slice(0, 80);
+  }
+}
+
+function classify(raw) {
+  let u;
+  try { u = new URL(raw, BASE); } catch { return "other"; }
+  if (u.protocol === "data:" || u.protocol === "blob:" || u.protocol === "about:") return "local";
+  const origin = u.origin.replace(/^ws/, "http");
+  if (origin === API) return "operational";
+  if (origin === BASE_ORIGIN) return u.pathname.startsWith("/api/") ? "operational" : "local";
+  if (STATIC_EXTERNAL.has(u.origin)) return "static";
+  return "operational"; // qualquer outra origem é tratada como transporte não autorizado
+}
+
+function record(entry) {
+  const kind = classify(entry.url);
+  if (kind === "local") return;
+  const item = {
+    scenario, transport: entry.transport, origin: entry.origin || "network",
+    destination: sanitize(entry.url), route: entry.route || "-",
+    result: "BLOQUEADO", component: entry.component || "-",
+  };
+  if (kind === "static") statics.push(item);
+  else attempts.push(item);
+}
+
+/* ------------------------------------------------- instrumentação da página */
+const INIT = () => {
+  const report = (transport, url) => {
+    const stack = (new Error().stack || "").split("\n").slice(2)
+      .map((l) => l.trim()).find((l) => /_next|chunks|webpack|\.js/.test(l)) || "";
+    try {
+      window.__docriskReport({ transport, url: String(url), route: location.pathname + location.search,
+        origin: "page", component: stack.replace(/\?[^)\s]*/g, "").slice(0, 160) });
+    } catch { /* binding indisponível em about:blank */ }
+  };
+  const wrap = (obj, key, transport, pick) => {
+    const original = obj && obj[key];
+    if (typeof original !== "function") return;
+    obj[key] = function (...args) { report(transport, pick.apply(this, args)); return original.apply(this, args); };
+  };
+  wrap(window, "fetch", "fetch", (input) => (input && input.url) || input);
+  wrap(XMLHttpRequest.prototype, "open", "xhr", (_m, url) => url);
+  if (navigator.sendBeacon) wrap(navigator, "sendBeacon", "beacon", (url) => url);
+  wrap(window, "open", "window.open", (url) => url || "about:blank");
+  for (const name of ["WebSocket", "EventSource", "Worker", "SharedWorker"]) {
+    const Original = window[name];
+    if (typeof Original !== "function") continue;
+    window[name] = new Proxy(Original, {
+      construct(target, args) { report(name, args[0]); return Reflect.construct(target, args); },
+    });
+  }
+  if (navigator.serviceWorker) wrap(navigator.serviceWorker, "register", "serviceWorker", (url) => url);
+  const formUrl = (form) => form.getAttribute("action") ? form.action : location.href;
+  wrap(HTMLFormElement.prototype, "submit", "form.submit", function () { return formUrl(this); });
+  document.addEventListener("submit", (event) => {
+    // Só registra envios que o navegador realmente faria (não interceptados pelo React).
+    setTimeout(() => { if (!event.defaultPrevented) report("form", formUrl(event.target)); }, 0);
+  }, true);
+};
+
+function storageBlocked() {
+  const thrower = { get() { throw new DOMException("Storage bloqueado (teste)", "SecurityError"); } };
+  Object.defineProperty(window, "sessionStorage", thrower);
+  Object.defineProperty(window, "localStorage", thrower);
+}
+
+async function newContext(browser, { blockStorage = false, preset = null } = {}) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, serviceWorkers: "block" });
+  await context.exposeBinding("__docriskReport", (_src, entry) => record(entry));
+  await context.addInitScript(INIT);
+  if (blockStorage) await context.addInitScript(storageBlocked);
+  if (preset) {
+    await context.addInitScript(([k, v]) => {
+      try { for (const [key, value] of Object.entries(v)) sessionStorage.setItem(key, value); } catch { /* */ }
+    }, [null, preset]);
+  }
+  await context.route("**/*", async (route) => {
+    const req = route.request();
+    const kind = classify(req.url());
+    if (kind === "local") return route.continue();
+    record({ transport: "network:" + req.resourceType(), url: req.url(),
+      route: (() => { try { return new URL(req.frame().url()).pathname; } catch { return "-"; } })(),
+      origin: req.isNavigationRequest() ? "navigation" : "network" });
+    return route.abort("blockedbyclient");
+  });
+  const errors = [];
+  context.on("page", (p) => p.on("pageerror", (e) => errors.push(e.message)));
+  return { context, errors };
+}
+
+async function chooseProfile(page, label, route) {
+  await page.goto(BASE + "/acesso/", { waitUntil: "domcontentloaded" });
+  await page.getByRole("radio", { name: new RegExp(label, "i") }).check();
+  await page.getByRole("button", { name: "Explorar demonstração" }).click();
+  await page.waitForURL((u) => u.pathname === route, { timeout: 15000 });
+}
+
+async function settle(page) {
+  await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => {});
+  await page.waitForTimeout(400); // polling/efeitos tardios
+}
+
+async function navLinks(page) {
+  const hrefs = await page.locator("nav a[href^='/']").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+  return [...new Set(hrefs)].filter((h) => !/^\/(acesso|contato)?\/?$/.test(h));
+}
+
+async function run(name, browser, opts, body) {
+  scenario = name;
+  const before = attempts.length;
+  notes = [];
+  const { context, errors } = await newContext(browser, opts);
+  const page = await context.newPage();
+  let failure = null;
+  try {
+    await body(page, context);
+    await settle(page);
+  } catch (error) {
+    failure = error.message.split("\n")[0];
+  } finally {
+    await context.close();
+  }
+  const violations = attempts.length - before;
+  const ok = !failure && violations === 0;
+  scenarioResults.push({ scenario: name, ok, violations, failure, notes, pageErrors: errors.slice(0, 3) });
+  console.log(`${ok ? "OK  " : "FAIL"} ${name}${violations ? ` — ${violations} transporte(s)` : ""}${failure ? ` — ${failure}` : ""}${notes.length ? ` [${notes.join("; ")}]` : ""}`);
+}
+
+/* ------------------------------------------------------------- autoteste */
+async function selfTest(browser) {
+  scenario = "AUTOTESTE-detector";
+  const { context } = await newContext(browser);
+  const page = await context.newPage();
+  await page.goto(BASE + "/", { waitUntil: "domcontentloaded" });
+  const before = attempts.length;
+  await page.evaluate((api) => {
+    fetch(api + "/api/me").catch(() => {});
+    const x = new XMLHttpRequest(); x.open("GET", api + "/api/batches"); x.send();
+    try { new WebSocket(api.replace("http", "ws") + "/ws"); } catch { /* */ }
+    try { new EventSource(api + "/api/stream"); } catch { /* */ }
+    navigator.sendBeacon(api + "/api/beacon", "x");
+    const f = document.createElement("form"); f.method = "POST"; f.action = api + "/api/form";
+    document.body.appendChild(f); f.submit();
+  }, API).catch(() => {});
+  await page.waitForTimeout(1500);
+  const seen = new Set(attempts.slice(before).map((a) => a.transport));
+  attempts.splice(before); // tentativas deliberadas não contam como violação
+  await context.close();
+  for (const t of ["fetch", "xhr", "WebSocket", "EventSource", "beacon", "form.submit"]) {
+    assert.ok(seen.has(t), `detector não capturou ${t}: ${[...seen].join(",")}`);
+  }
+  assert.ok([...seen].some((t) => t.startsWith("network:")), "camada de rede não capturou tentativas");
+  console.log(`OK   AUTOTESTE — detector captura: ${[...seen].sort().join(", ")}`);
+}
+
+/* ------------------------------------------------------------- cenários */
+async function main() {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    await selfTest(browser);
+
+    await run("S01 página inicial e institucional", browser, {}, async (page) => {
+      for (const p of ["/", "/contato/", "/acesso/"]) {
+        await page.goto(BASE + p, { waitUntil: "domcontentloaded" });
+        await settle(page);
+      }
+      assert.equal(await page.getByRole("radio").count(), 6);
+    });
+
+    for (const [role, label, home] of PROFILES) {
+      await run(`S02 perfil ${role}: navegação completa + refresh`, browser, {}, async (page) => {
+        await chooseProfile(page, label, home);
+        await settle(page);
+        const links = await navLinks(page);
+        assert.ok(links.length >= 1, "menu sem links");
+        for (const href of links) {
+          await page.locator(`nav a[href='${href}']`).first().click();
+          await page.waitForURL((u) => u.pathname.replace(/\/$/, "") === href.replace(/\/$/, ""), { timeout: 10000 }).catch(() => {});
+          await settle(page);
+          await page.reload({ waitUntil: "domcontentloaded" });
+          await settle(page);
+        }
+      });
+    }
+
+    await run("S03 links diretos sem sessão (storage vazio)", browser, {}, async (page) => {
+      for (const r of DEEP_ROUTES) { await page.goto(BASE + r, { waitUntil: "domcontentloaded" }); await settle(page); }
+    });
+
+    for (const [role] of PROFILES) {
+      await run(`S04 links diretos com sessão demo ${role}`, browser, { preset: { [DEMO_KEY]: role } }, async (page) => {
+        for (const r of DEEP_ROUTES) { await page.goto(BASE + r, { waitUntil: "domcontentloaded" }); await settle(page); }
+      });
+    }
+
+    await run("S05 sessão demo inválida", browser, { preset: { [DEMO_KEY]: "PAPEL_INEXISTENTE" } }, async (page) => {
+      for (const r of ["/painel/", "/administracao/", "/contratante/", "/plataforma/"]) {
+        await page.goto(BASE + r, { waitUntil: "domcontentloaded" }); await settle(page);
+      }
+    });
+
+    for (const [role, label, home] of PROFILES) {
+      await run(`S06 storage indisponível ${role}`, browser, { blockStorage: true }, async (page) => {
+        await chooseProfile(page, label, home);
+        await settle(page);
+        for (const href of await navLinks(page)) {
+          await page.locator(`nav a[href='${href}']`).first().click();
+          await settle(page);
+        }
+        await page.reload({ waitUntil: "domcontentloaded" }); // perde a sessão em memória
+        await settle(page);
+      });
+    }
+
+    await run("S07 tentativa de upload (operador)", browser, {}, async (page) => {
+      await chooseProfile(page, "Operador da fornecedora", "/painel/");
+      await page.goto(BASE + "/painel/envio/", { waitUntil: "domcontentloaded" });
+      await settle(page);
+      const input = page.locator("input[type=file]").first();
+      notes.push(`envio: ${await input.count()} input(s) de arquivo`);
+      if (await input.count()) {
+        await input.setInputFiles({ name: "sintetico.pdf", mimeType: "application/pdf",
+          buffer: Buffer.from("%PDF-1.4\n% documento sintetico de teste\n%%EOF\n") }).catch(() => {});
+        let clicked = 0;
+        for (const b of await page.getByRole("button", { name: /enviar|processar/i }).all()) {
+          if (await b.isEnabled().catch(() => false)) { await b.click({ timeout: 2000 }).catch(() => {}); clicked++; }
+        }
+        notes.push(`envio: ${clicked} botão(ões) acionado(s)`);
+      }
+      await page.goto(BASE + "/painel/pendencias/", { waitUntil: "domcontentloaded" });
+      await settle(page);
+      const reenvio = page.locator("input[type=file]").first();
+      notes.push(`pendências: ${await reenvio.count()} input(s) de arquivo`);
+      if (await reenvio.count() && await reenvio.isEnabled().catch(() => false)) {
+        await reenvio.setInputFiles({ name: "reenvio.pdf", mimeType: "application/pdf",
+          buffer: Buffer.from("%PDF-1.4\n%%EOF\n") }).catch(() => {});
+        for (const b of await page.getByRole("button", { name: /reenviar|enviar/i }).all()) {
+          if (await b.isEnabled().catch(() => false)) await b.click({ timeout: 2000 }).catch(() => {});
+        }
+      }
+    });
+
+    await run("S08 consulta de análise/lote/documento (analista)", browser, {}, async (page) => {
+      await chooseProfile(page, "Analista Bernhoeft", "/painel/");
+      for (const r of ["/painel/conciliacoes/", "/painel/lotes/detalhe/?id=101", "/painel/documentos/detalhe/?id=201",
+        "/painel/revisao/detalhe/?id=204", "/painel/pareceres/"]) {
+        await page.goto(BASE + r, { waitUntil: "domcontentloaded" }); await settle(page);
+      }
+      for (const b of await page.getByRole("button", { name: /publicar|aprovar|gerar/i }).all()) {
+        if (await b.isEnabled().catch(() => false)) await b.click({ timeout: 2000 }).catch(() => {});
+      }
+    });
+
+    await run("S09 acesso direto a URL operacional é bloqueado", browser, {}, async (page) => {
+      await chooseProfile(page, "Analista Bernhoeft", "/painel/");
+      const before = attempts.length;
+      await page.goto(API + "/api/me").catch(() => {}); // navegação deliberada
+      assert.equal(attempts.length - before, 1, "navegação à API deveria ser interceptada");
+      assert.equal(attempts[attempts.length - 1].origin, "navigation");
+      attempts.pop(); // deliberada: prova o bloqueio, não é transporte da aplicação
+    });
+
+    await run("S10 falha de rede simulada (offline após carga)", browser, {}, async (page, context) => {
+      await chooseProfile(page, "Gestor da fornecedora", "/painel/");
+      await settle(page);
+      await context.setOffline(true);
+      for (const href of await navLinks(page)) {
+        await page.locator(`nav a[href='${href}']`).first().click().catch(() => {});
+        await page.waitForTimeout(500);
+      }
+      await context.setOffline(false);
+    });
+
+    await run("S11 saída e reentrada", browser, {}, async (page) => {
+      await chooseProfile(page, "Gestor da contratante", "/contratante/");
+      const sair = page.getByRole("button", { name: /sair/i }).first();
+      if (await sair.count()) await sair.click().catch(() => {});
+      await settle(page);
+      await chooseProfile(page, "Administrador Bernhoeft", "/administracao/");
+    });
+  } finally {
+    await browser.close();
+  }
+
+  const report = {
+    base: BASE, apiOrigin: API, generatedAt: new Date().toISOString(),
+    scenarios: scenarioResults, attempts, staticExternalBlocked: dedupe(statics),
+  };
+  if (process.env.DOCRISK_ISOLATION_REPORT) {
+    fs.mkdirSync(path.dirname(process.env.DOCRISK_ISOLATION_REPORT), { recursive: true });
+    fs.writeFileSync(process.env.DOCRISK_ISOLATION_REPORT, JSON.stringify(report, null, 2));
+  }
+  const staticHosts = [...new Set(statics.map((s) => s.destination))];
+  console.log(`\nRecursos estáticos externos (bloqueados, não operacionais): ${staticHosts.join(", ") || "nenhum"}`);
+  if (attempts.length) {
+    console.log("\nTRANSPORTE OPERACIONAL DETECTADO:");
+    console.table(dedupe(attempts).map(({ scenario: s, transport, destination, route, component }) =>
+      ({ cenario: s.slice(0, 40), transporte: transport, destino: destination, rota: route, componente: component.slice(0, 60) })));
+  }
+  const failed = scenarioResults.filter((s) => !s.ok);
+  console.log(`\n${scenarioResults.length - failed.length}/${scenarioResults.length} cenários sem transporte operacional.`);
+  if (failed.length) process.exit(1);
+}
+
+function dedupe(list) {
+  const seen = new Set();
+  return list.filter((i) => {
+    const k = [i.scenario, i.transport, i.destination, i.route].join("|");
+    if (seen.has(k)) return false;
+    seen.add(k); return true;
+  });
+}
+
+main().catch((error) => { console.error(error); process.exit(1); });
