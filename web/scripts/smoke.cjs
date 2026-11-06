@@ -104,7 +104,7 @@ async function run() {
     await page.getByText("Contratos ativos").waitFor();
     await go(page, "/administracao/empresas/");
     await page.getByRole("heading", { name: "Empresas e Contratos." }).waitFor();
-    await page.getByText("Contratante Alfa S.A. (fictícia)").first().waitFor();
+    await page.locator("table.data-table").getByText("Contratante Alfa S.A. (fictícia)").first().waitFor();
     await go(page, "/administracao/usuarios/");
     await page.getByRole("heading", { name: "Gestão de Usuários." }).waitFor();
     await go(page, "/administracao/auditoria/");
