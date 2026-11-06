@@ -99,3 +99,14 @@ uvicorn docrisk_core.api:app --host 127.0.0.1 --port 8000
 
 Ambiente local inicia, recusa configurações inseguras, impede duplicidade e recupera-se de queda
 com evidência medida. Pendente: validação com Gemini real e CI remoto desta branch.
+
+## Reconciliação Codex — 2026-11-06
+
+Base independente origin/main 1cbd57f; backup backup/d4-04-20261106 (98166a2).
+Conflito em api.py: mantidos _configured_cors_origins e métodos GET/POST/PUT/PATCH
+atuais do Dev2; mantidos validação no lifespan e bloqueio de instância do Dev4.
+Ensaio: runtime_check.py --json, 11/11 verificações aprovadas, incluindo CORS,
+processos duplicados, queda abrupta, retomada e reinício com persistência.
+Windows/Python 3.13.14; TextLayer offline; banco sintético temporário.
+O sentinela em parar_worker permanece no código de Dev1; não alterado aqui.
+Suíte completa: 365 aprovados, 1 ignorado em 74,83 s. compileall e diff --check aprovados. Status: CONCLUÍDA LOCALMENTE para runtime local.
