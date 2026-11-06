@@ -71,3 +71,13 @@ Suíte completa: 248 passed, 1 skipped.
 
 Backup/restauração reproduzíveis, consistência e recuperação ensaiadas com tempos. Pendentes:
 política de retenção aprovada (D2-06), agendamento e teste em volume de piloto.
+
+## Reconciliação Codex — 2026-11-06
+Base a1f6109; backup backup/d4-08-20261106 (8583c00); rebase sem conflitos.
+pytest api/tests -q: 381 aprovados, 1 ignorado em 125,39s, incluindo 11 testes
+ de backup, hashes, integridade, restauração e remapeamento usando schema atual.
+Windows/Python 3.13.14, banco temporário sintético, TextLayer offline.
+compileall e diff --check aprovados. Schema atual inclui tabelas Clerk, copiadas
+pelo snapshot SQLite integral, sem alterar contratos de autenticação.
+Status: PARCIAL. Validação local aprovada; ensaio de recuperação em infraestrutura
+privada e proteção operacional integrada com D4-04 continuam pendentes.
