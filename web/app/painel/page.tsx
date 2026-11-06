@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { AnalystOverview } from "@/components/analyst-overview";
 import {
+  ArrowUpRight,
   CircleAlert,
   FileCheck2,
   Package,
