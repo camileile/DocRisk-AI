@@ -21,6 +21,7 @@ import { roleLabels, type Papel } from "@/lib/api";
 import { DEMO_ROLES } from "@/lib/offline-demo";
 
 const icons: Record<Papel, LucideIcon> = {
+  ADMIN_PLATAFORMA: Layers3,
   ANALISTA_BH: ShieldCheck,
   ADMIN_BH: LockKeyhole,
   GESTOR_FORN: UserCog,
@@ -28,6 +29,7 @@ const icons: Record<Papel, LucideIcon> = {
   GESTOR_CONTR: FileCheck2,
 };
 const descriptions: Record<Papel, string> = {
+  ADMIN_PLATAFORMA: "Gerenciar organizações auditoras e dados institucionais da plataforma.",
   ANALISTA_BH: "Revisar documentos, conciliações, pendências e publicar pareceres.",
   ADMIN_BH: "Consultar a trilha de auditoria e os indicadores da operação.",
   GESTOR_FORN: "Enviar lotes, acompanhar processamento e responder pendências.",
@@ -36,6 +38,7 @@ const descriptions: Record<Papel, string> = {
 };
 
 function destinationFor(role: Papel): string {
+  if (role === "ADMIN_PLATAFORMA") return "/plataforma";
   if (role === "GESTOR_CONTR") return "/contratante";
   if (role === "ADMIN_BH") return "/administracao";
   return "/painel";
@@ -104,7 +107,7 @@ export default function Access() {
         <div className="access-form">
           <span className="pill light">AMBIENTE DE DEMONSTRAÇÃO</span>
           <h2>Entrar na plataforma.</h2>
-          <p>Escolha um dos cinco perfis para explorar a plataforma com dados fictícios, sem token e sem conexão com a API.</p>
+          <p>Escolha um dos seis perfis para explorar a plataforma com dados fictícios, sem token e sem conexão com a API.</p>
           <fieldset className="persona-options">
             <legend>Perfil de acesso fictício</legend>
             {DEMO_ROLES.map((role) => {

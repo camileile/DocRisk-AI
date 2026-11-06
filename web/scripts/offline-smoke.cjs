@@ -5,6 +5,7 @@ const { chromium } = require("playwright");
 
 const base = process.env.DOCRISK_WEB_URL || "http://127.0.0.1:4173";
 const profiles = [
+  ["Administrador geral da plataforma", "/plataforma/"],
   ["Administrador Bernhoeft", "/administracao/"],
   ["Analista Bernhoeft", "/painel/"],
   ["Gestor da fornecedora", "/painel/"],
@@ -23,7 +24,7 @@ async function run() {
   });
   try {
     await page.goto(base + "/acesso/", { waitUntil: "domcontentloaded" });
-    assert.equal(await page.getByRole("radio").count(), 5);
+    assert.equal(await page.getByRole("radio").count(), 6);
     assert.equal(await page.getByText("Não foi possível conectar à API").count(), 0);
     for (const [role, route] of profiles) {
       await page.goto(base + "/acesso/", { waitUntil: "domcontentloaded" });
@@ -79,11 +80,11 @@ async function run() {
         await page.waitForURL((url) => url.pathname.startsWith("/contratante/"), { timeout: 15000 });
       }
       await page.goto(base + "/acesso/", { waitUntil: "domcontentloaded" });
-      assert.equal(await page.getByRole("radio").count(), 5);
+      assert.equal(await page.getByRole("radio").count(), 6);
     }
     assert.deepEqual(calls, [], "Modo demo nao deve acessar o backend");
     assert.deepEqual(runtimeErrors, [], "Nao deve haver erros JS");
-    console.log("Offline demo smoke: PASSOU (5 perfis, 0 chamadas API)");
+    console.log("Offline demo smoke: PASSOU (6 perfis, 0 chamadas API)");
   } finally {
     await browser.close();
   }

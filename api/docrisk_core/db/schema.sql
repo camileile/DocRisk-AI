@@ -224,3 +224,18 @@ CREATE TABLE IF NOT EXISTS contract_metadata (
   status TEXT NOT NULL DEFAULT 'ATIVO'
     CHECK(status IN ('ATIVO', 'ENCERRADO'))
 );
+
+-- Identidade institucional independente das empresas operacionais.
+-- Tabelas aditivas: não altera nem recria organizations ou seus vínculos.
+CREATE TABLE IF NOT EXISTS platform_accounts (
+  id TEXT PRIMARY KEY,
+  nome TEXT NOT NULL,
+  token TEXT NOT NULL UNIQUE,
+  ativo INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS platform_settings (
+  id INTEGER PRIMARY KEY CHECK (id=1),
+  nome TEXT NOT NULL,
+  contato TEXT NOT NULL DEFAULT ''
+);
+INSERT OR IGNORE INTO platform_settings (id,nome) VALUES (1,'DocRisk AI');

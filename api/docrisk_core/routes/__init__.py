@@ -123,7 +123,9 @@ def demo_users(conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, s
         "SELECT u.id, u.nome, u.org_id, o.tipo AS org_tipo, u.role, u.token "
         "FROM users u JOIN organizations o ON o.id=u.org_id WHERE u.ativo=1 ORDER BY u.rowid"
     ).fetchall()
-    return _rows(rows)
+    platform = conn.execute("SELECT id,nome,'DOCRISK' AS org_id,'PLATAFORMA' AS org_tipo,"
+                            "'ADMIN_PLATAFORMA' AS role,token FROM platform_accounts WHERE ativo=1").fetchall()
+    return [*_rows(rows), *_rows(platform)]
 
 
 @router.get("/api/me")
@@ -661,6 +663,8 @@ def search(q: str = Query(min_length=1, max_length=250),
           contract_id: str | None = None,
           user: Usuario = Depends(usuario_atual),
           conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
+    if user.papel == Papel.ADMIN_PLATAFORMA:
+        raise HTTPException(403, "Busca textual não está disponível para a administração geral")
     if user.org_tipo == "CONTRATANTE":
         raise HTTPException(403, "Busca textual não está disponível para a contratante")
     ids = contratos_do_usuario(conn, user)
