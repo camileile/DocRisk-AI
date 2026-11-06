@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import db
+from . import db, observability
 from .aej import AEJError
 from .documents import DocumentError
 from .routes.platform_management import router as platform_router
@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    observability.configurar_logs()
     db.init_db()
     worker_started = False
     try:
@@ -41,8 +42,11 @@ app.add_middleware(
         "CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",") if o.strip()],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
+    expose_headers=["X-Request-ID"],
 )
+app.middleware("http")(observability.middleware_correlacao)
+app.include_router(observability.router)
 app.include_router(router)
 app.include_router(supplier_management_router)
 
