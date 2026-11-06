@@ -1,267 +1,156 @@
 "use client";
-import { Suspense, useState } from "react";
-import { Search, FileText, X, ArrowUpRight, Fingerprint } from "lucide-react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { documents } from "@/lib/demo";
-import { documentFieldRows } from "@/lib/document-fields";
-import { useDemo } from "@/components/demo-provider";
+import { ArrowUpRight, Search } from "lucide-react";
+import { useSession } from "@/components/demo-provider";
 import {
   DocumentBadge,
   EmptyState,
+  ErrorState,
+  LoadingState,
+  Notice,
   PageIntro,
+  Snippet,
 } from "@/components/workspace-parts";
-export default function Documents() {
-  return (
-    <Suspense fallback={<p>Carregando documentos…</p>}>
-      <DocumentsContent />
-    </Suspense>
-  );
-}
-function DocumentsContent() {
-  const searchParams = useSearchParams();
-  const batch = searchParams.get("lote");
-  const { role, contract, competence } = useDemo();
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState("todos");
-  const [expandedId, setSelectedId] = useState<string | null | undefined>(
-    undefined,
-  );
-  const selectedId =
-    expandedId === undefined ? searchParams.get("documento") : expandedId;
-  const supplier = role === "OPERADOR_FORN";
-  const rows = documents.filter(
-    (d) =>
-      d.contract === contract &&
-      d.competence === competence &&
-      (!batch || d.batch === batch) &&
-      (status === "todos" || d.status === status) &&
-      `${d.id} ${d.worker} ${d.type} ${d.batch}`
-        .toLocaleLowerCase("pt-BR")
-        .includes(query.toLocaleLowerCase("pt-BR")),
-  );
-  const selected = rows.find((d) => d.id === selectedId);
+import { api, docStatusLabels, pageList, typeLabels, type Doc, type SearchHit } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+export default function DocumentsPage() {
+  const { contract } = useSession();
+  const [status, setStatus] = useState("");
+  const [tipo, setTipo] = useState("");
+  const params = new URLSearchParams();
+  if (status) params.set("status", status);
+  if (tipo) params.set("tipo", tipo);
+  const { data, error, loading, reload } = useApi<Doc[]>(`/api/documents?${params.toString()}`);
+  const rows = (data ?? []).filter((d) => !contract || d.contract_id === contract);
+
   return (
     <>
       <PageIntro
-        eyebrow="BIBLIOTECA DOCUMENTAL"
-        title="Documentos conectados."
-        description="Consulte a situação, o vínculo e a origem de cada documento de exemplo."
-        action={
-          supplier ? (
-            <Link href="/painel/envio" className="button">
-              Preparar envio <ArrowUpRight size={16} />
-            </Link>
-          ) : undefined
-        }
+        eyebrow="DOCUMENTOS CLASSIFICADOS"
+        title="Separados, classificados e pesquisáveis."
+        description="Cada documento lógico foi montado a partir das páginas do lote, com tipo, trabalhador, competência e texto lido."
       />
-      {batch && (
-        <div className="batch-filter-chip">
-          <span>
-            Lote filtrado: <strong>{batch}</strong>
-          </span>
-          <Link href="/painel/documentos">
-            Limpar filtro <X size={14} />
-          </Link>
-        </div>
-      )}
-      <section className="workspace-card">
-        <div className="list-toolbar">
-          <label className="search-field">
-            <Search size={18} />
-            <input
-              aria-label="Buscar documentos"
-              placeholder="Buscar trabalhador, tipo ou ID…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </label>
-          <label className="filter-label">
-            Situação
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="todos">Todas as situações</option>
-              <option value="APTO">Apto</option>
-              <option value="REVISAO_HUMANA">
-                {supplier ? "Em análise" : "Revisão humana"}
-              </option>
-              <option value="PENDENTE_CORRECAO">Pendente de correção</option>
-            </select>
-          </label>
-        </div>
-        <div className="list-summary" aria-live="polite">
-          {rows.length} documento{rows.length !== 1 ? "s" : ""} encontrado
-          {rows.length !== 1 ? "s" : ""}
-        </div>
-        {rows.length ? (
-          <div className="table-scroll">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Documento</th>
-                  <th>Trabalhador</th>
-                  <th>Competência</th>
-                  <th>Situação</th>
-                  <th>
-                    <span className="sr-only">Ações</span>
-                  </th>
+      <SearchBox />
+      <div className="list-toolbar">
+        <label className="filter-label">
+          Tipo
+          <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+            <option value="">Todos</option>
+            {Object.entries(typeLabels).map(([k, v]) => (
+              <option key={k} value={k}>{v}</option>
+            ))}
+          </select>
+        </label>
+        <label className="filter-label">
+          Situação
+          <select value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value="">Todas</option>
+            {(["APTO", "PENDENTE_CORRECAO", "REVISAO_HUMANA", "SUBSTITUIDO"] as const).map((k) => (
+              <option key={k} value={k}>{docStatusLabels[k]}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+      {loading ? (
+        <LoadingState />
+      ) : error ? (
+        <ErrorState message={error} onRetry={reload} />
+      ) : rows.length === 0 ? (
+        <EmptyState title="Nenhum documento encontrado." text="Ajuste os filtros ou envie um lote." />
+      ) : (
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Documento</th>
+                <th>Tipo</th>
+                <th>Trabalhador</th>
+                <th>Competência</th>
+                <th>Lote / páginas</th>
+                <th>Situação</th>
+                <th><span className="sr-only">Ações</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((d) => (
+                <tr key={d.id}>
+                  <td>#{d.id}{d.versao > 1 && <small className="muted"> · v{d.versao}</small>}</td>
+                  <td>{typeLabels[d.tipo] ?? d.tipo}</td>
+                  <td>{d.worker_id ?? "—"}</td>
+                  <td>{d.competencia ?? "—"}</td>
+                  <td>#{d.batch_id} · {pageList(d.paginas)}</td>
+                  <td><DocumentBadge status={d.status} /></td>
+                  <td>
+                    <Link className="table-action" href={`/painel/documentos/detalhe?id=${d.id}`}>
+                      Abrir <ArrowUpRight size={14} />
+                    </Link>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {rows.map((d) => (
-                  <tr key={d.id}>
-                    <td>
-                      <div className="document-cell">
-                        <FileText size={19} />
-                        <div>
-                          <strong>{d.type}</strong>
-                          <small>
-                            {d.id} · {d.batch}
-                          </small>
-                        </div>
-                      </div>
-                    </td>
-                    <td>{d.worker}</td>
-                    <td>{d.competence}</td>
-                    <td>
-                      <DocumentBadge status={d.status} supplier={supplier} />
-                    </td>
-                    <td>
-                      <button
-                        className="table-action"
-                        aria-expanded={selectedId === d.id}
-                        onClick={() =>
-                          setSelectedId(selectedId === d.id ? null : d.id)
-                        }
-                      >
-                        Detalhes <ArrowUpRight size={14} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <EmptyState
-            title="Nenhum documento encontrado"
-            text="Ajuste a busca, a situação ou o contexto da análise para consultar outros exemplos."
-          />
-        )}
-      </section>
-      {selected && (
-        <section
-          className="workspace-card evidence-panel"
-          aria-label={`Detalhes de ${selected.id}`}
-        >
-          <div className="card-title">
-            <div>
-              <span className="eyebrow">
-                RASTREABILIDADE · EXEMPLO SINTÉTICO
-              </span>
-              <h2>
-                {selected.type} · {selected.id}
-              </h2>
-            </div>
-            <button
-              className="icon-button"
-              aria-label="Fechar detalhes"
-              onClick={() => setSelectedId(null)}
-            >
-              <X size={19} />
-            </button>
-          </div>
-          <div className="evidence-grid">
-            <div className="document-preview">
-              <FileText size={38} />
-              <strong>Referência documental</strong>
-              <p>
-                <Link
-                  className="text-link"
-                  href={`/painel/lotes/${selected.batch}`}
-                >
-                  {selected.batch}
-                </Link>{" "}
-                · página {selected.page}
-              </p>
-              <span>
-                Representação ilustrativa. O arquivo original não está
-                disponível nesta demonstração.
-              </span>
-            </div>
-            <div>
-              <dl className="detail-list">
-                <div>
-                  <dt>Trabalhador</dt>
-                  <dd>{selected.worker}</dd>
-                </div>
-                <div>
-                  <dt>Competência</dt>
-                  <dd>{selected.competence}</dd>
-                </div>
-                <div>
-                  <dt>Contrato</dt>
-                  <dd>{selected.contract}</dd>
-                </div>
-                <div>
-                  <dt>Versão</dt>
-                  <dd>1 · exemplo</dd>
-                </div>
-                <div>
-                  <dt>Situação</dt>
-                  <dd>
-                    <DocumentBadge
-                      status={selected.status}
-                      supplier={supplier}
-                    />
-                  </dd>
-                </div>
-              </dl>
-              {documentFieldRows(selected.id).length > 0 && (
-                <section
-                  className="document-example-fields"
-                  aria-label="Campos sintéticos do documento"
-                >
-                  <h3>Campos de exemplo</h3>
-                  <p>
-                    Valores sintéticos para conferir a interface; sem extração
-                    de IA. Campos em revisão ainda dependem de conferência.
-                  </p>
-                  <dl className="detail-list">
-                    {documentFieldRows(selected.id).map((field) => (
-                      <div key={field.label}>
-                        <dt>{field.label}</dt>
-                        <dd>{field.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </section>
-              )}
-              <div className="evidence-note">
-                <Fingerprint size={18} />
-                <p>
-                  {supplier && selected.status === "REVISAO_HUMANA"
-                    ? "Documento em análise pela equipe responsável. Aguarde a conferência."
-                    : selected.note}
-                </p>
-              </div>
-            </div>
-          </div>
-          {!supplier && selected.status === "REVISAO_HUMANA" && (
-            <Link
-              className="button review-open-link"
-              href={`/painel/revisao/${selected.id}`}
-            >
-              Conferir na revisão <ArrowUpRight size={16} />
-            </Link>
-          )}
-          {!supplier && selected.status === "REVISAO_HUMANA" && (
-            <p className="integration-note">
-              A aprovação e a revisão documental serão conectadas à API em uma
-              próxima etapa.
-            </p>
-          )}
-        </section>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </>
+  );
+}
+
+function SearchBox() {
+  const [query, setQuery] = useState("");
+  const [hits, setHits] = useState<SearchHit[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    if (!query.trim()) return;
+    setBusy(true);
+    setError(null);
+    try {
+      setHits(await api<SearchHit[]>(`/api/search?q=${encodeURIComponent(query.trim())}`));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Falha na busca");
+      setHits(null);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <section className="workspace-card">
+      <form className="search-form" onSubmit={submit} role="search">
+        <label className="search-field">
+          <Search size={18} />
+          <span className="sr-only">Buscar no texto das páginas</span>
+          <input
+            type="search"
+            placeholder="Buscar no texto lido das páginas (ex.: T001, horas extras)"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </label>
+        <button className="button" disabled={busy || !query.trim()}>{busy ? "Buscando…" : "Buscar"}</button>
+      </form>
+      {error && <Notice tone="error">{error}</Notice>}
+      {hits && (hits.length === 0 ? (
+        <p className="muted">Nenhuma página encontrada para “{query}”.</p>
+      ) : (
+        <ul className="search-results">
+          {hits.map((h) => (
+            <li key={h.page_id}>
+              {h.document_id ? (
+                <Link href={`/painel/documentos/detalhe?id=${h.document_id}#pagina-${h.page_id}`}>
+                  Documento #{h.document_id} · página {h.ordem} do lote #{h.batch_id}
+                </Link>
+              ) : (
+                <strong>Página {h.ordem} do lote #{h.batch_id}</strong>
+              )}
+              <span className="muted"> · {h.contract_id}</span>
+              <p><Snippet text={h.trecho} /></p>
+            </li>
+          ))}
+        </ul>
+      ))}
+    </section>
   );
 }

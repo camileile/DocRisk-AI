@@ -1,0 +1,210 @@
+{
+  "competencia": "10/2026",
+  "contrato": "CT-001",
+  "paginas": 16,
+  "documentos": [
+    {
+      "paginas": [
+        1,
+        2
+      ],
+      "tipo": "CONTRATO",
+      "trabalhador_id": null,
+      "competencia": null,
+      "status_esperado": "APTO",
+      "horas_extras_h": null,
+      "horas_extras_so_em_reais": false,
+      "observacao": ""
+    },
+    {
+      "paginas": [
+        3,
+        4
+      ],
+      "tipo": "ESPELHO_PONTO",
+      "trabalhador_id": "T001",
+      "competencia": "10/2026",
+      "status_esperado": "APTO",
+      "horas_extras_h": 12,
+      "horas_extras_so_em_reais": false,
+      "observacao": ""
+    },
+    {
+      "paginas": [
+        5
+      ],
+      "tipo": "HOLERITE",
+      "trabalhador_id": "T001",
+      "competencia": "10/2026",
+      "status_esperado": "APTO",
+      "horas_extras_h": 8,
+      "horas_extras_so_em_reais": false,
+      "observacao": ""
+    },
+    {
+      "paginas": [
+        6
+      ],
+      "tipo": "ESPELHO_PONTO",
+      "trabalhador_id": "T002",
+      "competencia": "10/2026",
+      "status_esperado": "APTO",
+      "horas_extras_h": 6,
+      "horas_extras_so_em_reais": false,
+      "observacao": ""
+    },
+    {
+      "paginas": [
+        7
+      ],
+      "tipo": "HOLERITE",
+      "trabalhador_id": "T002",
+      "competencia": "10/2026",
+      "status_esperado": "PENDENTE_CORRECAO",
+      "horas_extras_h": null,
+      "horas_extras_so_em_reais": false,
+      "observacao": "corpo ilegível -> pendência ILEGIVEL"
+    },
+    {
+      "paginas": [
+        8
+      ],
+      "tipo": "COMPROVANTE_PAGAMENTO",
+      "trabalhador_id": "T001",
+      "competencia": "10/2026",
+      "status_esperado": "APTO",
+      "horas_extras_h": null,
+      "horas_extras_so_em_reais": false,
+      "observacao": ""
+    },
+    {
+      "paginas": [
+        9
+      ],
+      "tipo": "ESPELHO_PONTO",
+      "trabalhador_id": "T003",
+      "competencia": "10/2026",
+      "status_esperado": "PENDENTE_CORRECAO",
+      "horas_extras_h": null,
+      "horas_extras_so_em_reais": false,
+      "observacao": "página 2 de 2 faltante"
+    },
+    {
+      "paginas": [
+        10
+      ],
+      "tipo": "HOLERITE",
+      "trabalhador_id": "T003",
+      "competencia": "10/2026",
+      "status_esperado": "APTO",
+      "horas_extras_h": 2,
+      "horas_extras_so_em_reais": false,
+      "observacao": ""
+    },
+    {
+      "paginas": [
+        11
+      ],
+      "tipo": "DOCUMENTO_IDENTIFICACAO",
+      "trabalhador_id": null,
+      "competencia": null,
+      "status_esperado": "APTO",
+      "horas_extras_h": null,
+      "horas_extras_so_em_reais": false,
+      "observacao": ""
+    },
+    {
+      "paginas": [
+        12
+      ],
+      "tipo": "ESPELHO_PONTO",
+      "trabalhador_id": "T004",
+      "competencia": "10/2026",
+      "status_esperado": "APTO",
+      "horas_extras_h": 10,
+      "horas_extras_so_em_reais": false,
+      "observacao": ""
+    },
+    {
+      "paginas": [
+        13
+      ],
+      "tipo": "HOLERITE",
+      "trabalhador_id": "T004",
+      "competencia": "10/2026",
+      "status_esperado": "APTO",
+      "horas_extras_h": null,
+      "horas_extras_so_em_reais": true,
+      "observacao": ""
+    },
+    {
+      "paginas": [
+        14
+      ],
+      "tipo": "DESCONHECIDO",
+      "trabalhador_id": null,
+      "competencia": null,
+      "status_esperado": "REVISAO_HUMANA",
+      "horas_extras_h": null,
+      "horas_extras_so_em_reais": false,
+      "observacao": "anotação solta"
+    },
+    {
+      "paginas": [
+        15
+      ],
+      "tipo": "ESPELHO_PONTO",
+      "trabalhador_id": "T005",
+      "competencia": "10/2026",
+      "status_esperado": "APTO",
+      "horas_extras_h": 4,
+      "horas_extras_so_em_reais": false,
+      "observacao": ""
+    },
+    {
+      "paginas": [
+        16
+      ],
+      "tipo": "HOLERITE",
+      "trabalhador_id": "T005",
+      "competencia": "10/2026",
+      "status_esperado": "APTO",
+      "horas_extras_h": 4,
+      "horas_extras_so_em_reais": false,
+      "observacao": ""
+    }
+  ],
+  "conciliacao": {
+    "T001": {
+      "status": "ANALISADA",
+      "resultado": "DIVERGENCIA_A_VERIFICAR",
+      "diferenca_h": 4
+    },
+    "T002": {
+      "status": "BLOQUEADA_PENDENCIA",
+      "resultado": "NAO_AVALIADO"
+    },
+    "T003": {
+      "status": "BLOQUEADA_PENDENCIA",
+      "resultado": "NAO_AVALIADO"
+    },
+    "T004": {
+      "status": "ANALISADA",
+      "resultado": "DADOS_INSUFICIENTES"
+    },
+    "T005": {
+      "status": "ANALISADA",
+      "resultado": "SEM_DIVERGENCIA_NOS_CAMPOS_COMPARADOS",
+      "diferenca_h": 0
+    }
+  },
+  "apos_reenvio_T002": {
+    "T002": {
+      "status": "ANALISADA",
+      "resultado": "SEM_DIVERGENCIA_NOS_CAMPOS_COMPARADOS",
+      "diferenca_h": 0
+    },
+    "pendencia_holerite_T002": "RESOLVIDA",
+    "versao_holerite_T002": 2
+  }
+}

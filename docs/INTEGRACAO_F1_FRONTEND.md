@@ -1,5 +1,7 @@
 # DocRisk AI — Primeira integração Web ↔ API F1
 
+> **Atualização (branch `fix/auditoria-integracao-geral`):** o front agora usa a API em todas as telas e não tem mais modo fictício. O login aceita tanto a lista de perfis de `/api/demo/users` (com `DOCRISK_DEMO_MODE=1`) quanto o token colado descrito aqui. **Mudança de comportamento:** o token passou a ficar em `sessionStorage` (escopo da aba, apagado ao sair) para que recarregar a página não derrube a sessão durante a demonstração. A URL da API aceita `NEXT_PUBLIC_API_URL` ou `NEXT_PUBLIC_DOCRISK_API_URL`. As seções abaixo descrevem a primeira integração parcial e ficam como histórico.
+
 **Escopo concluído em código:** autenticação de teste por token Bearer da API FastAPI, consulta do usuário (`GET /api/me`), contratos (`GET /api/contracts`), lotes (`GET /api/batches`) e detalhe dos lotes/documentos (`GET /api/batches/{id}` e `GET /api/batches/{id}/documents`).
 
 Não é login de produção. O token é uma credencial *demo* criada no banco local: **não deve ser publicado, commitado, compartilhado, colocado em variáveis NEXT_PUBLIC ou usado contra uma API pública**. A interface mantém o token apenas no estado React, sem cookie, localStorage, sessionStorage ou persistência após refresh. A troca de perfil desconecta a sessão.

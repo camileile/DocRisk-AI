@@ -6,8 +6,9 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const { chromium } = require("playwright");
 
-const site = "http://localhost:3000";
-const api = "http://127.0.0.1:8000";
+const site = process.env.DOCRISK_LIVE_WEB_URL || "http://localhost:3000";
+const api = process.env.DOCRISK_LIVE_API_URL || "http://127.0.0.1:8000";
+const uploads = process.env.DOCRISK_UPLOAD_DIR || "/tmp";
 
 async function run() {
   const result = await fetch(api + "/api/demo/users");
@@ -24,6 +25,8 @@ async function run() {
 
   async function enter(token) {
     await page.goto(site + "/acesso/", { waitUntil: "domcontentloaded" });
+    // A lista de perfis só aparece depois da hidratação; antes disso o React zera o campo.
+    await page.getByRole("radio").first().waitFor({ timeout: 20000 });
     await page.getByLabel("Token Bearer de teste").fill(token);
     await page.getByRole("button", { name: "Conectar API de testes" }).click();
     await page.waitForURL((url) => url.pathname.startsWith("/painel"), { timeout: 30000 });
@@ -32,33 +35,32 @@ async function run() {
   try {
     console.log("[live 1/5] Identidade e contratos do SQLite via FastAPI");
     await enter(analyst.token);
-    await page.getByText("Acesso confirmado como Analista Bernhoeft (demo)").waitFor();
+    await page.locator(".workspace-person").getByText("Analista Bernhoeft (demo)").waitFor();
     const select = page.getByRole("combobox", { name: "Contrato" });
     assert.equal(await select.locator("option").count(), 2);
-    await page.getByText("integracao-f1-sintetico.pdf").waitFor();
 
     console.log("[live 2/5] Consulta lote/documentos processados pela F2");
     await page.getByRole("link", { name: "Lotes enviados", exact: true }).click();
     await page.getByText("integracao-f1-sintetico.pdf").waitFor();
-    await page.getByRole("button", { name: "Ver documentos" }).first().click();
-    await page.getByText(/Documento #\d+/).first().waitFor();
+    await page.getByRole("row", { name: /integracao-f1-sintetico\.pdf/ }).getByRole("link", { name: /Abrir/ }).click();
+    await page.getByText(/documento\(s\) separados/).waitFor();
     assert.equal(await page.getByText("LOTE-009").count(), 0);
 
     console.log("[live 3/5] Fornecedora vê apenas seu contrato real na API");
     await enter(supplier.token);
-    await page.getByText("Acesso confirmado como Operador Beta (demo)").waitFor();
+    await page.locator(".workspace-person").getByText("Operador Beta (demo)").waitFor();
     assert.equal(await page.getByRole("combobox", { name: "Contrato" }).locator("option").count(), 1);
     await page.getByRole("link", { name: "Lotes enviados", exact: true }).click();
     await page.getByText("integracao-f1-sintetico.pdf").waitFor();
     assert.equal(await page.getByRole("link", { name: "Pareceres", exact: true }).count(), 0);
 
     console.log("[live 4/5] Upload real do navegador, processamento F2 e histórico");
-    await page.getByRole("link", { name: "Enviar documentos", exact: true }).click();
+    await page.getByLabel("Navegação do painel").getByRole("link", { name: "Enviar lote", exact: true }).click();
     await page.getByRole("heading", { name: "Envio de documentos." }).waitFor();
     await page.getByLabel("Selecionar arquivo para envio real").setInputFiles({
       name: "teste-browser-f2.pdf",
       mimeType: "application/pdf",
-      buffer: fs.readFileSync("/tmp/docrisk-browser-upload.pdf"),
+      buffer: fs.readFileSync(uploads + "/docrisk-browser-upload.pdf"),
     });
     await page.getByRole("checkbox", { name: /Confirmo que o arquivo é/ }).check();
     await page.getByRole("button", { name: "Enviar arquivo ao backend" }).click();
@@ -70,7 +72,7 @@ async function run() {
     await page.getByLabel("Selecionar arquivo para envio real").setInputFiles({
       name: "teste-browser-f2.png",
       mimeType: "image/png",
-      buffer: fs.readFileSync("/tmp/docrisk-browser-upload.png"),
+      buffer: fs.readFileSync(uploads + "/docrisk-browser-upload.png"),
     });
     await page.getByRole("checkbox", { name: /Confirmo que o arquivo é/ }).check();
     await page.getByRole("button", { name: "Enviar arquivo ao backend" }).click();

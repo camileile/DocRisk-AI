@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - "web/**"
+      - "api/**"
       - ".github/workflows/frontend-validation.yml"
   push:
     branches: [feat/web-admin-auditoria, main]
     paths:
       - "web/**"
+      - "api/**"
       - ".github/workflows/frontend-validation.yml"
   workflow_dispatch:
 
@@ -39,7 +41,7 @@ jobs:
         run: npm run typecheck
       - name: Build e exportação estática
         env:
-          NEXT_PUBLIC_DOCRISK_API_URL: http://127.0.0.1:8000
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:8000
         run: npm run build
       - name: Validar rotas geradas
         run: |
@@ -64,21 +66,17 @@ jobs:
           done
           cat /tmp/docrisk-static.log
           exit 1
-      - name: Teste de navegação por perfil
-        run: node scripts/smoke.cjs
-      - name: Teste de integração F1 com respostas controladas
-        run: node scripts/integration-smoke.cjs
-
-      - name: Python 3.12 para teste com API real
+      - name: Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Instalar backend local de testes
-        run: python -m pip install -e "../api[test]"
-      - name: Iniciar FastAPI em loopback
+      - name: API real em loopback (leitor offline, modo demonstração)
+        working-directory: api
         run: |
+          python -m pip install -e ".[test]"
           DOCRISK_DEMO_MODE=1 DOCRISK_SYNC=1 AI_PROVIDER=textlayer \
-            DOCRISK_DATA_DIR="$RUNNER_TEMP/docrisk-f1-integration" \
+            DOCRISK_DATA_DIR="$RUNNER_TEMP/docrisk-ci-data" \
+            CORS_ORIGINS="http://127.0.0.1:4173,http://localhost:3000" \
             python -m uvicorn docrisk_core.api:app --host 127.0.0.1 --port 8000 > /tmp/docrisk-api.log 2>&1 &
           for i in $(seq 1 40); do
             if curl -fsS http://127.0.0.1:8000/health > /dev/null; then exit 0; fi
@@ -86,6 +84,8 @@ jobs:
           done
           cat /tmp/docrisk-api.log
           exit 1
+      - name: Teste ponta a ponta por perfil (front + API, lote sintético completo)
+        run: node scripts/smoke.cjs
       - name: Criar lote PDF inteiramente sintético via API F1 + F2
         run: |
           python - <<'PY'

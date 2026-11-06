@@ -1,242 +1,65 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
-import {
-  Search,
-  ArrowRight,
-  CircleAlert,
-  GitCompareArrows,
-  ShieldCheck,
-  Clock3,
-  LockKeyhole,
-} from "lucide-react";
-import { useDemo } from "@/components/demo-provider";
-import { PageIntro, EmptyState } from "@/components/workspace-parts";
-import {
-  AnalysisStatusBadge,
-  AnalysisResultBadge,
-} from "@/components/analysis-badges";
-import {
-  analyses,
-  analysisStatusLabels,
-  analysisResultLabels,
-  formatHours,
-  type AnalysisStatus,
-  type AnalysisResult,
-} from "@/lib/analyses";
+import { useSession } from "@/components/demo-provider";
+import { AnalysisBadge, EmptyState, ErrorState, LoadingState, PageIntro } from "@/components/workspace-parts";
+import { formatDate, formatHours, typeLabels, type Analysis } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
 export default function AnalysesPage() {
-  const { role, contract, competence } = useDemo();
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState("todos");
-  const [result, setResult] = useState("todos");
-  if (role !== "ANALISTA_BH")
-    return (
-      <>
-        <PageIntro
-          eyebrow="CONCILIAÇÕES"
-          title="Área de análise Bernhoeft."
-          description="As conciliações e seus insumos pertencem à perspectiva do analista nesta demonstração."
-        />
-        <Link href="/painel" className="button secondary">
-          Voltar ao painel
-        </Link>
-      </>
-    );
-  const context = analyses.filter(
-    (a) => a.contract === contract && a.competence === competence,
-  );
-  const rows = context.filter(
-    (a) =>
-      (status === "todos" || a.status === status) &&
-      (result === "todos" || a.result === result) &&
-      `${a.id} ${a.worker}`
-        .toLocaleLowerCase("pt-BR")
-        .includes(query.trim().toLocaleLowerCase("pt-BR")),
-  );
+  const { contract } = useSession();
+  const { data, error, loading, reload } = useApi<Analysis[]>("/api/analyses");
+  const rows = (data ?? []).filter((a) => !contract || a.contract_id === contract);
   return (
     <>
       <PageIntro
-        eyebrow="ANALISTA BERNHOEFT · TRABALHISTA"
-        title="Cruzar dados. Conferir contextos."
-        description="Compare horas extras por trabalhador e competência, com as evidências e limitações de cada exemplo."
+        eyebrow="CONCILIAÇÃO DE HORAS EXTRAS"
+        title="Ponto e holerite, lado a lado."
+        description="Comparação por trabalhador e competência, sempre horas com horas. Pares com pendência ficam bloqueados sem travar os demais. Divergência é indício a conferir."
       />
-      <div className="stat-grid">
-        {[
-          {
-            icon: GitCompareArrows,
-            value: context.length,
-            label: "Pares em acompanhamento",
-            tone: "purple",
-          },
-          {
-            icon: CircleAlert,
-            value: context.filter((a) => a.result === "DIVERGENCIA_A_VERIFICAR")
-              .length,
-            label: "Indícios a conferir",
-            tone: "amber",
-          },
-          {
-            icon: LockKeyhole,
-            value: context.filter(
-              (a) =>
-                a.status === "BLOQUEADA_PENDENCIA" ||
-                a.status === "REVISAO_HUMANA" ||
-                a.status === "AGUARDANDO_DOCUMENTOS",
-            ).length,
-            label: "Dependem de documentos",
-            tone: "purple",
-          },
-          {
-            icon: ShieldCheck,
-            value: context.filter(
-              (a) => a.result === "SEM_DIVERGENCIA_NOS_CAMPOS_COMPARADOS",
-            ).length,
-            label: "Sem divergência nos campos",
-            tone: "green",
-          },
-        ].map(({ icon: Icon, value, label, tone }) => (
-          <article className="stat-card" key={label}>
-            <div className={`stat-icon ${tone}`}>
-              <Icon size={20} />
-            </div>
-            <strong>{value}</strong>
-            <span>{label}</span>
-          </article>
-        ))}
-      </div>
-      <div className="inline-info">
-        <CircleAlert size={18} />
-        <p>
-          Horas são comparadas com horas. Valores em reais não são convertidos
-          em jornada. Um bloqueio afeta apenas o trabalhador e a competência
-          dependentes do documento.
-        </p>
-      </div>
-      <section className="workspace-card">
-        <div className="analysis-toolbar">
-          <label className="search-field">
-            <Search size={18} />
-            <input
-              aria-label="Buscar conciliações"
-              placeholder="Buscar trabalhador ou análise…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </label>
-          <div>
-            <label className="filter-label">
-              Situação
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option value="todos">Todas</option>
-                {(Object.keys(analysisStatusLabels) as AnalysisStatus[]).map(
-                  (key) => (
-                    <option key={key} value={key}>
-                      {analysisStatusLabels[key]}
-                    </option>
-                  ),
-                )}
-              </select>
-            </label>
-            <label className="filter-label">
-              Resultado
-              <select
-                value={result}
-                onChange={(e) => setResult(e.target.value)}
-              >
-                <option value="todos">Todos</option>
-                {(Object.keys(analysisResultLabels) as AnalysisResult[]).map(
-                  (key) => (
-                    <option key={key} value={key}>
-                      {analysisResultLabels[key]}
-                    </option>
-                  ),
-                )}
-              </select>
-            </label>
-          </div>
+      {loading ? (
+        <LoadingState />
+      ) : error ? (
+        <ErrorState message={error} onRetry={reload} />
+      ) : rows.length === 0 ? (
+        <EmptyState title="Nenhuma análise ainda." text="As análises são criadas quando chegam ponto e holerite de um trabalhador." />
+      ) : (
+        <div className="analysis-list">
+          {rows.map((a) => (
+            <article key={a.id} className="workspace-card analysis-card">
+              <header>
+                <div>
+                  <span className="eyebrow">{a.contract_id} · COMPETÊNCIA {a.competencia}</span>
+                  <h2>Trabalhador {a.worker_id}</h2>
+                </div>
+                <AnalysisBadge status={a.status} result={a.resultado.tipo} />
+              </header>
+              {a.status === "ANALISADA" && (
+                <div className="hours-comparison">
+                  <div><span>Ponto</span><strong>{formatHours(a.resultado.horas_ponto)}</strong></div>
+                  <div><span>Holerite</span><strong>{formatHours(a.resultado.horas_folha)}</strong></div>
+                  <div><span>Diferença</span><strong>{formatHours(a.resultado.diferenca_h)}</strong></div>
+                </div>
+              )}
+              <p>{a.resultado.detalhe}</p>
+              <p className="muted">{a.resultado.comprovante.observacao}</p>
+              <details>
+                <summary>Evidências utilizadas ({a.insumos.length})</summary>
+                <ul className="plain-list">
+                  {a.insumos.map((i) => (
+                    <li key={i.doc_id}>
+                      <Link href={`/painel/documentos/detalhe?id=${i.doc_id}`}>
+                        {typeLabels[i.tipo] ?? i.tipo} #{i.doc_id}
+                      </Link>{" "}
+                      · versão {i.versao} · lote #{i.batch_id} · páginas {i.paginas.join(", ")} · {i.status}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+              <small className="muted">Regra {a.regra_versao} · calculada em {formatDate(a.created_at)}</small>
+            </article>
+          ))}
         </div>
-        <div className="list-summary" aria-live="polite">
-          {rows.length} análise{rows.length === 1 ? "" : "s"} encontrada
-          {rows.length === 1 ? "" : "s"}
-        </div>
-        {rows.length ? (
-          <div className="table-scroll">
-            <table className="data-table analysis-table">
-              <thead>
-                <tr>
-                  <th>Trabalhador / análise</th>
-                  <th>Situação e resultado</th>
-                  <th>Ponto · h</th>
-                  <th>Folha · h</th>
-                  <th>Diferença · h</th>
-                  <th>
-                    <span className="sr-only">Ações</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((a) => (
-                  <tr key={a.id}>
-                    <td>
-                      <strong>{a.worker}</strong>
-                      <small>
-                        {a.id} · {a.competence}
-                      </small>
-                    </td>
-                    <td>
-                      <div className="analysis-status-stack">
-                        <AnalysisStatusBadge status={a.status} />
-                        <AnalysisResultBadge result={a.result} />
-                      </div>
-                    </td>
-                    <td>{formatHours(a.hoursPoint)}</td>
-                    <td>{formatHours(a.hoursPayroll)}</td>
-                    <td>
-                      {a.differenceHours === null ? (
-                        <span className="unavailable-value">Não comparada</span>
-                      ) : (
-                        formatHours(a.differenceHours)
-                      )}
-                    </td>
-                    <td>
-                      <Link
-                        className="table-action"
-                        href={`/painel/conciliacoes/${a.id}`}
-                        aria-label={`Abrir ${a.id}`}
-                      >
-                        Conferir <ArrowRight size={14} />
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <EmptyState
-            title="Nenhuma análise encontrada"
-            text="Altere a busca, os filtros ou o contexto para consultar os exemplos."
-          />
-        )}
-        <p className="card-footnote">
-          Resultados demonstrativos fixos. “Analisada” não significa
-          regularidade integral nem parecer publicado.
-        </p>
-      </section>
-      <section className="workspace-card analysis-explainer">
-        <Clock3 size={21} />
-        <div>
-          <h2>Cada análise tem seu próprio caminho.</h2>
-          <p>
-            Documentos ausentes, em correção ou em revisão impedem a comparação
-            dependente. Os demais pares podem seguir. Valores não disponíveis
-            continuam sem valor, sem preenchimento com zero.
-          </p>
-        </div>
-      </section>
+      )}
     </>
   );
 }

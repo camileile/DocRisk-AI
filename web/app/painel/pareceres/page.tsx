@@ -1,174 +1,160 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
-import {
-  Search,
-  ArrowRight,
-  FileCheck2,
-  FilePenLine,
-  UserCheck,
-  Layers3,
-  CircleAlert,
-} from "lucide-react";
-import { useDemo } from "@/components/demo-provider";
-import { reports, reportStatusLabels, type ReportStatus } from "@/lib/reports";
-import { formatReceivedAt } from "@/lib/batches";
-import { PageIntro, EmptyState } from "@/components/workspace-parts";
-import { ReportBadge } from "@/components/report-badge";
+import { FilePlus2, Send } from "lucide-react";
+import { useSession } from "@/components/demo-provider";
+import { ReportView } from "@/components/report-view";
+import { EmptyState, ErrorState, LoadingState, Notice, PageIntro } from "@/components/workspace-parts";
+import { api, formatDate, reportStatusLabels, type Report, type ReportContent } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
 export default function ReportsPage() {
-  const { role, contract, competence } = useDemo();
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState("todos");
-  if (role !== "ANALISTA_BH")
-    return (
-      <>
-        <PageIntro
-          eyebrow="PARECERES"
-          title="Área do analista."
-          description="A preparação e revisão de pareceres pertencem à perspectiva Bernhoeft."
-        />
-        <Link className="button secondary" href="/painel">
-          Voltar ao painel
-        </Link>
-      </>
-    );
-  const context = reports.filter(
-    (r) => r.contract === contract && r.competence === competence,
-  );
-  const rows = context.filter(
-    (r) =>
-      (status === "todos" || r.status === status) &&
-      r.id.toLowerCase().includes(query.trim().toLowerCase()),
-  );
+  const { contract, contracts } = useSession();
+  const { data, error, loading, reload } = useApi<Report[]>("/api/reports");
+  const [competencia, setCompetencia] = useState("10/2026");
+  const [observacoes, setObservacoes] = useState("");
+  const [selected, setSelected] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [feedback, setFeedback] = useState<{ tone: "success" | "error"; text: string } | null>(null);
+  const rows = (data ?? []).filter((r) => !contract || r.contract_id === contract);
+
+  async function create() {
+    setBusy(true);
+    setFeedback(null);
+    try {
+      const r = await api<Report>("/api/reports", {
+        method: "POST",
+        body: JSON.stringify({ contract_id: contract, competencia, observacoes }),
+      });
+      setSelected(r.id);
+      setFeedback({ tone: "success", text: `Rascunho v${r.versao} criado. Confira a prévia antes de publicar.` });
+      await reload();
+    } catch (err) {
+      setFeedback({ tone: "error", text: err instanceof Error ? err.message : "Falha ao criar rascunho" });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <>
       <PageIntro
-        eyebrow="ANALISTA BERNHOEFT"
-        title="Da conferência ao parecer."
-        description="Acompanhe rascunhos, revisão e versões publicadas dos pareceres de exemplo."
+        eyebrow="PARECERES"
+        title="Revisado por pessoas, publicado com versão."
+        description="O rascunho usa as análises atuais. A publicação grava um retrato imutável; correções geram nova versão e a anterior fica marcada como substituída. A contratante só vê o publicado."
       />
-      <div className="stat-grid">
-        {[
-          {
-            icon: FilePenLine,
-            label: "Rascunhos",
-            value: context.filter((r) => r.status === "RASCUNHO").length,
-            tone: "purple",
-          },
-          {
-            icon: UserCheck,
-            label: "Em revisão",
-            value: context.filter((r) => r.status === "EM_REVISAO").length,
-            tone: "purple",
-          },
-          {
-            icon: FileCheck2,
-            label: "Aprovados e publicados",
-            value: context.filter((r) => r.status === "APROVADO_PUBLICADO")
-              .length,
-            tone: "green",
-          },
-          {
-            icon: Layers3,
-            label: "Versões substituídas",
-            value: context.filter((r) => r.status === "SUBSTITUIDO_POR_VERSAO")
-              .length,
-            tone: "purple",
-          },
-        ].map(({ icon: Icon, label, value, tone }) => (
-          <article className="stat-card" key={label}>
-            <div className={`stat-icon ${tone}`}>
-              <Icon size={20} />
-            </div>
-            <strong>{value}</strong>
-            <span>{label}</span>
-          </article>
-        ))}
-      </div>
-      <div className="inline-info">
-        <CircleAlert size={18} />
-        <p>
-          Um rascunho novo não substitui o parecer publicado. A contratante só
-          consulta versões aprovadas e publicadas; a publicação real exige
-          revisão humana e um retrato imutável na API.
-        </p>
-      </div>
+      {feedback && <Notice tone={feedback.tone}>{feedback.text}</Notice>}
       <section className="workspace-card">
-        <div className="list-toolbar">
-          <label className="search-field">
-            <Search size={18} />
-            <input
-              aria-label="Buscar pareceres"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar identificador do parecer…"
-            />
+        <h2>Novo rascunho</h2>
+        <div className="inline-form">
+          <label className="filter-label">
+            Contrato
+            <input value={contracts.find((c) => c.id === contract)?.nome ?? contract} disabled />
           </label>
           <label className="filter-label">
-            Situação
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="todos">Todas as situações</option>
-              {(Object.keys(reportStatusLabels) as ReportStatus[]).map(
-                (key) => (
-                  <option key={key} value={key}>
-                    {reportStatusLabels[key]}
-                  </option>
-                ),
-              )}
-            </select>
+            Competência
+            <input value={competencia} onChange={(e) => setCompetencia(e.target.value)} pattern="(0[1-9]|1[0-2])/\d{4}" />
           </label>
+          <label className="filter-label grow">
+            Observações internas
+            <input value={observacoes} onChange={(e) => setObservacoes(e.target.value)} maxLength={2000} />
+          </label>
+          <button className="button" disabled={busy || !contract || !/^(0[1-9]|1[0-2])\/\d{4}$/.test(competencia)} onClick={create}>
+            <FilePlus2 size={16} /> Criar rascunho
+          </button>
         </div>
-        <div className="list-summary" aria-live="polite">
-          {rows.length}{" "}
-          {rows.length === 1 ? "versão encontrada" : "versões encontradas"}
-        </div>
-        {rows.length ? (
-          <div className="table-scroll">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Parecer</th>
-                  <th>Situação</th>
-                  <th>Registro do exemplo (Recife)</th>
-                  <th>
-                    <span className="sr-only">Ações</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((report) => (
-                  <tr key={report.id}>
-                    <td>
-                      <strong>{report.id}</strong>
-                      <small>
-                        Versão {report.version} · {report.competence}
-                      </small>
-                    </td>
-                    <td>
-                      <ReportBadge status={report.status} />
-                    </td>
-                    <td>{formatReceivedAt(report.recordedAt)}</td>
-                    <td>
-                      <Link
-                        className="table-action"
-                        href={`/painel/pareceres/${report.id}`}
-                        aria-label={`Abrir ${report.id}`}
-                      >
-                        Abrir parecer <ArrowRight size={14} />
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <EmptyState
-            title="Nenhum parecer encontrado"
-            text="Ajuste a busca, os filtros ou o contexto para consultar os exemplos."
-          />
-        )}
       </section>
+      {loading ? (
+        <LoadingState />
+      ) : error ? (
+        <ErrorState message={error} onRetry={reload} />
+      ) : rows.length === 0 ? (
+        <EmptyState title="Nenhum parecer." text="Crie um rascunho para a competência desejada." />
+      ) : (
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Parecer</th>
+                <th>Competência</th>
+                <th>Situação</th>
+                <th>Publicado em</th>
+                <th><span className="sr-only">Ações</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} className={selected === r.id ? "selected" : ""}>
+                  <td>#{r.id} · versão {r.versao}</td>
+                  <td>{r.competencia}</td>
+                  <td>{reportStatusLabels[r.status]}</td>
+                  <td>{formatDate(r.publicado_em)}</td>
+                  <td>
+                    <button className="table-action" onClick={() => setSelected(r.id)}>
+                      {r.status === "RASCUNHO" ? "Ver prévia" : "Ver parecer"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {selected !== null && (
+        <ReportPanel
+          key={selected}
+          id={selected}
+          onPublished={() => {
+            setFeedback({ tone: "success", text: "Parecer publicado. A contratante já pode consultá-lo." });
+            void reload();
+          }}
+        />
+      )}
     </>
+  );
+}
+
+function ReportPanel({ id, onPublished }: { id: number; onPublished: () => void }) {
+  const { data, error, loading, reload } = useApi<Report>(`/api/reports/${id}/preview`);
+  const [busy, setBusy] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
+  if (loading) return <LoadingState text="Montando a prévia…" />;
+  if (error || !data) return <ErrorState message={error ?? "Parecer não encontrado"} onRetry={reload} />;
+  const content = data.conteudo_json as ReportContent;
+  const draft = data.status === "RASCUNHO";
+
+  async function publish() {
+    if (!window.confirm("Publicar este parecer? O conteúdo fica imutável e visível à contratante.")) return;
+    setBusy(true);
+    setPublishError(null);
+    try {
+      await api(`/api/reports/${id}/publish`, { method: "POST" });
+      onPublished();
+      await reload();
+    } catch (err) {
+      setPublishError(err instanceof Error ? err.message : "Falha ao publicar");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="workspace-card">
+      <div className="card-title">
+        <h2>
+          Parecer #{data.id} · versão {data.versao} · {reportStatusLabels[data.status]}
+        </h2>
+        {draft && (
+          <button className="button" disabled={busy} onClick={publish}>
+            <Send size={16} /> {busy ? "Publicando…" : "Publicar"}
+          </button>
+        )}
+      </div>
+      {publishError && <Notice tone="error">{publishError}</Notice>}
+      {content && "resumo" in content ? (
+        <ReportView content={content} draft={draft} />
+      ) : (
+        <EmptyState title="Sem conteúdo." text="Este parecer não possui conteúdo gravado." />
+      )}
+    </section>
   );
 }

@@ -1,3 +1,5 @@
+import { API_URL } from "./api";
+
 // Integração inicial com a API F1. O token é fornecido pelo usuário em ambiente
 // local de testes e permanece apenas na memória do React (nunca em storage).
 export type ApiUser = {
@@ -58,7 +60,8 @@ export class ApiRequestError extends Error {
   }
 }
 
-const configuredUrl = process.env.NEXT_PUBLIC_DOCRISK_API_URL?.trim() ?? "";
+// Mesma origem usada por lib/api.ts (NEXT_PUBLIC_API_URL, NEXT_PUBLIC_DOCRISK_API_URL ou o padrão local).
+const configuredUrl = API_URL.trim();
 
 export function apiIsConfigured(): boolean {
   return configuredUrl.length > 0;
@@ -72,7 +75,7 @@ function apiOrigin(): string {
   try {
     url = new URL(configuredUrl);
   } catch {
-    throw new ApiRequestError("NEXT_PUBLIC_DOCRISK_API_URL não é uma URL válida.");
+    throw new ApiRequestError("A URL da API configurada não é válida.");
   }
   const local = url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "[::1]";
   if (url.username || url.password || url.search || url.hash || url.pathname !== "/" ||
