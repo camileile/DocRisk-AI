@@ -18,7 +18,7 @@ export function FieldReview({ doc, disabled, onSave, onSelectPage }: {
   function save(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (disabled || !changed.length || !valid || !reason.trim()) return;
-    onSave({ acao: "editar_campos", esperado_em: doc.updated_at, justificativa: reason.trim(),
+    onSave({ acao: "corrigir_campos", esperado_em: doc.updated_at, motivo: reason.trim(),
       campos: Object.fromEntries(changed.map(name => [name, values[name] === "" ? null : name === "data_pagamento" ? values[name] : Number(values[name])])),
       fontes: Object.fromEntries(changed.map(name => [name, Number(sources[name])])),
     });
@@ -56,9 +56,9 @@ export function FieldReview({ doc, disabled, onSave, onSelectPage }: {
         </fieldset>
       </form>
       {!!doc.revisoes_campos?.length && <details><summary>Histórico de correções ({doc.revisoes_campos.length} mais recentes)</summary>
-        {doc.revisoes_campos.map(review => <article key={review.id}>
-          <p><strong>{review.autor}</strong> · {formatDate(review.created_at)}</p><p>{review.justificativa}</p>
-          <ul>{Object.entries(review.depois).map(([name, value]) => <li key={name}>{LABELS[name as keyof Campos]}: {String(review.antes[name as keyof Campos] ?? "ausente")} → {String(value ?? "ausente")} · página de origem #{review.fontes[name as keyof Campos]}</li>)}</ul>
+        {doc.revisoes_campos.map(review => <article key={review.revision_number}>
+          <p><strong>{review.author_name}</strong> · {formatDate(review.created_at)}</p><p>{review.reason}</p>
+          <p>{LABELS[review.field_name]}: {String(review.valor_original ?? "ausente")} → {String(review.valor_corrigido ?? "ausente")} · {review.source} · versão {review.document_version}</p>
         </article>)}
       </details>}
     </section>

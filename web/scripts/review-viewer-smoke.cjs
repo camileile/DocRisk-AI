@@ -54,9 +54,9 @@ if (!Number.isSafeInteger(docId) || docId <= 0) throw Error('Informe DOCRISK_VIE
     const saved = await (await fetch(`${api}/api/documents/${docId}?include_page_text=false`, { headers })).json();
     assert.equal(saved.campos.horas_extras_h, 12);
     assert.equal(saved.status, 'REVISAO_HUMANA');
-    assert.equal(saved.revisoes_campos[0].justificativa, 'Conferência sintética da página 50.');
+    assert.equal(saved.revisoes_campos[0].reason, 'Conferência sintética da página 50.');
     // A fonte abre a página exata sem carregar as demais.
-    await page.getByRole('button', { name: 'Lote p. 50', exact: true }).click();
+    await page.getByRole('button', { name: 'Lote p. 50', exact: true }).first().click();
     await page.getByRole('status').filter({ hasText: 'Página 50 de' }).waitFor();
     await viewer.getByRole('img').waitFor();
     // Verificação responsiva do visualizador, sem repetir os seis perfis.

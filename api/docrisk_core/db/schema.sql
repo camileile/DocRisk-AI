@@ -90,6 +90,24 @@ CREATE TABLE IF NOT EXISTS doc_pages (
   posicao      INTEGER NOT NULL      -- 1..n dentro do documento
 );
 
+-- Histórico imutável de correções manuais de campos extraídos.
+CREATE TABLE IF NOT EXISTS document_field_reviews (
+  id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+  document_id          INTEGER NOT NULL REFERENCES documents(id),
+  field_name           TEXT NOT NULL,
+  original_value_json  TEXT NOT NULL,
+  corrected_value_json TEXT NOT NULL,
+  author_id            TEXT NOT NULL REFERENCES users(id),
+  reason               TEXT NOT NULL,
+  source               TEXT NOT NULL,
+  document_version     INTEGER NOT NULL,
+  revision_number      INTEGER NOT NULL,
+  created_at           TEXT NOT NULL,
+  UNIQUE (document_id, revision_number)
+);
+CREATE INDEX IF NOT EXISTS ix_document_field_reviews_document
+  ON document_field_reviews (document_id, revision_number);
+
 CREATE TABLE IF NOT EXISTS issues (
   id              INTEGER PRIMARY KEY AUTOINCREMENT,
   contract_id     TEXT NOT NULL REFERENCES contracts(id),
@@ -239,16 +257,3 @@ CREATE TABLE IF NOT EXISTS platform_settings (
   contato TEXT NOT NULL DEFAULT ''
 );
 INSERT OR IGNORE INTO platform_settings (id,nome) VALUES (1,'DocRisk AI');
-
--- Histórico interno de correções humanas: nunca exposto em auditoria administrativa.
-CREATE TABLE IF NOT EXISTS document_field_reviews (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  document_id INTEGER NOT NULL REFERENCES documents(id),
-  user_id TEXT NOT NULL REFERENCES users(id),
-  antes_json TEXT NOT NULL,
-  depois_json TEXT NOT NULL,
-  fontes_json TEXT NOT NULL,
-  justificativa TEXT NOT NULL,
-  created_at TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS ix_document_field_reviews ON document_field_reviews(document_id, id);

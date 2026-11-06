@@ -15,7 +15,7 @@ FIELDS = {"horas_extras_h", "horas_extras_valor", "valor_liquido", "valor_pago",
 def corrigir(conn, doc, payload: dict[str, Any], user_id: str) -> None:
     changes = payload.get("campos")
     sources = payload.get("fontes")
-    reason = payload.get("justificativa")
+    reason = payload.get("motivo")
     if not isinstance(changes, dict) or not changes or not set(changes) <= FIELDS:
         raise HTTPException(422, "Informe somente campos documentais editáveis")
     if not isinstance(reason, str) or not 1 <= len(reason.strip()) <= 500:
@@ -56,10 +56,14 @@ def corrigir(conn, doc, payload: dict[str, Any], user_id: str) -> None:
         (json.dumps(fields), user_id, now, doc["id"], doc["updated_at"], doc["status"]))
     if updated.rowcount != 1:
         raise HTTPException(409, "Documento atualizado por outra operação; recarregue antes de editar")
-    conn.execute(
-        "INSERT INTO document_field_reviews (document_id,user_id,antes_json,depois_json,fontes_json,justificativa,created_at) "
-        "VALUES (?,?,?,?,?,?,?)", (doc["id"], user_id, json.dumps(before), json.dumps(actual),
-                                     json.dumps({name: sources[name] for name in actual}), reason.strip(), now))
+    revision = conn.execute("SELECT COALESCE(MAX(revision_number),0)+1 FROM document_field_reviews WHERE document_id=?", (doc["id"],)).fetchone()[0]
+    for name, value in actual.items():
+        conn.execute(
+            "INSERT INTO document_field_reviews (document_id,field_name,original_value_json,corrected_value_json,author_id,reason,source,document_version,revision_number,created_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
+            (doc["id"],name,json.dumps(before[name]),json.dumps(value),user_id,reason.strip(),
+             f"Página #{sources[name]}",doc["versao"],revision,now))
+        revision += 1
+
 
 
 def evidencias(conn, document_id: int) -> dict[str, list[dict[str, Any]]]:
@@ -79,17 +83,4 @@ def evidencias(conn, document_id: int) -> dict[str, list[dict[str, Any]]]:
                 result[name].append({"page_id": row["id"], "ordem": row["ordem"], "valor": value,
                                      "origem": analysis.get("origem", "Não informada"),
                                      "confianca_classificacao": analysis.get("confianca_tipo")})
-    return result
-
-
-def historico(conn, document_id: int) -> list[dict[str, Any]]:
-    rows = conn.execute(
-        "SELECT r.*,u.nome AS autor FROM document_field_reviews r JOIN users u ON u.id=r.user_id "
-        "WHERE document_id=? ORDER BY id DESC LIMIT 50", (document_id,)).fetchall()
-    result = []
-    for row in rows:
-        item = dict(row)
-        for key in ("antes", "depois", "fontes"):
-            item[key] = json.loads(item.pop(key + "_json"))
-        result.append(item)
     return result

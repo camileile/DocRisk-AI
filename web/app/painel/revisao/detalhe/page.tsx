@@ -18,7 +18,6 @@ import { useApi } from "@/lib/use-api";
 import { useSession } from "@/components/demo-provider";
 
 const FOCO = ["ESPELHO_PONTO", "HOLERITE", "COMPROVANTE_PAGAMENTO"];
-
 export default function Page() {
   return (
     <Suspense fallback={<LoadingState />}>
@@ -112,6 +111,7 @@ function ReviewDetail() {
       setBusy(false);
     }
   }
+
 
   return (
     <>

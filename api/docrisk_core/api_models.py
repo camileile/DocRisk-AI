@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -22,6 +22,28 @@ class ReportCreate(BaseModel):
     @classmethod
     def trim_required_values(cls, value: Any) -> Any:
         return value.strip() if isinstance(value, str) else value
+
+
+class FieldReviewRequest(BaseModel):
+    """Correção auditável de um ou mais campos estruturados do documento."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    acao: Literal["corrigir_campos"]
+    campos: dict[str, Any] = Field(min_length=1)
+    motivo: str = Field(min_length=1, max_length=1000)
+    fonte: str = Field(min_length=1, max_length=500)
+
+    @field_validator("motivo", "fonte", mode="before")
+    @classmethod
+    def trim_required_values(cls, value: Any) -> Any:
+        return value.strip() if isinstance(value, str) else value
+
+
+class ReportPublish(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    conteudo_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
 class ReportEvidence(BaseModel):
@@ -76,6 +98,7 @@ class ReportResponse(BaseModel):
     versao: int = Field(gt=0)
     status: StatusParecer
     conteudo_json: ReportContent | dict[str, Any]
+    conteudo_sha256: str | None = None
     observacoes: str | None = None
     autor_id: str | None = None
     created_at: str | None = None

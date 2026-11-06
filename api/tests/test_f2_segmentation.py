@@ -163,6 +163,7 @@ def test_bug4_troca_de_trabalhador_em_pagina_de_continuacao():
     assert [g["pages"] for g in _sprint01([p1_curta, outro])] == [[1, 2]]  # antes: T001 e T002 juntos
     segs = segmentar([analisar_texto(p1_curta), analisar_texto(outro)])
     assert paginas(segs) == [[1], [2]] and segs[1].alertas
+    assert rotear(segs[1], CONTRATO, 0.75).status is S.REVISAO_HUMANA
 
 
 # --- roteamento -----------------------------------------------------------

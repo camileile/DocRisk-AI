@@ -39,8 +39,8 @@ def document(banco):
 
 
 def payload(document, **changes):
-    return {"acao": "editar_campos", "esperado_em": document["updated_at"], "campos": {"horas_extras_h": 12},
-            "fontes": {"horas_extras_h": document["pages"][1]}, "justificativa": "Total conferido na página 2", **changes}
+    return {"acao": "corrigir_campos", "esperado_em": document["updated_at"], "campos": {"horas_extras_h": 12},
+            "fontes": {"horas_extras_h": document["pages"][1]}, "motivo": "Total conferido na página 2", **changes}
 
 
 def test_page_text_is_on_demand_and_evidence_retains_real_origin(document):
@@ -70,8 +70,8 @@ def test_edit_preserves_ocr_history_and_pending_review_and_reconciles(document, 
     assert detail["campos"]["horas_extras_h"] == 12
     assert detail["status"] == "REVISAO_HUMANA" and detail["confianca"] == .55
     review = detail["revisoes_campos"][0]
-    assert review["antes"] == {"horas_extras_h": 8} and review["depois"] == {"horas_extras_h": 12}
-    assert review["user_id"] == "u-analista" and review["justificativa"] == payload(document)["justificativa"]
+    assert review["valor_original"] == 8 and review["valor_corrigido"] == 12
+    assert review["author_id"] == "u-analista" and review["reason"] == payload(document)["motivo"]
     assert detail["evidencias_campos"]["horas_extras_h"][0]["valor"] == 8
     assert "evidencias_campos" not in supplier and "revisoes_campos" not in supplier and supplier["campos"] == {}
     assert calls == [("CT-001", "T001", "10/2026")]
@@ -81,7 +81,7 @@ def test_edit_preserves_ocr_history_and_pending_review_and_reconciles(document, 
 
 
 @pytest.mark.parametrize("changes", [
-    {"justificativa": "   "}, {"justificativa": "x" * 501}, {"fontes": {}},
+    {"motivo": "   "}, {"motivo": "x" * 501}, {"fontes": {}},
     {"fontes": {"horas_extras_h": True}}, {"campos": {"horas_extras_h": -1}},
     {"campos": {"horas_extras_h": "12"}}, {"campos": {"horas_extras_h": True}}, {"campos": {"horas_extras_h": 10**400}},
     {"campos": {"unknown": 10}}, {"campos": {"horas_extras_h": 8}},
@@ -130,9 +130,26 @@ def test_absent_value_stays_null_and_approved_document_cannot_be_edited(document
         assert response.status_code == 200
         detail = client.get(f"/api/documents/{document['id']}", headers=headers()).json()
         assert detail["campos"]["horas_extras_h"] is None
-        assert detail["revisoes_campos"][0]["depois"]["horas_extras_h"] is None
+        assert detail["revisoes_campos"][0]["valor_corrigido"] is None
         approved = client.patch(f"/api/documents/{document['id']}/review", headers=headers(), json={"acao": "aprovar"})
         assert approved.status_code == 200
         denied = client.patch(f"/api/documents/{document['id']}/review", headers=headers(),
                               json=payload(document, esperado_em=detail["updated_at"]))
         assert denied.status_code == 409
+
+def test_existing_d1_06_history_and_page_corrections_share_schema(document):
+    with TestClient(app) as client:
+        url = f"/api/documents/{document['id']}/review"
+        legacy = client.patch(url, headers=headers(), json={
+            "acao": "corrigir_campos", "campos": {"horas_extras_h": 10},
+            "motivo": "Conferência D1-06", "fonte": "Holerite, página 1"})
+        assert legacy.status_code == 200, legacy.text
+        before = client.get(f"/api/documents/{document['id']}", headers=headers()).json()
+        updated = client.patch(url, headers=headers(), json=payload(document, esperado_em=before["updated_at"]))
+        assert updated.status_code == 200, updated.text
+        after = client.get(f"/api/documents/{document['id']}", headers=headers()).json()
+    history = after["revisoes_campos"]
+    assert len(history) == 2
+    assert {r["revision_number"] for r in history} == {1, 2}
+    assert {r["source"] for r in history} == {"Holerite, página 1", f"Página #{document['pages'][1]}"}
+    assert {r["author_id"] for r in history} == {"u-analista"}

@@ -58,8 +58,19 @@ export type Doc = {
 export type DocDetail = Doc & {
   paginas_detalhe: { page_id: number; ordem: number; texto?: string }[];
   evidencias_campos?: Partial<Record<keyof Campos, { page_id: number; ordem: number; valor: string | number; origem: string; confianca_classificacao: number | null }[]>>;
-  revisoes_campos?: { id: number; autor: string; created_at: string; justificativa: string; antes: Campos; depois: Campos; fontes: Partial<Record<keyof Campos, number>> }[];
   versoes: { id: number; versao: number; status: DocStatus; batch_id: number; created_at: string }[];
+  revisoes_campos?: {
+    field_name: keyof Campos;
+    valor_original: number | string | null;
+    valor_corrigido: number | string | null;
+    author_id: string;
+    author_name: string;
+    reason: string;
+    source: string;
+    document_version: number;
+    revision_number: number;
+    created_at: string;
+  }[];
   aej?: {
     worker_link_id: string;
     worker_id: string | null;
@@ -156,6 +167,7 @@ export type Report = {
   versao: number;
   status: "RASCUNHO" | "EM_REVISAO" | "APROVADO_PUBLICADO" | "SUBSTITUIDO_POR_VERSAO";
   conteudo_json: ReportContent | Record<string, never>;
+  conteudo_sha256?: string;
   observacoes?: string | null;
   autor_id?: string;
   created_at?: string;
