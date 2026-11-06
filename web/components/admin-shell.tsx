@@ -11,7 +11,7 @@ import { useSession } from "./demo-provider";
 import { SessionGate } from "./workspace-shell";
 import { roleLabels } from "@/lib/api";
 
-const navigation = [
+const bhNavigation = [
   { href: "/administracao", title: "Visão Geral", Icon: LayoutDashboard },
   { href: "/administracao/empresas", title: "Empresas e Contratos", Icon: Building2 },
   { href: "/administracao/usuarios", title: "Gestão de Usuários", Icon: Users },
@@ -26,7 +26,16 @@ export function AdminShell({ children }: { children: ReactNode }) {
   );
 }
 
-function Admin({ children }: { children: ReactNode }) {
+export function PlatformShell({ children }: { children: ReactNode }) {
+  return <SessionGate allowed={["ADMIN_PLATAFORMA"]}><Admin platform>{children}</Admin></SessionGate>;
+}
+
+function Admin({ children, platform = false }: { children: ReactNode; platform?: boolean }) {
+  const navigation = platform ? [
+    { href: "/plataforma", title: "Visão Geral", Icon: LayoutDashboard },
+    { href: "/plataforma/auditoras", title: "Organizações Auditoras", Icon: Building2 },
+    { href: "/plataforma/configuracoes", title: "Dados da Plataforma", Icon: LockKeyhole },
+  ] : bhNavigation;
   const { me, logout, isDemo } = useSession();
   const router = useRouter();
   const path = usePathname().replace(/\/$/, "") || "/";
@@ -45,10 +54,10 @@ function Admin({ children }: { children: ReactNode }) {
             <X size={20} />
           </button>
         </div>
-        <span className="sidebar-caption">ADMINISTRAÇÃO BERNHOEFT</span>
+        <span className="sidebar-caption">{platform ? "ADMINISTRAÇÃO GERAL" : "ADMINISTRAÇÃO BERNHOEFT"}</span>
         <div className="workspace-module">
-          <span>Gestão da operação</span>
-          <small>Empresas, contratos, usuários e indicadores</small>
+          <span>{platform ? "Estrutura da plataforma" : "Gestão da operação"}</span>
+          <small>{platform ? "Auditoras, catálogo e dados institucionais" : "Empresas, contratos, usuários e indicadores"}</small>
         </div>
         <nav aria-label="Navegação administrativa">
           {navigation.map(({ href, title, Icon }) => (
@@ -90,7 +99,7 @@ function Admin({ children }: { children: ReactNode }) {
             <button className="workspace-menu" aria-label="Abrir navegação" onClick={() => setOpen(true)}>
               <Menu size={22} />
             </button>
-            <span>Administração Bernhoeft</span>
+            <span>{platform ? "Plataforma" : "Administração Bernhoeft"}</span>
             <ChevronRight size={14} />
             <strong>{current.title}</strong>
           </div>
@@ -109,7 +118,7 @@ function Admin({ children }: { children: ReactNode }) {
             </div>
           )}
           <div className="admin-context">
-            <div><ShieldCheck size={21} aria-hidden="true" /><span>Gestão interna da organização auditora</span></div>
+            <div><ShieldCheck size={21} aria-hidden="true" /><span>{platform ? "Gestão institucional do DocRisk AI" : "Gestão interna da organização auditora"}</span></div>
             <span className="admin-readonly">{isDemo ? "Somente consulta" : "API de testes"}</span>
           </div>
           {children}

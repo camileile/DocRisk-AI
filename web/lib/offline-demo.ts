@@ -6,7 +6,7 @@ import type {
 } from "./api";
 
 export const DEMO_ROLES: Papel[] = [
-  "ADMIN_BH", "ANALISTA_BH", "GESTOR_FORN", "OPERADOR_FORN", "GESTOR_CONTR",
+  "ADMIN_PLATAFORMA", "ADMIN_BH", "ANALISTA_BH", "GESTOR_FORN", "OPERADOR_FORN", "GESTOR_CONTR",
 ];
 
 const KEY = "docrisk.offline-demo-role";
@@ -30,6 +30,7 @@ export function setDemoRole(role: Papel | null): void {
 }
 
 const USERS: Record<Papel, Me> = {
+  ADMIN_PLATAFORMA: { id: "demo-plataforma", nome: "Admin Geral (fictício)", org_id: "DOCRISK", org_tipo: "PLATAFORMA", papel: "ADMIN_PLATAFORMA" },
   ADMIN_BH: { id: "demo-admin", nome: "Administrador (fictício)", org_id: "demo-bh", org_tipo: "BERNHOEFT", papel: "ADMIN_BH" },
   ANALISTA_BH: { id: "demo-analista", nome: "Analista (fictício)", org_id: "demo-bh", org_tipo: "BERNHOEFT", papel: "ANALISTA_BH" },
   GESTOR_FORN: { id: "demo-gestor-forn", nome: "Gestor (fictício)", org_id: "demo-forn", org_tipo: "FORNECEDORA", papel: "GESTOR_FORN" },
@@ -192,7 +193,21 @@ export function demoRead(path: string, role: Papel): unknown {
   const url = new URL(path, "https://demo.invalid");
   const route = url.pathname;
   if (route === "/api/me") return USERS[role];
-  if (route === "/api/contracts") return DEMO_CONTRACTS;
+  if (route === "/api/contracts") return role === "ADMIN_PLATAFORMA" ? [] : DEMO_CONTRACTS;
+  if (role === "ADMIN_PLATAFORMA") {
+    if (route === "/api/platform/registry") return {
+      auditoras: [{ id: "demo-bh", nome: "Bernhoeft (demonstração)", contratos: 1 }],
+      administradores: [{ id: "demo-admin", nome: "Admin Bernhoeft (fictício)", org_id: "demo-bh", ativo: 1 }],
+      configuracoes: { nome: "DocRisk AI", contato: "" }, auditoria: [],
+      modulos: [
+        { id: "trabalhista", nome: "Trabalhista", status: "MVP" },
+        { id: "homologacao", nome: "Homologação de Fornecedores", status: "PLANEJADO" },
+        { id: "sso", nome: "Saúde e Segurança Ocupacional", status: "PLANEJADO" },
+        { id: "ambiental", nome: "Conformidade Ambiental", status: "PLANEJADO" },
+      ],
+    };
+    throw new Error("Administração geral restrita à estrutura da plataforma.");
+  }
   if (route === "/api/analyst/overview" && role === "ANALISTA_BH") return demoAnalystDashboard(url);
   if (route === "/api/bernhoeft/metrics" && (role === "ADMIN_BH" || role === "ANALISTA_BH")) return METRICS;
   if (route === "/api/audit" && role === "ADMIN_BH") return AUDIT;
