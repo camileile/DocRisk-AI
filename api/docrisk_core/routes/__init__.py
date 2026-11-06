@@ -12,13 +12,12 @@ from typing import Any
 import pymupdf
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse, Response
-from pydantic import ValidationError
 
 from .. import config, db, report_document, report_pdf
-from ..api_models import FieldReviewRequest, ReportCreate, ReportEditorial, ReportPublish, ReportResponse
+from ..api_models import ReportCreate, ReportEditorial, ReportPublish, ReportResponse
 from ..auth import (Usuario, auditar, contratos_do_usuario, exigir_contrato,
                     exigir_papel, usuario_atual)
-from ..contracts import (CamposPagina, CategoriaPendencia, PAPEIS_BERNHOEFT,
+from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT,
                          PAPEIS_FORNECEDORA, TIPOS_FOCO, Papel, StatusDocumento,
                          StatusParecer, StatusPendencia, StatusLote, TipoDocumento)
 from ..pipeline.render import ArquivoInvalido
@@ -506,10 +505,9 @@ def review_document(document_id: int, payload: dict[str, Any],
                          _document_pair({"tipo": doc["tipo"], "worker_id": doc["worker_id"],
                                          "competencia": doc["competencia"]}))
     elif action == "corrigir_campos":
-        # H07: uma única forma de correção, com justificativa, página de origem
-        # de cada campo e controle de concorrência. O contrato legado sem
-        # esperado_em/fontes não é aceito por esta API.
-        if doc["status"] not in {StatusDocumento.REVISAO_HUMANA.value, StatusDocumento.PENDENTE_CORRECAO.value}:
+        # Contrato documental único, mesmo quando chamado fora do frontend.
+        if doc["status"] not in {StatusDocumento.REVISAO_HUMANA.value,
+                                 StatusDocumento.PENDENTE_CORRECAO.value}:
             raise HTTPException(409, "A edição exige documento em revisão ou pendente de correção")
         field_review.corrigir(conn, doc, payload, user.id)
         _reconcile_pairs(conn, doc["contract_id"], _document_pair(doc))
@@ -926,8 +924,10 @@ def create_report(payload: ReportCreate, user: Usuario = Depends(usuario_atual),
          payload.observacoes, user.id, now))
     conn.execute("INSERT INTO report_editorial (report_id,recomendacoes) VALUES (?,?)", (cursor.lastrowid,payload.recomendacoes.strip()))
     auditar(conn, user, "PARECER_RASCUNHO_CRIADO", str(cursor.lastrowid))
-    return _report_result(conn.execute(
+    result = _report_result(conn.execute(
         "SELECT * FROM reports WHERE id=?", (cursor.lastrowid,)).fetchone(), conn)
+    conn.commit()
+    return result
 
 
 @router.get("/api/reports", response_model=list[ReportResponse], response_model_exclude_unset=True)
@@ -963,7 +963,9 @@ def edit_report(report_id: int, payload: ReportEditorial, user: Usuario = Depend
     conn.execute("INSERT INTO report_editorial (report_id,recomendacoes) VALUES (?,?) ON CONFLICT(report_id) DO UPDATE SET recomendacoes=excluded.recomendacoes",
                  (report_id,payload.recomendacoes.strip()))
     auditar(conn,user,"PARECER_RECOMENDACOES_EDITADAS",str(report_id))
-    return _report_result(row,conn)
+    result = _report_result(row,conn)
+    conn.commit()
+    return result
 
 
 @router.get("/api/reports/{report_id}/preview", response_model=ReportResponse,
@@ -980,6 +982,7 @@ def preview_report(report_id: int, user: Usuario = Depends(usuario_atual),
         return _report_result(report, conn)
     result = _report_result(report, conn)
     result["conteudo_json"], result["conteudo_sha256"] = report_document.cache_preview(conn, report, user)
+    conn.commit()
     return result
 
 
@@ -1031,8 +1034,10 @@ def publish_report(report_id: int, payload: ReportPublish | None = None, user: U
                                   report["competencia"], report_id,
                                   StatusParecer.APROVADO_PUBLICADO.value))
     auditar(conn, user, "PARECER_PUBLICADO", str(report_id))
-    return _report_result(conn.execute(
+    result = _report_result(conn.execute(
         "SELECT * FROM reports WHERE id=?", (report_id,)).fetchone(), conn)
+    conn.commit()
+    return result
 
 
 @router.get("/api/reports/{report_id}/pdf", response_class=Response, responses={200: {"content": {"application/pdf": {}}, "description": "Parecer em PDF"}})

@@ -137,13 +137,13 @@ def test_absent_value_stays_null_and_approved_document_cannot_be_edited(document
                               json=payload(document, esperado_em=detail["updated_at"]))
         assert denied.status_code == 409
 
-def test_legacy_field_correction_is_rejected_and_page_history_is_preserved(document):
+def test_legacy_field_review_is_rejected_and_document_history_only_records_valid_edits(document):
     with TestClient(app) as client:
         url = f"/api/documents/{document['id']}/review"
         legacy = client.patch(url, headers=headers(), json={
             "acao": "corrigir_campos", "campos": {"horas_extras_h": 10},
             "motivo": "Conferência D1-06", "fonte": "Holerite, página 1"})
-        assert legacy.status_code == 422, legacy.text
+        assert legacy.status_code == 422
         before = client.get(f"/api/documents/{document['id']}", headers=headers()).json()
         assert before["revisoes_campos"] == []
         updated = client.patch(url, headers=headers(), json=payload(document, esperado_em=before["updated_at"]))
@@ -154,8 +154,6 @@ def test_legacy_field_correction_is_rejected_and_page_history_is_preserved(docum
     assert history[0]["revision_number"] == 1
     assert history[0]["source"] == f"Página #{document['pages'][1]}"
     assert history[0]["author_id"] == "u-analista"
-
-
 
 def test_manual_review_of_apt_document_is_audited_and_recalculates(document, monkeypatch):
     from docrisk_core.rules import conciliacao
