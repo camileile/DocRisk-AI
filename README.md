@@ -17,7 +17,7 @@ revisão humana na Bernhoeft e parecer publicado só depois de aprovado.
 | Contratos compartilhados (tipos, estados, JSON da página) | Pronto — `api/docrisk_core/contracts.py` |
 | Esquema do banco + dados demo | Pronto — `api/docrisk_core/db/` |
 | Auth, rotas, IA, segmentação, worker, regras, gerador do lote | **Assinaturas definidas, implementação pendente** (cada função diz o critério de aceite) |
-| Front-end Next.js | Landing, contato e nove telas demonstrativas do Trabalhista prontas (`web/`); autenticação e integração operacional pendentes |
+| Front-end Next.js | Landing, contato e onze telas demonstrativas do Trabalhista prontas (`web/`); autenticação e integração operacional pendentes |
 
 ## Estrutura e donos
 

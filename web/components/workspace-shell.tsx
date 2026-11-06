@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  GitCompareArrows,
   ClipboardCheck,
   Package,
   Files,
@@ -23,6 +24,11 @@ const navigation = [
   { href: "/painel/lotes", label: "Lotes enviados", icon: Package },
   { href: "/painel/documentos", label: "Documentos", icon: Files },
   { href: "/painel/revisao", label: "Fila de revisão", icon: ClipboardCheck },
+  {
+    href: "/painel/conciliacoes",
+    label: "Conciliações",
+    icon: GitCompareArrows,
+  },
   { href: "/painel/pendencias", label: "Pendências", icon: CircleAlert },
   { href: "/painel/envio", label: "Prévia de envio", icon: Upload },
 ];
@@ -56,7 +62,9 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
       ? "Detalhes do lote"
       : path.startsWith("/painel/revisao/")
         ? "Conferência documental"
-        : navigation.find((item) => item.href === path)?.label) ??
+        : path.startsWith("/painel/conciliacoes/")
+          ? "Detalhes da análise"
+          : navigation.find((item) => item.href === path)?.label) ??
     "Visão geral";
   return (
     <div className="workspace">
@@ -90,7 +98,8 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
             .filter((item) =>
               role === "ANALISTA_BH"
                 ? item.href !== "/painel/envio"
-                : item.href !== "/painel/revisao",
+                : item.href !== "/painel/revisao" &&
+                  item.href !== "/painel/conciliacoes",
             )
             .map(({ href, label, icon: Icon }) => (
               <Link

@@ -2189,3 +2189,360 @@
     font-size: 11px;
   }
 }
+/* Reconciliation snapshots: state, outcome, hours and money are distinct. */
+.result-badge {
+  white-space: normal;
+  max-width: 270px;
+  line-height: 1.7;
+  align-items: flex-start;
+}
+.result-badge i {
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.analysis-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+.analysis-toolbar > .search-field {
+  max-width: 430px;
+}
+.analysis-toolbar > div {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.analysis-toolbar .filter-label {
+  flex: 1;
+  min-width: 200px;
+}
+.analysis-toolbar select {
+  width: 100%;
+  max-width: 360px;
+}
+.analysis-status-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 230px;
+  min-width: 155px;
+}
+.analysis-table td {
+  font-size: 11px;
+}
+.analysis-table td:nth-child(3),
+.analysis-table td:nth-child(4),
+.analysis-table td:nth-child(5) {
+  font-variant-numeric: tabular-nums;
+}
+.unavailable-value {
+  font-size: 10px;
+  color: #9a87aa;
+}
+.analysis-explainer {
+  display: flex;
+  gap: 17px;
+  align-items: flex-start;
+}
+.analysis-explainer > svg {
+  color: #a183b9;
+  flex-shrink: 0;
+}
+.analysis-explainer h2 {
+  margin-bottom: 10px;
+}
+.analysis-explainer p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #8c779b;
+}
+.analysis-outcome {
+  background: #fcfaff;
+  border-color: #e6d9f2;
+}
+.analysis-outcome.attention {
+  background: #fffcf6;
+  border-color: #efdfbc;
+}
+.analysis-outcome-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 17px;
+}
+.analysis-outcome-heading > svg {
+  color: #ac8cb9;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.analysis-outcome-heading .eyebrow {
+  font-size: 9px;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.analysis-outcome-heading h2 {
+  font-size: 20px;
+  line-height: 1.6;
+  letter-spacing: -0.5px;
+}
+.analysis-outcome > p {
+  font-size: 13px;
+  line-height: 1.9;
+  margin-top: 17px;
+  color: #8a709b;
+  max-width: 850px;
+}
+.analysis-outcome.attention .analysis-outcome-heading > svg {
+  color: #b49862;
+}
+.hours-comparison {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.hours-comparison .workspace-card {
+  padding: 23px 20px;
+}
+.hours-comparison article > span {
+  font-size: 11px;
+  color: #8e789f;
+  line-height: 1.7;
+  display: block;
+}
+.hours-comparison article > strong {
+  font-family: var(--heading);
+  font-weight: 500;
+  font-size: 25px;
+  letter-spacing: -0.8px;
+  line-height: 1.5;
+  display: block;
+  margin: 20px 0 12px;
+}
+.hours-comparison article > p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #9a85a9;
+}
+.hours-comparison .difference-card {
+  background: #faf7fe;
+  border-color: #e6dbf3;
+}
+.analysis-missing {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: #fffaf0;
+  border: 1px solid #eee3c9;
+  padding: 13px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+.analysis-missing > svg {
+  color: #b69a66;
+  flex-shrink: 0;
+}
+.analysis-missing p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #a08c6f;
+}
+.analysis-missing strong {
+  font-weight: 500;
+}
+.evidence-actions {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.analysis-detail-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+.analysis-detail-columns .card-title > svg {
+  color: #a387b9;
+  flex-shrink: 0;
+}
+.analysis-section-note {
+  font-size: 11px;
+  line-height: 1.9;
+  color: #917b9f;
+  margin-bottom: 20px;
+}
+.analysis-money > div {
+  font-size: 11px;
+  gap: 15px;
+}
+.analysis-money dd {
+  white-space: nowrap;
+}
+.analysis-payment-note {
+  display: flex;
+  gap: 12px;
+  background: #faf7fd;
+  border: 1px solid #eee4f5;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 22px;
+}
+.analysis-payment-note > svg {
+  color: #a483ba;
+  flex-shrink: 0;
+}
+.analysis-payment-note strong {
+  font-size: 11px;
+  font-weight: 500;
+  color: #896d9d;
+  line-height: 1.8;
+  display: block;
+  margin-bottom: 6px;
+}
+.analysis-payment-note p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #9a82a9;
+}
+.analysis-history-note {
+  margin-top: 22px;
+  margin-bottom: 0;
+}
+.analysis-detail-columns .detail-list dd {
+  text-align: right;
+  max-width: 65%;
+  line-height: 1.8;
+}
+.analysis-detail-columns .detail-list > div {
+  align-items: flex-start;
+}
+.analysis-next-step {
+  background: #fcfaff;
+  border-color: #e8def3;
+}
+.analysis-next-step .eyebrow {
+  font-size: 9px;
+  margin-bottom: 16px;
+}
+.analysis-next-step h2 {
+  font-size: 17px;
+  line-height: 1.8;
+  max-width: 700px;
+  margin-bottom: 20px;
+}
+.analysis-next-step .text-link {
+  font-size: 12px;
+}
+.analysis-next-step .card-footnote {
+  margin-top: 22px;
+}
+@media (max-width: 1050px) {
+  .analysis-detail-columns {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .hours-comparison {
+    gap: 13px;
+  }
+  .hours-comparison .workspace-card {
+    padding: 19px 16px;
+  }
+  .hours-comparison article > strong {
+    font-size: 22px;
+  }
+  .analysis-toolbar > div {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .analysis-toolbar select {
+    max-width: none;
+  }
+  .analysis-toolbar > .search-field {
+    max-width: none;
+  }
+}
+@media (max-width: 640px) {
+  .hours-comparison {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .hours-comparison article > strong {
+    font-size: 27px;
+    margin: 14px 0 10px;
+  }
+  .hours-comparison .workspace-card {
+    padding: 20px;
+  }
+  .analysis-outcome-heading {
+    gap: 12px;
+  }
+  .analysis-outcome-heading h2 {
+    font-size: 18px;
+  }
+  .analysis-outcome > p {
+    font-size: 12px;
+  }
+  .analysis-toolbar .filter-label {
+    min-width: 0;
+    font-size: 11px;
+  }
+  .analysis-toolbar select {
+    font-size: 11px;
+  }
+  .analysis-outcome .result-badge {
+    font-size: 10px;
+    max-width: none;
+  }
+  .analysis-missing {
+    padding: 13px 12px;
+  }
+  .analysis-money > div {
+    font-size: 11px;
+  }
+  .analysis-detail-columns .detail-list > div {
+    font-size: 11px;
+  }
+  .analysis-explainer p {
+    font-size: 11px;
+  }
+  .analysis-next-step h2 {
+    font-size: 15px;
+  }
+  .analysis-next-step .text-link {
+    font-size: 11px;
+  }
+  .analysis-outcome-heading .eyebrow {
+    font-size: 8px;
+  }
+}
+.document-example-fields {
+  border: 1px solid #e8def3;
+  border-radius: 8px;
+  padding: 17px;
+  margin-top: 20px;
+  background: #fdfbff;
+}
+.document-example-fields h3 {
+  font-size: 12px;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+.document-example-fields > p {
+  font-size: 10px;
+  line-height: 1.9;
+  color: #8f789f;
+  margin-bottom: 12px;
+}
+.document-example-fields .detail-list > div {
+  font-size: 11px;
+  align-items: flex-start;
+  gap: 15px;
+}
+.document-example-fields dd {
+  white-space: nowrap;
+  text-align: right;
+}
+.document-example-fields .detail-list > div:last-child {
+  border: 0;
+}
