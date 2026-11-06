@@ -94,7 +94,10 @@ def _report_result(row: sqlite3.Row | dict[str, Any]) -> dict[str, Any]:
 
 
 def _hash_report_content(content: dict[str, Any]) -> str:
-    canonical = json.dumps(content, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    # "gerado_em" muda a cada geração (segundos): fora do hash, senão publicar mais de 1 s
+    # depois da prévia daria sempre "conteúdo alterado". O hash cobre só o que o analista confere.
+    conferido = {k: v for k, v in content.items() if k != "gerado_em"}
+    canonical = json.dumps(conferido, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
