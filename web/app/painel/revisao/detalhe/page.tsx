@@ -14,6 +14,7 @@ import {
 } from "@/components/workspace-parts";
 import { api, formatHours, pageList, typeLabels, type DocDetail } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
+import { useSession } from "@/components/demo-provider";
 
 const FOCO = ["ESPELHO_PONTO", "HOLERITE", "COMPROVANTE_PAGAMENTO"];
 
@@ -26,6 +27,7 @@ export default function Page() {
 }
 
 function ReviewDetail() {
+  const { isDemo } = useSession();
   const id = useSearchParams().get("id");
   const router = useRouter();
   const { data: d, error, loading, reload } = useApi<DocDetail>(id ? `/api/documents/${id}` : null);
@@ -79,6 +81,7 @@ function ReviewDetail() {
         description={(d.motivos_revisao ?? []).join("; ") || "Sem motivos de revisão registrados."}
         action={<DocumentBadge status={d.status} />}
       />
+      {isDemo && <Notice>Esta é uma fila ilustrativa; alterações de classificação, divisão, união e correção estão desativadas.</Notice>}
       {feedback && <Notice tone={feedback.tone}>{feedback.text}</Notice>}
       <div className="review-workspace">
         <div className="review-pages">
@@ -132,7 +135,7 @@ function ReviewDetail() {
             </label>
             <button
               className="button"
-              disabled={busy || !reviewable || !tipo || (foco && (!worker || !competencia))}
+              disabled={isDemo || busy || !reviewable || !tipo || (foco && (!worker || !competencia))}
               onClick={() =>
                 act(
                   { acao: "aprovar", tipo, trabalhador_id: worker || null, competencia: competencia || null },
@@ -158,7 +161,7 @@ function ReviewDetail() {
                 </label>
                 <button
                   className="button secondary"
-                  disabled={busy}
+                  disabled={isDemo || busy}
                   onClick={() => act({ acao: "dividir", apos_pagina: splitAfter }, "Documento dividido em dois.", true)}
                 >
                   <Scissors size={16} /> Dividir
@@ -167,7 +170,7 @@ function ReviewDetail() {
             )}
             <button
               className="button secondary"
-              disabled={busy}
+              disabled={isDemo || busy}
               onClick={() => act({ acao: "unir_proximo" }, "Documento unido ao seguinte do lote.")}
             >
               <Merge size={16} /> Unir ao próximo documento do lote
@@ -186,7 +189,7 @@ function ReviewDetail() {
             </label>
             <button
               className="button secondary"
-              disabled={busy || !motivo.trim() || !acao.trim()}
+              disabled={isDemo || busy || !motivo.trim() || !acao.trim()}
               onClick={() =>
                 act(
                   { acao: "solicitar_correcao", motivo: motivo.trim(), acao_solicitada: acao.trim() },

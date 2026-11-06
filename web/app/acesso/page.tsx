@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -17,8 +17,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useSession } from "@/components/demo-provider";
-import { api, roleLabels, type DemoUser, type Papel } from "@/lib/api";
-import { ErrorState, LoadingState } from "@/components/workspace-parts";
+import { roleLabels, type Papel } from "@/lib/api";
+import { DEMO_ROLES } from "@/lib/offline-demo";
 
 const icons: Record<Papel, LucideIcon> = {
   ANALISTA_BH: ShieldCheck,
@@ -42,45 +42,18 @@ function destinationFor(role: Papel): string {
 }
 
 export default function Access() {
-  const [users, setUsers] = useState<DemoUser[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [selected, setSelected] = useState<string>("u-analista");
+  const [selected, setSelected] = useState<Papel>("ANALISTA_BH");
   const [entering, setEntering] = useState(false);
   const [token, setTokenInput] = useState("");
   const [tokenError, setTokenError] = useState("");
-  const { login } = useSession();
+  const { login, enterDemo } = useSession();
   const router = useRouter();
 
-  async function load() {
-    setError(null);
-    try {
-      setUsers(await api<DemoUser[]>("/api/demo/users"));
-    } catch (err) {
-      setError(
-        err instanceof Error && err.message.startsWith("Rota")
-          ? "A API não está em modo demonstração (DOCRISK_DEMO_MODE=1)."
-          : err instanceof Error
-            ? err.message
-            : "Falha ao carregar os perfis",
-      );
-    }
-  }
-  useEffect(() => {
-    void load();
-  }, []);
-
-  async function enter() {
-    const user = users?.find((u) => u.id === selected);
-    if (!user) return;
+  function enter() {
+    if (entering) return;
     setEntering(true);
-    setError(null);
-    try {
-      const me = await login(user.token);
-      router.push(destinationFor(me.papel));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Falha ao entrar");
-      setEntering(false);
-    }
+    const user = enterDemo(selected);
+    router.push(destinationFor(user.papel));
   }
 
   async function enterWithToken() {
@@ -112,7 +85,7 @@ export default function Access() {
             <br />
             <em>Pessoas no controle.</em>
           </h1>
-          <p>Cada perfil enxerga apenas os contratos e as ações que a API autoriza.</p>
+          <p>Na demonstração, cada perfil visualiza apenas dados ilustrativos; o modo operacional tem permissões verificadas pela API.</p>
           <div className="access-principle">
             <Layers3 size={28} />
             <span>
@@ -131,49 +104,43 @@ export default function Access() {
         <div className="access-form">
           <span className="pill light">AMBIENTE DE DEMONSTRAÇÃO</span>
           <h2>Entrar na plataforma.</h2>
-          <p>Escolha um perfil de demonstração. A sessão usa o token do perfil e todas as permissões são verificadas pela API.</p>
-          {error && <ErrorState message={error} onRetry={users ? undefined : load} />}
-          {!users && !error && <LoadingState text="Carregando perfis da API…" />}
-          {users && (
-            <fieldset className="persona-options">
-              <legend>Perfil de acesso</legend>
-              {users.map((user) => {
-                const Icon = icons[user.role] ?? ShieldCheck;
-                return (
-                  <label key={user.id} className={selected === user.id ? "persona selected" : "persona"}>
-                    <input
-                      type="radio"
-                      name="perfil"
-                      value={user.id}
-                      checked={selected === user.id}
-                      onChange={() => setSelected(user.id)}
-                    />
-                    <Icon size={25} />
-                    <span>
-                      <strong>{roleLabels[user.role]}</strong>
-                      <small>
-                        {user.nome} · {descriptions[user.role]}
-                      </small>
-                    </span>
-                    <span className="persona-check">{selected === user.id && <Check size={14} />}</span>
-                  </label>
-                );
-              })}
-            </fieldset>
-          )}
-          <button className="button access-enter" onClick={enter} disabled={!users || entering}>
-            {entering ? "Entrando…" : "Entrar"} <ArrowRight size={18} />
+          <p>Escolha um dos cinco perfis para explorar a plataforma com dados fictícios, sem token e sem conexão com a API.</p>
+          <fieldset className="persona-options">
+            <legend>Perfil de acesso fictício</legend>
+            {DEMO_ROLES.map((role) => {
+              const Icon = icons[role];
+              return (
+                <label key={role} className={selected === role ? "persona selected" : "persona"}>
+                  <input
+                    type="radio"
+                    name="perfil"
+                    value={role}
+                    checked={selected === role}
+                    onChange={() => setSelected(role)}
+                  />
+                  <Icon size={25} />
+                  <span>
+                    <strong>{roleLabels[role]}</strong>
+                    <small>{descriptions[role]}</small>
+                  </span>
+                  <span className="persona-check">{selected === role && <Check size={14} />}</span>
+                </label>
+              );
+            })}
+          </fieldset>
+          <button className="button access-enter" onClick={enter} disabled={entering}>
+            {entering ? "Entrando…" : "Explorar demonstração"} <ArrowRight size={18} />
           </button>
           <p className="demo-disclosure">
-            Perfis e documentos são fictícios. Em produção, o acesso seria por SSO/OIDC; aqui o token de demonstração só é
-            exposto com DOCRISK_DEMO_MODE=1 em ambiente local.
+            Perfis, documentos e indicadores são fictícios. A navegação funciona sem backend; envios, aprovações e publicações
+            não são realizados neste modo.
           </p>
           <section className="api-access" aria-labelledby="api-access-title">
             <span className="eyebrow">
               <PlugZap size={15} /> ENTRAR COM TOKEN
             </span>
             <h3 id="api-access-title">Conectar à API de testes</h3>
-            <p>Sem o modo demonstração, cole o token de um usuário de teste do backend local. O perfil e os contratos vêm da API.</p>
+            <p>Uso exclusivo em ambiente de desenvolvimento local com FastAPI iniciado. Aqui o backend determina o perfil e os contratos.</p>
             <form
               onSubmit={(event) => {
                 event.preventDefault();
