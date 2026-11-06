@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test:p0": "node scripts/p0-regression.cjs"
+    "test:p0": "node scripts/p0-regression.cjs",
+    "test:transport": "node scripts/transport-regression.cjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
