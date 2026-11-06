@@ -1,0 +1,15 @@
+.document-viewer { min-width: 0; }
+.document-viewer-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.document-viewer-toolbar label { display: flex; align-items: center; gap: 6px; }
+.document-viewer-toolbar select { max-width: 230px; padding: 8px; font: inherit; }
+.document-viewer-toolbar output { min-width: 42px; text-align: center; }
+.document-viewer-viewport { max-height: 75vh; overflow: auto; padding: 12px; margin-top: 12px; border: 1px solid var(--line, #d8d7e5); border-radius: 8px; background: #eeedf4; }
+.document-viewer-canvas { position: relative; margin: 0 auto; background: #fff; }
+.document-viewer-canvas img { position: absolute; left: 50%; top: 50%; max-width: none; object-fit: contain; }
+.document-viewer-text { margin-top: 16px; }
+.field-review fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.field-review legend { font-weight: 600; margin-bottom: 12px; }
+.field-review-item { padding: 12px 0; border-bottom: 1px solid var(--line, #d8d7e5); }
+.field-review-item input { width: 100%; }
+.field-source { color: #4430a4; text-decoration: underline; font: inherit; border: 0; padding: 2px; background: transparent; cursor: pointer; }
+.document-viewer button:focus-visible, .document-viewer select:focus-visible, .document-viewer-viewport:focus-visible, .field-review :focus-visible { outline: 3px solid #6350bd; outline-offset: 3px; }

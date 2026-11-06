@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import platform
 import sys
@@ -20,6 +21,7 @@ from docrisk_core.auth import Usuario
 from docrisk_core.contracts import Papel
 from docrisk_core.pipeline import worker
 from gerar_lote_demo import gerar_parametrizado
+from gerar_corpus_d1_08 import gerar_corpus_desenvolvimento
 
 
 def main() -> None:
@@ -50,6 +52,16 @@ def main() -> None:
                 raise RuntimeError("O PDF não contém 300 páginas.")
         finally:
             pdf_doc.close()
+
+        corpus_paths = gerar_corpus_desenvolvimento(raiz / "corpus_dev")
+        corpus_gold = json.loads(corpus_paths["gabarito"].read_text(encoding="utf-8"))
+        with fitz.open(corpus_paths["pdf"]) as corpus_pdf:
+            corpus_page_count = corpus_pdf.page_count
+            corpus_image_only = sum(not page.get_text().strip() for page in corpus_pdf)
+            corpus_rotated = sum(bool(page.rotation) for page in corpus_pdf)
+        if corpus_page_count != len(corpus_gold["pages"]):
+            raise RuntimeError("O corpus D1-08 não confere com o gabarito de páginas.")
+        corpus_digest = hashlib.sha256(corpus_paths["pdf"].read_bytes()).hexdigest()
 
         tempos = {"segmentacao": 0.0, "conciliacao": 0.0}
         segmentar_original, conciliar_original = worker.segmentar, worker.f3.conciliar
@@ -132,6 +144,13 @@ def main() -> None:
 - Distribuição: {json.dumps(gabarito['distribuicao'], ensure_ascii=False, sort_keys=True)}.
 - Uso correto: medição de vazão local e conferência contra o gabarito gerado para este lote.
 - Limite: os acertos neste conjunto sintético não medem precisão visual nem generalização para documentos reais.
+
+## Corpus representativo de desenvolvimento (D1-08)
+
+- Inventário sintético: {len(corpus_gold['cases'])} casos, {corpus_page_count} páginas; distribuição por caso: {json.dumps(corpus_gold['distribution'], ensure_ascii=False, sort_keys=True)}.
+- Cobertura: {corpus_image_only} página(s) sem camada de texto (scan) e {corpus_rotated} página(s) com rotação; multipágina, página/documento ausente, identidade ambígua e campo de horas apenas em reais.
+- PDF de desenvolvimento SHA-256: `{corpus_digest}`; semente {corpus_gold['seed']}.
+- Esta seção registra a cobertura; o benchmark de desempenho continua medindo o lote sintético de 100 trabalhadores. O holdout congelado não é carregado nem pontuado por este script.
 
 ## Execução
 

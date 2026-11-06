@@ -22,6 +22,7 @@ from ..contracts import (CamposPagina, CategoriaPendencia, PAPEIS_BERNHOEFT,
                          PAPEIS_FORNECEDORA, TIPOS_FOCO, Papel, StatusDocumento,
                          StatusParecer, StatusPendencia, StatusLote, TipoDocumento)
 from ..pipeline.render import ArquivoInvalido
+from .. import field_review
 from ..pipeline import integracao_f3 as f3, revisao, worker
 from ..privacidade import SemCamadaDeTexto, anonimizar_pdf, mascarar_texto
 from ..rules import metricas, metricas_analista, parecer, pendencias, portal_contratante
@@ -473,6 +474,13 @@ def review_document(document_id: int, payload: dict[str, Any],
                          _document_pair({"tipo": doc["tipo"], "worker_id": doc["worker_id"],
                                          "competencia": doc["competencia"]}))
     elif action == "corrigir_campos":
+        if "fontes" in payload:
+            if doc["status"] not in {StatusDocumento.REVISAO_HUMANA.value, StatusDocumento.PENDENTE_CORRECAO.value}:
+                raise HTTPException(409, "A edição exige documento em revisão ou pendente de correção")
+            field_review.corrigir(conn, doc, payload, user.id)
+            _reconcile_pairs(conn, doc["contract_id"], _document_pair(doc))
+            auditar(conn, user, "DOCUMENTO_CORRIGIR_CAMPOS", str(document_id))
+            return {"document_id": document_id, "acao": action, "status": doc["status"]}
         if doc["status"] == StatusDocumento.SUBSTITUIDO.value:
             raise HTTPException(409, "Documento substituído não pode receber correções")
         try:
@@ -537,7 +545,7 @@ def review_document(document_id: int, payload: dict[str, Any],
         except revisao.RevisaoInvalida as exc:
             raise HTTPException(409 if exc.conflito else 422, str(exc)) from exc
     else:
-        raise HTTPException(422, "Ação deve ser aprovar, dividir, unir_proximo ou solicitar_correcao")
+        raise HTTPException(422, "Ação deve ser aprovar, corrigir_campos, dividir, unir_proximo ou solicitar_correcao")
     auditar(conn, user, f"DOCUMENTO_{action.upper()}", str(document_id))
     return {"document_id": document_id, "acao": action, "status": conn.execute(
         "SELECT status FROM documents WHERE id=?", (document_id,)).fetchone()[0]}
@@ -618,19 +626,22 @@ def list_documents(status: str | None = None, tipo: str | None = None,
 
 
 @router.get("/api/documents/{document_id}")
-def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
+def get_document(document_id: int, include_page_text: bool = True, user: Usuario = Depends(usuario_atual),
                  conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     """Documento com as páginas e o texto (OCR) de cada uma, vinculados à imagem original."""
     _require_batch_reader(user)
     row = _document_or_404(conn, user, document_id)
     item = _document_view(conn, user, row)
+    text_column = ", p.texto" if include_page_text else ""
     paginas = conn.execute(
-        "SELECT p.id, p.ordem, p.texto FROM doc_pages dp JOIN pages p ON p.id=dp.page_id "
+        f"SELECT p.id, p.ordem{text_column} FROM doc_pages dp JOIN pages p ON p.id=dp.page_id "
         "WHERE dp.document_id=? ORDER BY dp.posicao", (document_id,)).fetchall()
     item["paginas_detalhe"] = [
         {"page_id": int(p["id"]), "ordem": int(p["ordem"]),
-         "texto": (p["texto"] or "") if user.org_tipo == "BERNHOEFT"
-         else mascarar_texto(p["texto"] or "")[0]} for p in paginas]
+         **({"texto": (p["texto"] or "") if user.org_tipo == "BERNHOEFT"
+             else mascarar_texto(p["texto"] or "")[0]} if include_page_text else {})} for p in paginas]
+    if user.papel == Papel.ANALISTA_BH:
+        item["evidencias_campos"] = field_review.evidencias(conn, document_id)
     versoes = []
     if row["worker_id"] and row["competencia"]:
         versoes = _rows(conn.execute(
@@ -659,6 +670,22 @@ def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
     if aej is not None and user.org_tipo == "BERNHOEFT":
         item["aej"] = _json_object(aej["calculation_json"])
     return item
+
+
+@router.get("/api/documents/{document_id}/pages/{page_id}")
+def document_page(document_id: int, page_id: int, user: Usuario = Depends(usuario_atual),
+                  conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Texto de uma única página, com as mesmas permissões do documento."""
+    _require_batch_reader(user)
+    _document_or_404(conn, user, document_id)
+    page = conn.execute(
+        "SELECT p.id, p.ordem, p.texto FROM doc_pages dp JOIN pages p ON p.id=dp.page_id "
+        "WHERE dp.document_id=? AND dp.page_id=?", (document_id, page_id)).fetchone()
+    if page is None:
+        raise HTTPException(404, "Página não pertence ao documento")
+    return {"page_id": page_id, "ordem": page["ordem"],
+            "texto": (page["texto"] or "") if user.papel == Papel.ANALISTA_BH
+            else mascarar_texto(page["texto"] or "")[0]}
 
 
 @router.get("/api/documents/{document_id}/anonimizado")
