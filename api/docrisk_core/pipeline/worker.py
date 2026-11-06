@@ -21,9 +21,14 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from pydantic import ValidationError
+
 from .. import config, db
 from ..aej import parse_aej_detalhado
-from ..ai import ErroIA, ProvedorLeitura, chave_cache, get_provider
+from ..ai import (
+    ErroIA, ProvedorLeitura, analisar_com_proveniencia, chave_cache, chave_cache_legada, get_provider,
+    metadados_basicos,
+)
 from ..contracts import (
     TIPOS_FOCO, AnalisePagina, CategoriaPendencia, StatusDocumento, StatusLote, StatusPagina,
 )
@@ -317,17 +322,23 @@ def _processar_lote_aej(batch_id: int) -> None:
              batch_id, resumo["workers_count"], len(periodos) * resumo["workers_count"])
 
 
-def _chave(provedor: ProvedorLeitura, pagina: sqlite3.Row) -> str:
-    """Muda se mudar a imagem, o texto digital, o provedor, o modelo ou a versão do prompt."""
+def _entrada_cache(pagina: sqlite3.Row) -> str:
+    """Identifica a imagem e o texto digital, igualmente nas duas versões da chave."""
     texto = (pagina["texto_camada"] or "").encode("utf-8")
     entrada = f"{pagina['sha256']}:{hashlib.sha256(texto).hexdigest()[:16]}"
-    return chave_cache(provedor, entrada, getattr(provedor, "modelo", ""))
+    return entrada
+
+
+def _chave(provedor: ProvedorLeitura, pagina: sqlite3.Row) -> str:
+    return chave_cache(provedor, _entrada_cache(pagina), getattr(provedor, "modelo", ""))
 
 
 def _analisar_pagina(pagina: sqlite3.Row, contract_id: str, provedor: ProvedorLeitura) -> bool:
     chave = _chave(provedor, pagina)
     inicio = time.monotonic()
     do_cache = False
+    cache_legado = False
+    metadados = metadados_basicos(provedor)
     try:
         with db.tx() as conn:
             linha = conn.execute("SELECT resultado_json FROM ai_cache WHERE chave = ?", (chave,)).fetchone()
@@ -335,8 +346,28 @@ def _analisar_pagina(pagina: sqlite3.Row, contract_id: str, provedor: ProvedorLe
             analise = AnalisePagina.model_validate_json(linha[0])
             do_cache = True
         else:
+            antiga = chave_cache_legada(provedor, _entrada_cache(pagina), getattr(provedor, "modelo", ""))
+            if antiga is not None:
+                with db.tx() as conn:
+                    legada = conn.execute("SELECT resultado_json FROM ai_cache WHERE chave = ?", (antiga,)).fetchone()
+                if legada is not None:
+                    try:
+                        analise = AnalisePagina.model_validate_json(legada[0])
+                    except ValidationError:
+                        log.warning("cache legado inválido ignorado página id=%s", pagina["id"])
+                    else:
+                        do_cache = cache_legado = True
+        if do_cache:
+            metadados.update({
+                "input_tokens": 0 if provedor.nome == "gemini" else None,
+                "output_tokens": 0 if provedor.nome == "gemini" else None,
+                "total_tokens": 0 if provedor.nome == "gemini" else None,
+                "estimated_cost_usd": 0.0,
+                "cache_hit": True,
+            })
+        else:
             png = Path(pagina["image_path"]).read_bytes()
-            analise = provedor.analisar(png, pagina["texto_camada"] or "")
+            analise, metadados = analisar_com_proveniencia(provedor, png, pagina["texto_camada"] or "")
             if not isinstance(analise, AnalisePagina):
                 analise = AnalisePagina.model_validate(analise)
     except Exception as exc:
@@ -349,6 +380,7 @@ def _analisar_pagina(pagina: sqlite3.Row, contract_id: str, provedor: ProvedorLe
         with db.tx() as conn:
             conn.execute("UPDATE pages SET status = ?, erro = ?, ms = ? WHERE id = ?",
                          (StatusPagina.ERRO.value, motivo[:500], ms, pagina["id"]))
+            _registrar_telemetria(conn, int(pagina["id"]), metadados, "ERRO", ms, type(exc).__name__)
         log.warning("página falhou id=%s ordem=%s provedor=%s erro=%s",
                     pagina["id"], pagina["ordem"], provedor.nome, type(exc).__name__)
         return False
@@ -356,17 +388,35 @@ def _analisar_pagina(pagina: sqlite3.Row, contract_id: str, provedor: ProvedorLe
     ms = int((time.monotonic() - inicio) * 1000)
     resultado = analise.model_dump_json()
     with db.tx() as conn:
-        if not do_cache:
+        if not do_cache or cache_legado:
             conn.execute("INSERT OR REPLACE INTO ai_cache (chave, resultado_json, created_at) VALUES (?, ?, ?)",
                          (chave, resultado, db.agora()))
         conn.execute("UPDATE pages SET status = ?, texto = ?, analise_json = ?, ms = ?, erro = NULL WHERE id = ?",
                      (StatusPagina.OK.value, analise.texto, resultado, ms, pagina["id"]))
+        _registrar_telemetria(conn, int(pagina["id"]), metadados, "OK", ms, None)
         conn.execute("DELETE FROM page_fts WHERE page_id = ?", (pagina["id"],))
         conn.execute("INSERT INTO page_fts (texto, page_id, contract_id) VALUES (?, ?, ?)",
                      (analise.texto, pagina["id"], contract_id))
     log.info("página lida id=%s ordem=%s provedor=%s cache=%s ms=%d tipo=%s",
              pagina["id"], pagina["ordem"], provedor.nome, do_cache, ms, analise.tipo.value)
     return True
+
+
+def _registrar_telemetria(conn: sqlite3.Connection, page_id: int, metadados: dict[str, object],
+                          status: str, duration_ms: int, error_type: str | None) -> None:
+    campos = (
+        "provider", "model", "prompt_version", "schema_version", "input_tokens", "output_tokens",
+        "total_tokens", "input_price_usd_per_million", "output_price_usd_per_million",
+        "estimated_cost_usd", "timeout_ms", "max_output_tokens",
+    )
+    valores = [metadados.get(campo) for campo in campos]
+    conn.execute(
+        "INSERT OR REPLACE INTO ai_telemetry (page_id, provider, model, prompt_version, schema_version, "
+        "input_tokens, output_tokens, total_tokens, input_price_usd_per_million, "
+        "output_price_usd_per_million, estimated_cost_usd, timeout_ms, max_output_tokens, cache_hit, "
+        "status, duration_ms, error_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (page_id, *valores, int(bool(metadados.get("cache_hit"))), status, duration_ms, error_type, db.agora()),
+    )
 
 
 def processar_lote(batch_id: int, provedor: ProvedorLeitura | None = None) -> None:

@@ -335,19 +335,34 @@ def gerar_parametrizado(trabalhadores: int, saida: Path, semente: int = 2026) ->
         ponto(doc, t, ponto_h, paginas=2 if cenario == "faltante" else 1,
               so_primeira=cenario == "faltante")
         paginas_ponto = [inicio] if cenario == "faltante" else [inicio]
-        documentos.append(_doc(paginas_ponto, "ESPELHO_PONTO", t,
-                               "PENDENTE_CORRECAO" if cenario == "faltante" else "APTO",
-                               horas=ponto_h, obs="página 2 de 2 faltante" if cenario == "faltante" else ""))
+        ponto_doc = _doc(paginas_ponto, "ESPELHO_PONTO", t,
+                         "PENDENTE_CORRECAO" if cenario == "faltante" else "APTO",
+                         horas=ponto_h, obs="página 2 de 2 faltante" if cenario == "faltante" else "")
+        ponto_doc["campos_esperados"] = {
+            "horas_extras_h": float(ponto_h), "horas_extras_valor": None,
+            "valor_liquido": None, "valor_pago": None,
+        }
+        documentos.append(ponto_doc)
         inicio = doc.page_count + 1
         holerite(doc, t, None if cenario == "reais" else folha_h,
                  f"{folha_h * 20},00", "1.800,00", ilegivel=cenario == "ilegivel")
-        documentos.append(_doc([inicio], "HOLERITE", t,
-                               "PENDENTE_CORRECAO" if cenario == "ilegivel" else "APTO",
-                               horas=None if cenario == "reais" else folha_h,
-                               horas_valor=cenario == "reais", obs="corpo ilegível" if cenario == "ilegivel" else ""))
+        folha_doc = _doc([inicio], "HOLERITE", t,
+                         "PENDENTE_CORRECAO" if cenario == "ilegivel" else "APTO",
+                         horas=None if cenario == "reais" else folha_h,
+                         horas_valor=cenario == "reais", obs="corpo ilegível" if cenario == "ilegivel" else "")
+        folha_doc["campos_esperados"] = {
+            "horas_extras_h": None if cenario == "reais" else float(folha_h),
+            "horas_extras_valor": float(folha_h * 20), "valor_liquido": 1800.0, "valor_pago": None,
+        }
+        documentos.append(folha_doc)
         inicio = doc.page_count + 1
         comprovante(doc, t, "1.800,00", "05/11/2026")
-        documentos.append(_doc([inicio], "COMPROVANTE_PAGAMENTO", t))
+        comprovante_doc = _doc([inicio], "COMPROVANTE_PAGAMENTO", t)
+        comprovante_doc["campos_esperados"] = {
+            "horas_extras_h": None, "horas_extras_valor": None,
+            "valor_liquido": None, "valor_pago": 1800.0,
+        }
+        documentos.append(comprovante_doc)
         if cenario in ("faltante", "ilegivel"):
             conciliacao[t] = {"status": "BLOQUEADA_PENDENCIA", "resultado": "NAO_AVALIADO"}
         elif cenario == "reais":
