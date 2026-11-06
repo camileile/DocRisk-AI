@@ -81,6 +81,18 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
         </Link>
       </main>
     );
+  if (role === "ADMIN_BH")
+    return (
+      <main className="demo-gate">
+        <img src="/brand/logo-horizontal-claro.svg" alt="DocRisk AI" width="200" height="52" />
+        <h1>Continue na administração.</h1>
+        <p>O perfil administrador consulta somente os exemplos de auditoria no seu ambiente separado.</p>
+        <Link href="/administracao" className="button">
+          Abrir auditoria administrativa <ArrowUpRight size={17} />
+        </Link>
+        <Link href="/acesso" className="text-link">Trocar perspectiva</Link>
+      </main>
+    );
   const title =
     (path.startsWith("/painel/lotes/")
       ? "Detalhes do lote"
