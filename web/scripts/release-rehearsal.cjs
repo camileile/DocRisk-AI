@@ -125,6 +125,19 @@ async function main() {
       if (restarted) {
         await step("E7", "navegador contra FastAPI/SQLite após reinício", async () => {
           run(PY, ["-c", SYNTHETIC_UPLOADS, tmp], { ...process.env, PYTHONIOENCODING: "utf-8" }, path.join(tmp, "uploads.log"));
+          // O smoke conectado exige o lote sintético que o CI prepara antes do navegador.
+          const usersResponse = await fetch(apiUrl + "/api/demo/users");
+          if (!usersResponse.ok) throw new Error("Não foi possível consultar usuários demo");
+          const supplier = (await usersResponse.json()).find((u) => u.id === "u-oper-beta");
+          if (!supplier?.token) throw new Error("Operador sintético ausente");
+          const form = new FormData();
+          form.set("contract_id", "CT-001");
+          form.set("file", new Blob([fs.readFileSync(path.join(tmp, "docrisk-browser-upload.pdf"))],
+            { type: "application/pdf" }), "integracao-f1-sintetico.pdf");
+          const uploaded = await fetch(apiUrl + "/api/supplier/batches", {
+            method: "POST", headers: { Authorization: "Bearer " + supplier.token }, body: form,
+          });
+          if (uploaded.status !== 202) throw new Error("Preparo do lote sintético: HTTP " + uploaded.status);
           run(process.execPath, ["scripts/live-api-smoke.cjs"], envWeb, path.join(tmp, "live.log"));
         });
       }
