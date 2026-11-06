@@ -64,6 +64,8 @@ def _par(doc: sqlite3.Row | dict) -> tuple[str, str] | None:
 
 
 def _em_historico(conn: sqlite3.Connection, doc: sqlite3.Row) -> bool:
+    if conn.execute("SELECT 1 FROM document_field_reviews WHERE document_id=? LIMIT 1", (doc["id"],)).fetchone():
+        return True
     if doc["substitui_id"] is not None:
         return True
     return conn.execute("SELECT 1 FROM documents WHERE substitui_id = ? LIMIT 1", (doc["id"],)).fetchone() is not None
@@ -153,7 +155,7 @@ def unir_proximo(conn: sqlite3.Connection, doc_id: int, usuario_id: str | None =
     if min(int(p["ordem"]) for p in _paginas(conn, proximo["id"])) != ultima + 1:
         raise RevisaoInvalida("O próximo documento não começa logo após este.", conflito=True)
     if _em_historico(conn, doc) or _em_historico(conn, proximo):
-        raise RevisaoInvalida("Documento com histórico de versões (reenvio) não pode ser unido.", conflito=True)
+        raise RevisaoInvalida("Documento com histórico de versões ou correções não pode ser unido.", conflito=True)
 
     antes = {p for p in (_par(doc), _par(proximo)) if p}
     paginas_proximo = _paginas(conn, proximo["id"])

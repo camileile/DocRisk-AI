@@ -181,6 +181,14 @@ export function demoRead(path: string, role: Papel): unknown {
   const url = new URL(path, "https://demo.invalid");
   const route = url.pathname;
   if (route === "/api/me") return USERS[role];
+  const pageRoute = route.match(/^\/api\/documents\/(\d+)\/pages\/(\d+)$/);
+  if (pageRoute) {
+    // Reutiliza a autorização e o conteúdo fictício da rota do documento.
+    const detail = demoRead(`/api/documents/${pageRoute[1]}`, role) as DocDetail;
+    const page = detail.paginas_detalhe.find(p => p.page_id === Number(pageRoute[2]));
+    if (!page) throw new Error("Página não pertence ao documento.");
+    return page;
+  }
   if (route === "/api/contracts") return role === "ADMIN_PLATAFORMA" ? [] : DEMO_CONTRACTS;
   if (role === "ADMIN_PLATAFORMA") {
     if (route === "/api/platform/registry") return {
