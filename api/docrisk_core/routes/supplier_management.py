@@ -1,4 +1,4 @@
-"""Gestão de operadores da própria fornecedora; cadastro mutável só no demo."""
+"""Gestão da fornecedora; contas com token só são criadas no demo local."""
 import secrets
 import sqlite3
 
@@ -21,8 +21,8 @@ def authorize(user: Usuario, write: bool = False):
     exigir_papel(user, [Papel.GESTOR_FORN])
     if user.org_tipo != "FORNECEDORA":
         raise HTTPException(403, "Perfil incompatível com a organização.")
-    if write and not config.DEMO_MODE:
-        raise HTTPException(403, "Cadastro disponível somente no ambiente de testes; autenticação produtiva pendente.")
+    if write and (config.AUTH_MODE != "token" or not config.DEMO_MODE):
+        raise HTTPException(403, "No acesso Clerk, convide operadores e gerencie seus vínculos autenticados.")
 
 
 class OperatorInput(BaseModel):
