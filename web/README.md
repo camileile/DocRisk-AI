@@ -15,6 +15,8 @@ Além da demonstração sintética, há agora um modo de integração **opt-in**
 
 Veja [INTEGRACAO_F1_FRONTEND.md](../docs/INTEGRACAO_F1_FRONTEND.md) para instalar, validar o CORS e usar tokens de teste **somente em localhost**. O frontend continua exportado estaticamente; lotes numéricos reais têm detalhes na própria listagem, e não em rotas dinâmicas não prerenderizadas.
 
+Para testar o **envio efetivo**, consulte [INTEGRACAO_F1_FRONTEND.md](../docs/INTEGRACAO_F1_FRONTEND.md), especialmente a seção **Envio real de arquivos sintéticos**. Não use dados pessoais reais ou uma API demo aberta na internet.
+
 ## Páginas
 
 | Rota | Conteúdo |
@@ -53,15 +55,15 @@ O estado existe apenas na memória do navegador. Recarregar uma rota interna vol
 
 Os exemplos sintéticos estão em `lib/demo.ts`; os estados seguem os nomes de `api/docrisk_core/contracts.py`. Indicadores e listas usam a mesma fonte e o mesmo filtro de contrato/competência.
 
-- O envio permite selecionar até 10 arquivos não vazios de até 20 MB, nas extensões PDF, PNG, JPG, JPEG e AEJ. Essas são restrições desta prévia, não um contrato definitivo da API.
-- A seleção usa apenas nome e tamanho. Não lê conteúdo, transmite arquivos, cria lote, executa OCR ou resolve pendências.
+- **Na demonstração sintética**, a prévia de envio permite selecionar até 10 arquivos não vazios de até 20 MB nas extensões PDF, PNG, JPG, JPEG e AEJ. **No modo API de testes**, o upload é efetivo, aceita apenas um PDF, PNG, JPEG ou TIFF fictício por lote (até 20 MB na interface) e acompanha o processamento da F2.
+- A prévia sintética usa apenas nome e tamanho e não transmite arquivos. No modo API, o navegador efetua `POST /api/supplier/batches` com Bearer e multipart e recebe um ID de lote; a leitura/classificação depende da F2. O AEJ ainda não entra no upload operacional.
 - Detalhes de evidência usam referências sintéticas; não exibem um PDF original inexistente.
 - Busca e filtros funcionam localmente. Revisão, aprovação, notificações e publicação não são simuladas como ações concluídas.
 - Perfil, arquivos selecionados e filtros não são persistidos.
 - Administração e auditoria, pareceres e portal da contratante estão disponíveis como demonstração. A fila e a conferência documental estão disponíveis como demonstração.
 - Os três módulos futuros continuam apenas como visão de expansão na landing.
 
-O backend expõe rotas de autenticação e operações em `api/docrisk_core/routes/__init__.py`. A primeira integração F1 com identificação, contratos e lotes já existe em modo local opt-in; envio, revisão, conciliação e pareceres continuam sem integração. Parte dos serviços de processamento/regras depende das frentes F2/F3. O formulário de contato continua sem canal comercial fictício e sem envio.
+O backend expõe rotas de autenticação e operações em `api/docrisk_core/routes/__init__.py`. No modo local opt-in, a integração F1 já cobre identificação, contratos, lotes e **envio real de PDF/imagens sintéticos com acompanhamento do processamento F2**. Revisão, conciliação F3 e pareceres continuam sem integração. O formulário de contato permanece sem envio.
 
 ## Verificações desta etapa
 
