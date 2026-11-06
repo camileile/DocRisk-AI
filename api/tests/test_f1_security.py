@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from docrisk_core import config, db
 from docrisk_core.api import app
 from docrisk_core.routes import worker
+from test_f2_worker import banco  # noqa: F401
 
 
 def token_for(user_id: str) -> str:
@@ -190,3 +191,77 @@ def test_read_endpoints_enforce_role_matrix(endpoint, permitidos):
                 f"{user_id} em {endpoint}: "
                 f"esperado {esperado}, recebido {response.status_code}"
             )
+
+def _upload_batch(client, filename, content):
+    return client.post(
+        "/api/supplier/batches",
+        headers=headers("u-oper-beta"),
+        data={"contract_id": "CT-001"},
+        files={"file": (filename, content, "application/octet-stream")},
+    )
+
+
+def _assert_upload_rejected_without_batch(client, filename, content):
+    with db.tx() as conn:
+        before = conn.execute("SELECT COUNT(*) FROM batches").fetchone()[0]
+
+    response = _upload_batch(client, filename, content)
+
+    with db.tx() as conn:
+        after = conn.execute("SELECT COUNT(*) FROM batches").fetchone()[0]
+
+    assert response.status_code == 422, response.text
+    assert after == before
+
+
+@pytest.mark.parametrize(
+    ("filename", "content"),
+    [
+        ("arquivo.pdf", b"MZ" + b"\x00" * 100),  # executável renomeado
+        ("jornada.aej", b"01|1|2026-11-06|"),    # AEJ fora do fluxo próprio
+        ("corrompido.pdf", b"%PDF-1.4\n" + b"\x00lixo" * 50),
+        ("vazio.pdf", b""),
+    ],
+)
+def test_upload_rejeita_arquivos_invalidos_sem_criar_lote(
+    banco, filename, content
+):
+    with TestClient(app) as client:
+        _assert_upload_rejected_without_batch(client, filename, content)
+
+
+def test_upload_rejeita_arquivo_acima_de_50mb_sem_criar_lote(banco):
+    content = b"x" * (50 * 1024 * 1024 + 1)
+
+    with TestClient(app) as client:
+        _assert_upload_rejected_without_batch(client, "grande.pdf", content)
+
+def test_upload_aceita_tiff_multipagina(banco, monkeypatch):
+    from io import BytesIO
+    from PIL import Image
+    from docrisk_core.routes import worker
+
+    quadros = [
+        Image.new("RGB", (200, 100), cor)
+        for cor in ("red", "green", "blue")
+    ]
+    buffer = BytesIO()
+    quadros[0].save(
+        buffer,
+        format="TIFF",
+        save_all=True,
+        append_images=quadros[1:],
+    )
+    content = buffer.getvalue()
+
+    monkeypatch.setattr(
+        worker,
+        "criar_lote",
+        lambda *args, **kwargs: 123,
+    )
+    monkeypatch.setattr(worker, "enfileirar", lambda *args, **kwargs: None)
+
+    with TestClient(app) as client:
+        response = _upload_batch(client, "lote.tif", content)
+
+    assert response.status_code == 202, response.text
