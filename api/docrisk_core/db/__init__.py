@@ -88,10 +88,12 @@ TRABALHADORES = [
 
 
 def seed_demo(conn: sqlite3.Connection) -> None:
-    """Idempotente: não sobrescreve tokens já criados."""
-    if config.DEMO_MODE:
-        conn.execute("INSERT OR IGNORE INTO platform_accounts (id,nome,token) VALUES (?,?,?)",
-                     ("u-plataforma", "Admin Geral (demo)", secrets.token_urlsafe(32)))
+    """Cria dados fictícios somente quando o modo de demonstração está ativo."""
+    if not config.DEMO_MODE:
+        return
+
+    conn.execute("INSERT OR IGNORE INTO platform_accounts (id,nome,token) VALUES (?,?,?)",
+                 ("u-plataforma", "Admin Geral (demo)", secrets.token_urlsafe(32)))
     conn.executemany("INSERT OR IGNORE INTO organizations VALUES (?, ?, ?)", ORGANIZACOES)
     for uid, nome, org, papel in USUARIOS:
         conn.execute(
