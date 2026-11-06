@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./workspace.css";
+import "./api-integration.css";
 import { DemoProvider } from "@/components/demo-provider";
 export const metadata: Metadata = {
   title: "DocRisk AI | Inteligência documental, decisões mais claras",
