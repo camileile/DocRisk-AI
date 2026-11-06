@@ -1,0 +1,2410 @@
+{
+  "branches": [
+    {
+      "branch": "backup/d4-01-20261106",
+      "sha": "22f294ca73c95982aa0e16aeeb285a6c763d8459"
+    },
+    {
+      "branch": "backup/d4-02-20261106",
+      "sha": "185b4ae13456a23730c2eba2842c202834bfec88"
+    },
+    {
+      "branch": "backup/d4-03-20261106",
+      "sha": "96bb15c8dd8c9695ace8265a9a4e21345da4cb63"
+    },
+    {
+      "branch": "backup/d4-04-20261106",
+      "sha": "98166a282546928ec6fc9892bd710cc63248b566"
+    },
+    {
+      "branch": "backup/d4-05-20261106",
+      "sha": "dcb749f48b413127cf5d877670c160f8a53c5c74"
+    },
+    {
+      "branch": "backup/d4-06-20261106",
+      "sha": "e043d751c719b8d650759edd1b5ba2d3c94b4461"
+    },
+    {
+      "branch": "backup/d4-07-20261106",
+      "sha": "b3d186d531a07efa6077f8ba61e89d271f106bf1"
+    },
+    {
+      "branch": "backup/d4-08-20261106",
+      "sha": "8583c007e8be47ef81c0af80a3a17047046ad14f"
+    },
+    {
+      "branch": "backup/d4-09-20261106",
+      "sha": "1cab17334bbb69d8510a671d46069bc8af42a015"
+    },
+    {
+      "branch": "backup/d4-10-20261106",
+      "sha": "5d09bc9a3a6ef2f589cc284bddf000ce37f6a08e"
+    },
+    {
+      "branch": "backup/migration-20261106/detached-1148e76d4d55",
+      "sha": "1148e76d4d550846604ab3ddb2f1602beb901982"
+    },
+    {
+      "branch": "backup/migration-20261106/detached-2d5c56d58ee2",
+      "sha": "2d5c56d58ee20d782f7ac1656cf78006c5604450"
+    },
+    {
+      "branch": "backup/migration-20261106/detached-f52b97d2cde0",
+      "sha": "f52b97d2cde0ce2a3bdedb41b5405fc40e28a7f7"
+    },
+    {
+      "branch": "backup/migration-20261106/history/010a885956f5",
+      "sha": "010a885956f5c2efaa46eae2738519fbe01aead7"
+    },
+    {
+      "branch": "backup/migration-20261106/history/02d8a7a9df1f",
+      "sha": "02d8a7a9df1f605f6182fb47a3ef5a87ab5e53f3"
+    },
+    {
+      "branch": "backup/migration-20261106/history/0842e157110a",
+      "sha": "0842e157110aaae1bbdf666af482067e0f54cf80"
+    },
+    {
+      "branch": "backup/migration-20261106/history/0b0c01b16ea2",
+      "sha": "0b0c01b16ea29095a01de14124ec9ddac9458149"
+    },
+    {
+      "branch": "backup/migration-20261106/history/132caa0f29ef",
+      "sha": "132caa0f29efdc49166f02102a8e916e6908d592"
+    },
+    {
+      "branch": "backup/migration-20261106/history/17512c5da58a",
+      "sha": "17512c5da58aa65902595ee413bb4fc593de6353"
+    },
+    {
+      "branch": "backup/migration-20261106/history/19fc07bb00f0",
+      "sha": "19fc07bb00f0536014ef2412212dfaaa89569ed3"
+    },
+    {
+      "branch": "backup/migration-20261106/history/1b559d1203bd",
+      "sha": "1b559d1203bd3d822261c0ff348bc101ef08db41"
+    },
+    {
+      "branch": "backup/migration-20261106/history/220888418d4f",
+      "sha": "220888418d4fab87dd2110a816183cf1a3906d2e"
+    },
+    {
+      "branch": "backup/migration-20261106/history/23201740a5a1",
+      "sha": "23201740a5a1f6150a7ce56370288bb0fa6d0bf0"
+    },
+    {
+      "branch": "backup/migration-20261106/history/253f35a1d8b7",
+      "sha": "253f35a1d8b709f13637da63c6aa907d53de509c"
+    },
+    {
+      "branch": "backup/migration-20261106/history/2bb5b4ba9420",
+      "sha": "2bb5b4ba94208dbc8079f2d9124a88218cc49ae2"
+    },
+    {
+      "branch": "backup/migration-20261106/history/2bc77b673ab1",
+      "sha": "2bc77b673ab17071b9432bc72ba6c60fe90460a9"
+    },
+    {
+      "branch": "backup/migration-20261106/history/2bfa0401594a",
+      "sha": "2bfa0401594ae26b3301487292068e2740f17e34"
+    },
+    {
+      "branch": "backup/migration-20261106/history/3c0129c5b6b1",
+      "sha": "3c0129c5b6b1182eecee6ab92a57355b92cd0d58"
+    },
+    {
+      "branch": "backup/migration-20261106/history/3cf1c2472179",
+      "sha": "3cf1c2472179bb46033e9a15e33eec3d07e7dad4"
+    },
+    {
+      "branch": "backup/migration-20261106/history/46623ed08dab",
+      "sha": "46623ed08dab8a725538b86977c815da31b1af74"
+    },
+    {
+      "branch": "backup/migration-20261106/history/476b32c95a1c",
+      "sha": "476b32c95a1c7dbbdcf5e9228cf31a89b90a699d"
+    },
+    {
+      "branch": "backup/migration-20261106/history/5a1d0f3280c7",
+      "sha": "5a1d0f3280c7b38aca649f48c3b27ee5816ecb05"
+    },
+    {
+      "branch": "backup/migration-20261106/history/5accfea7e802",
+      "sha": "5accfea7e8024c709d0f154bf1a1da0557eadfc1"
+    },
+    {
+      "branch": "backup/migration-20261106/history/5bc0302cf0a7",
+      "sha": "5bc0302cf0a70d7d844f1a4f68fd625dc082edc1"
+    },
+    {
+      "branch": "backup/migration-20261106/history/5d5c1298b91f",
+      "sha": "5d5c1298b91fec2fdc429a279eee575553fbaba4"
+    },
+    {
+      "branch": "backup/migration-20261106/history/61d61c6e1191",
+      "sha": "61d61c6e1191d066b69c767822dc620d3f84a10f"
+    },
+    {
+      "branch": "backup/migration-20261106/history/6528b94ff0a5",
+      "sha": "6528b94ff0a5f0cba22d57838a282e59b907c29b"
+    },
+    {
+      "branch": "backup/migration-20261106/history/66994e8afc4b",
+      "sha": "66994e8afc4bdbceae6db6a02147a65987a61116"
+    },
+    {
+      "branch": "backup/migration-20261106/history/71ed7c0e27f3",
+      "sha": "71ed7c0e27f343d3084e81884679cea15e76d879"
+    },
+    {
+      "branch": "backup/migration-20261106/history/74927bec8277",
+      "sha": "74927bec8277b0630c752214e82fa2981eb22c95"
+    },
+    {
+      "branch": "backup/migration-20261106/history/7b63cc0724f1",
+      "sha": "7b63cc0724f17656d62839d4a119afc8ba3bf15a"
+    },
+    {
+      "branch": "backup/migration-20261106/history/85ed6c16f6d8",
+      "sha": "85ed6c16f6d8f5f7d06181310f48ff72ef7cd68e"
+    },
+    {
+      "branch": "backup/migration-20261106/history/9375139e64c5",
+      "sha": "9375139e64c5b8d0862b842b35de618f394b172a"
+    },
+    {
+      "branch": "backup/migration-20261106/history/9614754a6028",
+      "sha": "9614754a60283a9c2fe879a9bb6fce3dcceaa8fd"
+    },
+    {
+      "branch": "backup/migration-20261106/history/979990b388e1",
+      "sha": "979990b388e15541d59af60135c65c3dc3d4ffdb"
+    },
+    {
+      "branch": "backup/migration-20261106/history/98a2f94437cc",
+      "sha": "98a2f94437cc054fc700d94ed5d539116004e935"
+    },
+    {
+      "branch": "backup/migration-20261106/history/9ab112cf260b",
+      "sha": "9ab112cf260b2b2a66a742ae58de626a564fe61a"
+    },
+    {
+      "branch": "backup/migration-20261106/history/9ac92f1c9da6",
+      "sha": "9ac92f1c9da64c83e0d2eaec5de112fe3d997a30"
+    },
+    {
+      "branch": "backup/migration-20261106/history/a2420f1eb69a",
+      "sha": "a2420f1eb69a0f8aead4f286d4659fb2fe4f3544"
+    },
+    {
+      "branch": "backup/migration-20261106/history/a3986002e9f9",
+      "sha": "a3986002e9f9810d9acdd90dbca86efb2745a340"
+    },
+    {
+      "branch": "backup/migration-20261106/history/a465c79f08c0",
+      "sha": "a465c79f08c0d5d14481034166997a25d3c06e69"
+    },
+    {
+      "branch": "backup/migration-20261106/history/a87d115d5090",
+      "sha": "a87d115d50904756251e99bf02adccb33d612250"
+    },
+    {
+      "branch": "backup/migration-20261106/history/ab14993a1b10",
+      "sha": "ab14993a1b10e4dc81a1e55733a52999578fe4c4"
+    },
+    {
+      "branch": "backup/migration-20261106/history/af2a81d3d38b",
+      "sha": "af2a81d3d38b7f8e622320c28a7ade40c2f62357"
+    },
+    {
+      "branch": "backup/migration-20261106/history/b2612c1635ee",
+      "sha": "b2612c1635eefb8ac72cb7ef1a73e0a3bacb8af5"
+    },
+    {
+      "branch": "backup/migration-20261106/history/b265d2fba755",
+      "sha": "b265d2fba7559f0ea9b1cebd0897b3724a955886"
+    },
+    {
+      "branch": "backup/migration-20261106/history/b2e76dfbbb16",
+      "sha": "b2e76dfbbb1601f8d25c8380fa16ddec54d1ca67"
+    },
+    {
+      "branch": "backup/migration-20261106/history/b43ce81bfd23",
+      "sha": "b43ce81bfd23f70bcfad883f0dc8aaeabdb162c7"
+    },
+    {
+      "branch": "backup/migration-20261106/history/b44c5676a4e9",
+      "sha": "b44c5676a4e9c7f19fd933de3b3e73b3736b29ce"
+    },
+    {
+      "branch": "backup/migration-20261106/history/b80ee6507cde",
+      "sha": "b80ee6507cde6a59140cbb98ce1430b8c9fd749e"
+    },
+    {
+      "branch": "backup/migration-20261106/history/b82059fc1d3e",
+      "sha": "b82059fc1d3e5f522f027c356fe2b47b4586bae8"
+    },
+    {
+      "branch": "backup/migration-20261106/history/bd2c6b199f70",
+      "sha": "bd2c6b199f7020679d9bba5c450646236cf1e76a"
+    },
+    {
+      "branch": "backup/migration-20261106/history/c015403148e8",
+      "sha": "c015403148e8fa6f51a4c5800d0f6da2a1f85ae8"
+    },
+    {
+      "branch": "backup/migration-20261106/history/c6c37ea2c51f",
+      "sha": "c6c37ea2c51f41e70e6709a027c12148bc66a38f"
+    },
+    {
+      "branch": "backup/migration-20261106/history/c72d39da08b8",
+      "sha": "c72d39da08b803abedab50595e6cb51c59f2856f"
+    },
+    {
+      "branch": "backup/migration-20261106/history/c9407db9b676",
+      "sha": "c9407db9b6766a4f3be3e24fc792ace4687d9be3"
+    },
+    {
+      "branch": "backup/migration-20261106/history/cdd5005a0ca6",
+      "sha": "cdd5005a0ca6443f28acdb66d094390c61183141"
+    },
+    {
+      "branch": "backup/migration-20261106/history/cf1bd080dde9",
+      "sha": "cf1bd080dde995a74717f9d8f291d3998ae6487f"
+    },
+    {
+      "branch": "backup/migration-20261106/history/d637082f6967",
+      "sha": "d637082f696786f13e7b3073d0bb8fc5b10c1b5c"
+    },
+    {
+      "branch": "backup/migration-20261106/history/d8c7917f8b85",
+      "sha": "d8c7917f8b853cce93c81705e98d65039f8453ed"
+    },
+    {
+      "branch": "backup/migration-20261106/history/d902fe31ee72",
+      "sha": "d902fe31ee72662e662f177db5ab86f9446741c1"
+    },
+    {
+      "branch": "backup/migration-20261106/history/dacc1f7b4cb7",
+      "sha": "dacc1f7b4cb7e1be6738abde49dd932d16f9a455"
+    },
+    {
+      "branch": "backup/migration-20261106/history/e495bcd50784",
+      "sha": "e495bcd507843654716a2a8b4c91888c20cf3faf"
+    },
+    {
+      "branch": "backup/migration-20261106/history/e5900f67f07d",
+      "sha": "e5900f67f07d6d82fa9a356005450a9c6a7e7100"
+    },
+    {
+      "branch": "backup/migration-20261106/history/e7abac73ae5e",
+      "sha": "e7abac73ae5e5dd2577639a25b165630e078bdf0"
+    },
+    {
+      "branch": "backup/migration-20261106/history/e8cf98019dce",
+      "sha": "e8cf98019dcef5d926fccdf89004360054823a24"
+    },
+    {
+      "branch": "backup/migration-20261106/history/f24a9f6ceadf",
+      "sha": "f24a9f6ceadf801f15d976bec542ad835c5fb511"
+    },
+    {
+      "branch": "backup/migration-20261106/history/f593994a5137",
+      "sha": "f593994a5137a32018042c6e0db8f66fafa3e0ea"
+    },
+    {
+      "branch": "backup/migration-20261106/history/fd78f4d263cf",
+      "sha": "fd78f4d263cf265fcccc4865b067cde1b7305255"
+    },
+    {
+      "branch": "backup/migration-20261106/history/fd7a4aa92725",
+      "sha": "fd7a4aa9272598190a53a6c5bde6364b60920198"
+    },
+    {
+      "branch": "backup/migration-20261106/local-main",
+      "sha": "e8e5e0f0045a23a9d8e4e5bb108e634171999ae3"
+    },
+    {
+      "branch": "chore/d4-03-release-readiness",
+      "sha": "fd97fd39b58656b45bf5b65c3a8c46353b2f24dc"
+    },
+    {
+      "branch": "chore/d4-05-dependency-security",
+      "sha": "780d92b8a0dbf2143e1784ef4395fbea9c2d8d90"
+    },
+    {
+      "branch": "codex/d4-01-review-1148",
+      "sha": "47c3ff998e5d92cbc624662478247a4c09e0eb34"
+    },
+    {
+      "branch": "codex/d4-02-review-1148",
+      "sha": "b81b4a0652445ac8ea35ca9a9a429b1fc40b615d"
+    },
+    {
+      "branch": "codex/d4-04-review-1148",
+      "sha": "33d17d71742bcc5ab2b03682303b91f047afff6c"
+    },
+    {
+      "branch": "codex/d4-09-concurrency-investigation",
+      "sha": "d37071743e45b9bf5a341a2bd2119f1c43af03fc"
+    },
+    {
+      "branch": "codex/d4-09-stage3-review",
+      "sha": "5a568d6052924a387ce6f5bfba763106f9c3ae24"
+    },
+    {
+      "branch": "codex/d4-09-validated-snapshot",
+      "sha": "7961bc647936089a1a29a0e1e4326160aa9a23cb"
+    },
+    {
+      "branch": "codex/dev4-stage3-integration",
+      "sha": "cf9b09cefb0f9cf5d120012dd7a7f330c99569c8"
+    },
+    {
+      "branch": "codex/fix-pr47",
+      "sha": "98339f9f0147b97df5ed1aa77ec97dc7152f45ac"
+    },
+    {
+      "branch": "codex/fix-pr49",
+      "sha": "9421d74caeb349600439a19455e75c51290a6cec"
+    },
+    {
+      "branch": "codex/fix-pr50",
+      "sha": "e40f151bbff9d6318f936547e61b7d84a4f557c1"
+    },
+    {
+      "branch": "codex/pr23-upload-coverage",
+      "sha": "3de6f46f1dd9f76042a844880315e0da7a2d5899"
+    },
+    {
+      "branch": "codex/pr24-privacy-fixes",
+      "sha": "6a952beb91d5b566040ffba63e5fb0c9263cf32e"
+    },
+    {
+      "branch": "codex/pr25-admin-access-tests",
+      "sha": "098fdfee8ca55b4c17e479066300f215b8d6dd32"
+    },
+    {
+      "branch": "codex/pr27-benchmark-evidence",
+      "sha": "b4b6cdfabde2de9fc1830bbaa91efa5dc711088c"
+    },
+    {
+      "branch": "codex/reconcile-pr38",
+      "sha": "2d5c56d58ee20d782f7ac1656cf78006c5604450"
+    },
+    {
+      "branch": "codex/review-drafts",
+      "sha": "e25783ff8d0c9af6bb945b1a154d17abf5aded45"
+    },
+    {
+      "branch": "codex/review-pr42",
+      "sha": "a6d70067f7401f2b066eed9d87e7571c65cbd3c8"
+    },
+    {
+      "branch": "codex/review-pr44",
+      "sha": "e55ad03ab70a795428d8a0a23298a42189406e1b"
+    },
+    {
+      "branch": "codex/review-pr45",
+      "sha": "60a05a999bd41bf3ab32395334ae1a088b6b0efa"
+    },
+    {
+      "branch": "codex/review-pr46",
+      "sha": "2f0b8c0f7c28134a4ac2eb77eeaf77047691f0d0"
+    },
+    {
+      "branch": "codex/review-pr47",
+      "sha": "a1f6109c0c14574091186a9c2f23e34705224818"
+    },
+    {
+      "branch": "codex/review-pr49",
+      "sha": "f085df4aedeecc17f6b6b55cb651204dc4693ccd"
+    },
+    {
+      "branch": "codex/review-pr50",
+      "sha": "92837f76ebeffa1496d009d6fcbd6dc80aecde0f"
+    },
+    {
+      "branch": "feat/d4-06-private-pilot",
+      "sha": "7ee31394234924175e8a058d7b0fee199462f4d1"
+    },
+    {
+      "branch": "feat/d4-07-observability",
+      "sha": "04eef5f98cc5f61a653469d83d4e57dcc46b47df"
+    },
+    {
+      "branch": "feat/d4-08-backup-recovery",
+      "sha": "90852d3bdbe7304f05b9dd5d5aa6669b612b3ffd"
+    },
+    {
+      "branch": "feat/d4-10-distributed-processing",
+      "sha": "2f3d282525c7721eaa1d9b7a2755b4283d5669dc"
+    },
+    {
+      "branch": "fix/auditoria-integracao-geral",
+      "sha": "d49662c6a7a2dc2c74d78cb85431b35b95cd9632"
+    },
+    {
+      "branch": "fix/d4-04-local-runtime",
+      "sha": "345ff4733fb2e6ccf830666a2bf271d82c9888b7"
+    },
+    {
+      "branch": "test/d4-01-pr22-integration",
+      "sha": "d55689baa98c2276750df04f53ade7ea0ba757ff"
+    },
+    {
+      "branch": "test/d4-02-demo-isolation",
+      "sha": "6a6ce6cd0c66015719e17654b7c7e6f0428c487e"
+    },
+    {
+      "branch": "test/d4-09-adversarial-scenarios",
+      "sha": "168d3ea2ba7966c7ddecdad6c9997bf39f84b421"
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "sha": "93cf0391102d007089337cd0704ecac3c0ee9020"
+    },
+    {
+      "branch": "backup/migration-20261106/worktree-DocRisk-dev4-race-baseline",
+      "sha": "b271b5725e838acd64723edcb5d45cde3e3b5999"
+    },
+    {
+      "branch": "backup/migration-20261106/worktree-DocRisk-review42",
+      "sha": "90f6ee1c4668442706744913772f5d1e905d4e97"
+    },
+    {
+      "branch": "backup/migration-20261106/worktree-DocRisk-review44",
+      "sha": "2f67e40e8074e170badc978ead01fc99be566f01"
+    },
+    {
+      "branch": "backup/migration-20261106/worktree-DocRisk-review45",
+      "sha": "3bfdd38df2be6ee2e123c6d9e06aa07eb9b347a8"
+    },
+    {
+      "branch": "backup/migration-20261106/review49-evidence",
+      "sha": "8280616c4b583156a0020dbdbcb3d0e85a71c5c2"
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "sha": "43d307da972c249193133397b9ca86f75cc1cecc"
+    }
+  ],
+  "files": [
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/D4-03_PRE_CONGELAMENTO_E_VIDEO.md",
+      "sha256": "bda06ee4afb4a5e99980b6bb16303febbf903affcc47d3f73e49ff821c97d110",
+      "size": 3615
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-baseline-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-baseline-pytest.txt",
+      "sha256": "9fff4cf5b2b6c9bfc2cc163ac927e0f0eae3898175ea84fdc991a4fd34d4853e",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-final-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-final-pytest.txt",
+      "sha256": "819cdc5626a190945843fe6e0c3f3e7073d0d873e33c179f864a3d0a21061813",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-final-rehearsal.json",
+      "sha256": "87a03e1efa4a65eaa6b60de4269f28c106d2cdbb0baf9d2aaa783b80060198e5",
+      "size": 1418
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-final-rehearsal.txt",
+      "sha256": "9be3ce6d01233a61ba66b1ad418799afb4f3cad94549ddebc8c3951501847dcd",
+      "size": 609
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-install.txt",
+      "sha256": "42ae2399e5b623f6d8b2fb4cdb62d90f953a4652b259069cc73581c80a460c4d",
+      "size": 148
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-latest-install.txt",
+      "sha256": "ce10124eecce49c82a36d8d0f835f4779a9d19869c2d5bff537550ef576bf95e",
+      "size": 148
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-latest-pytest.txt",
+      "sha256": "0046815dfdbbe8705d25986eec842d63c0319c1b437fca3942ee25682c53536d",
+      "size": 1072
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-latest-rehearsal.json",
+      "sha256": "dbfac3c84849be4d535fe93eb4dd128662cc7d9f6b6084e983745d30180b6568",
+      "size": 1413
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-latest-rehearsal.txt",
+      "sha256": "efce6394261d4673d34bc0c37f4d5989e030081ce7745332144e2a4accff9d40",
+      "size": 604
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-p0.txt",
+      "sha256": "3beaae3bb87aac4481ec07dcbd92d6a996f14169d03b6abfca976f61fa594a11",
+      "size": 395
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-pytest.txt",
+      "sha256": "c4d044d3ad42c191ce35c55b3c2d15560f94d74d80f162be8099b049ef794868",
+      "size": 965
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-rehearsal.json",
+      "sha256": "8369130e6b75b94e1dca9e019341f2c911a0096718c54922622259ef6585595d",
+      "size": 1755
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-rehearsal.txt",
+      "sha256": "34d32f5f690d8d7d5671c24ebda133626d81ed70d86c469ca9d67757d9cd8ae2",
+      "size": 926
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-transport.txt",
+      "sha256": "f00712343d0f5c45e038a6d18b28b117a4faec09c52da6bbc5acc38d79ac8a0f",
+      "size": 340
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-typecheck.txt",
+      "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+      "size": 51
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-install.txt",
+      "sha256": "42ae2399e5b623f6d8b2fb4cdb62d90f953a4652b259069cc73581c80a460c4d",
+      "size": 148
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-p0.txt",
+      "sha256": "3beaae3bb87aac4481ec07dcbd92d6a996f14169d03b6abfca976f61fa594a11",
+      "size": 395
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-pytest.txt",
+      "sha256": "c4d044d3ad42c191ce35c55b3c2d15560f94d74d80f162be8099b049ef794868",
+      "size": 965
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-rehearsal.json",
+      "sha256": "8369130e6b75b94e1dca9e019341f2c911a0096718c54922622259ef6585595d",
+      "size": 1755
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-rehearsal.txt",
+      "sha256": "34d32f5f690d8d7d5671c24ebda133626d81ed70d86c469ca9d67757d9cd8ae2",
+      "size": 926
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-transport.txt",
+      "sha256": "f00712343d0f5c45e038a6d18b28b117a4faec09c52da6bbc5acc38d79ac8a0f",
+      "size": 340
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-typecheck.txt",
+      "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+      "size": 51
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/ENTREGA_DEV4_ETAPA2.md",
+      "sha256": "4de41bf5451ad0a1c52f62816dc9cb9da587f69e51703ee964107c763542b35c",
+      "size": 5731
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/build-delivery.cjs",
+      "sha256": "ce262f09cdac0afc3356bfe3d019fe83be0b73adeddd08ab57fb8e9bec8ac2ce",
+      "size": 6907
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/full-suite-final-sha.txt",
+      "sha256": "76729f00da3a55ef43a0ee9fed0f675c78260c5189624c0a4043a59b503d4dd1",
+      "size": 1496
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/full-suite.txt",
+      "sha256": "98fcf7e9d8962413819dd93eb0fee0010606e1f296183b45c0cefa3804f794de",
+      "size": 1496
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/rehearsal-preserved-hash.txt",
+      "sha256": "be93a2ff91420989bd1f871f49587816c99be2e5da62b067cc851afd381af969",
+      "size": 212
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review-snapshot.json",
+      "sha256": "1c6c89fa41896112f4691ec02f644ae49c824f94d7438c9b3da52276b12ee173",
+      "size": 1576
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/run-isolation.cjs",
+      "sha256": "0bf69fa378658635a05919501aeaf194ecaf76653f524121b653199d50357fa5",
+      "size": 1081
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/run-review.cjs",
+      "sha256": "fe51cc4389f61701d957fd2d7b58c199abfe14f3e2b99c310c79d7ea3cd9e3b5",
+      "size": 756
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/tested-sha.txt",
+      "sha256": "588f2a20747fbfc7e166ab8f6fb40df5a2204b0214d3e64563efbd4ad8f75db0",
+      "size": 41
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/RELATORIO_ETAPA3.md",
+      "sha256": "5e59a63af8446482776f1a4214d1f18d206f86c5cd45330143349d192cd24719",
+      "size": 11043
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/aej-main-control.txt",
+      "sha256": "979820e21b6a282391e84b911232bb5497bdaa51185a6d8d83c6ed4952bb14f4",
+      "size": 2553
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/build-final-report.cjs",
+      "sha256": "28caee61c4a8b8b01d1c642568d1952386ea0c98f410b68b1f56e4ebb387a95b",
+      "size": 12025
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/build.txt",
+      "sha256": "f4ef558fc19d6c9362bfd68300a9e51421a93c6023ead248083eabb42878af9a",
+      "size": 1885
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-concurrency-repeated.txt",
+      "sha256": "002a3f277740e726c40bbf51d42e47e9a83f10911d6606b6651acf3a0659ddb0",
+      "size": 3290
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-final-pytest.txt",
+      "sha256": "23677e3918d93304a82f148d8e4bbf9af5cc1fc0e9d9a7c124f8da17693fc4dc",
+      "size": 6395
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-isolation.json",
+      "sha256": "415fc6fa0b96804776d18fffd4d747b894db4436ecdf2ec8fc43542d6d229080",
+      "size": 67304
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-isolation.txt",
+      "sha256": "e7b61e65d89bf6eea4774e8af9776f715813471cc1e9c549c1379fa31843fbd6",
+      "size": 1684
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-p0.txt",
+      "sha256": "3beaae3bb87aac4481ec07dcbd92d6a996f14169d03b6abfca976f61fa594a11",
+      "size": 395
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-pytest.txt",
+      "sha256": "e0843eb71347f624dc512f7915ba44653092d0c95e5abf5e5c91475aadc217f8",
+      "size": 3377
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-runtime.json",
+      "sha256": "cb86289a8229dd60b47f600a00486cfae740c7f9f3268591bf88610320366142",
+      "size": 2042
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-runtime.txt",
+      "sha256": "3b385bf9e17f76174e02cfebf24c4af6fa62edee41b0301b20cec90acf343bfb",
+      "size": 1081
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-server.txt",
+      "sha256": "b1cd7864db7da4c40ae4059e64aca0f96fde017b4e8d29b8334cdf123273ef0a",
+      "size": 752137
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-transport.txt",
+      "sha256": "ce9a7a1460480475e0df1c00925e79f2c4909a039a88236c3a91bf617589b456",
+      "size": 438
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/d409-final-pytest.txt",
+      "sha256": "6c62d5b4c860ebf4cc5a1233d3965527906f62d186c887b73f69203435c78982",
+      "size": 6381
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/d409-final-sha.txt",
+      "sha256": "03b78e903672a20a3d9c69fecbccf493ac29bb1bf2948e54bd39e85fc09aafc3",
+      "size": 41
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/d409-pytest.txt",
+      "sha256": "aecab392e70dfc3b171960be0d1161ffc549a8c74335ec221fd5d7dc45684110",
+      "size": 3377
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/integration-base.txt",
+      "sha256": "6afa2abc4bb44a51178c5968737c90424ce16845902a4d402c20cdf0e8811b40",
+      "size": 41
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/integration-included-commits.txt",
+      "sha256": "e7754c5a1cc506c45ebccc144cea1fe8707356f4ec88abd29f481e7ecafdda83",
+      "size": 2362
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/integration-manifest.json",
+      "sha256": "5b0c3d507adc20dd952932674dcdd24bad932d213c9aff01540677cbf40c31fa",
+      "size": 6663
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/integration-tested-sha.txt",
+      "sha256": "9b741e2a1b7a7840851bdf253be868094eecc33187b71f76da9e3d0a6ca97413",
+      "size": 41
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/main-risk-controls.txt",
+      "sha256": "5f10a6626199788a2cf4dcdea5260ca152656f16076df2de6cd4cd57fe6bdac6",
+      "size": 5561
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/npm-ci.txt",
+      "sha256": "bacdba539877cf3be65943ebde522509ef4a8c05a13d3878e6c212dacece0845",
+      "size": 314
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/prepare-prs.cjs",
+      "sha256": "e55dbf113c5fc9781970761caf5f9fbac41352ae0b06719ac2b9c14e07321134",
+      "size": 7289
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/protected-refs-check.txt",
+      "sha256": "074bb59ca1d093f501517db7a764f77fb795549b394f88374d1ef29511f6aefc",
+      "size": 36
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/protected-refs.txt",
+      "sha256": "285dab96c4bf2da959e218185a31b1aed0b3b404a187fcc18117988159138280",
+      "size": 740
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/run-isolation.cjs",
+      "sha256": "21b860d57df57b768f036c635a7b9cdad3baca7d945a2ecaa4455b2cea9bb332",
+      "size": 1074
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/typecheck.txt",
+      "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+      "size": 51
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/RELATORIO_RECONCILIACAO_DEV4.md",
+      "sha256": "ae07cd7378b18ffd792b8523ea29a4ba7e97215d8418cbaeafdc4cd7217cf5ea",
+      "size": 12193
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/backups.txt",
+      "sha256": "c9bdf22d9e810456cb157f224898f6efb0d2d78bd751cb64aa18ecef3d4053af",
+      "size": 640
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/base-install.txt",
+      "sha256": "395b10e6ca192516b1c96a26e550cb490501f314eccc75fda4abff292655df77",
+      "size": 11779
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/build-report.cjs",
+      "sha256": "3ea8b90489ba02717d54ee53e46e5480bd4ff8015c0bcba366a9a1a11bfb28b3",
+      "size": 13549
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/final-p0.txt",
+      "sha256": "3beaae3bb87aac4481ec07dcbd92d6a996f14169d03b6abfca976f61fa594a11",
+      "size": 395
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/final-snapshot.json",
+      "sha256": "2bfdd726680ca280ed68b90d6c6aa7913c1c2105c7962760e24e38a8a7bf11a1",
+      "size": 3428
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/final-transport.txt",
+      "sha256": "ce9a7a1460480475e0df1c00925e79f2c4909a039a88236c3a91bf617589b456",
+      "size": 438
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/final-typecheck.txt",
+      "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+      "size": 51
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/install.txt",
+      "sha256": "f616a08f1b5593d36bc9aacb209213030ec8a3053b732a27d152a9a0556e1475",
+      "size": 17463
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/main-audit.txt",
+      "sha256": "6309337cb070132d0b5a5a0fb663e5e9f3e42f0f091d2c8880b66fd30dcbab1b",
+      "size": 2113
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/main-history.txt",
+      "sha256": "e7fb7a6e1b45b3a21f504a9d30f21e7d12e93352e0e285bcfb023a023bb54b87",
+      "size": 4437
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/report-check.txt",
+      "sha256": "4face4dc1363542b99791f31d761acc61981d181d97188e9e01036c6b1d3c3b8",
+      "size": 1344
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/run-baseline-suites.cjs",
+      "sha256": "beb25cdb890ffb493d0640175ee0fa3bd1cb0bb39ba533abd3e8f3af913b73e5",
+      "size": 1051
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/run-final-suites.cjs",
+      "sha256": "53430b09829bd2596e64255c6c25930de751dbf344109dcb90aeceee974f1424",
+      "size": 1049
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/run-isolation.cjs",
+      "sha256": "1b029b4fad536fd6915a2e27135437752955d725c089635ada73232637a8edc8",
+      "size": 1075
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/backups.txt",
+      "sha256": "c9bdf22d9e810456cb157f224898f6efb0d2d78bd751cb64aa18ecef3d4053af",
+      "size": 640
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/main-history.txt",
+      "sha256": "e7fb7a6e1b45b3a21f504a9d30f21e7d12e93352e0e285bcfb023a023bb54b87",
+      "size": 4437
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/PR_D4-01_RASCUNHO.md",
+      "sha256": "887319dc072d1946f2b8b3c7cd1c1e1d7311b49499d1404f5583b8986cee31b3",
+      "size": 855
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review01-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review01-pytest.txt",
+      "sha256": "b833420f85d24d0134dfe247a442ecb5cbdfc4332ed5905779345b03c3d82e8b",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/PR_D4-01.md",
+      "sha256": "30a1d556f267908613092902e5c06436a5851ab35efd602e579a8061544d4779",
+      "size": 2303
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-baseline-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-baseline-pytest.txt",
+      "sha256": "30c5d041b66ba8a4ce5ea04468cb6d61810b726fb72fd0c6c4394be664a4a6c8",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-final-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-final-pytest.txt",
+      "sha256": "e39e47b119c45c5f3b47572ac46059b23ff43be49a31e74dc74fd44f80bc723f",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-latest-pytest.txt",
+      "sha256": "7869f12a0d7fda44a2321e94e93b5bb50fbcb737fe2c6fb8ee305eb700fd9cb5",
+      "size": 1072
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-pytest.txt",
+      "sha256": "b69cf988439b5903baf21fa7b15f50668cecb6bc243ff8e2528893debebddff1",
+      "size": 1032
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-01-pytest.txt",
+      "sha256": "b69cf988439b5903baf21fa7b15f50668cecb6bc243ff8e2528893debebddff1",
+      "size": 1032
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/PR_D4-02_RASCUNHO.md",
+      "sha256": "55a8c7d993c3058854c3c668a37f41da31cd0a4eed8b052e243fbba8f16abf21",
+      "size": 1101
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-build.txt",
+      "sha256": "69f0b7982246c116c12f9d81cfac89faf0c06a30cecdb0b289ad57e71fe9ff95",
+      "size": 1886
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-install.txt",
+      "sha256": "bdecf6a318a972e543cca4d958d5537bc70a87504f317e7f5735f2b636df3ad7",
+      "size": 313
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-isolation.json",
+      "sha256": "dd270e51a9a95f16ac13ee0eb14c83db1efad1aa7990b3cde08f3a37c067d34c",
+      "size": 67304
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-isolation.txt",
+      "sha256": "e7b61e65d89bf6eea4774e8af9776f715813471cc1e9c549c1379fa31843fbd6",
+      "size": 1684
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-pytest.txt",
+      "sha256": "3f4869905bd515fc545e6ba1e21ae0c875c21bf4e6a4cb9752080a15b27a932c",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-server.txt",
+      "sha256": "2bc2d5ea92053976dc301fbf792c5e1ae27e1cf5f0e9569ccee3ced82bc11486",
+      "size": 752045
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-typecheck.txt",
+      "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+      "size": 51
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/PR_D4-02.md",
+      "sha256": "224c90bba88392b32eec0f5f4115dbab039a1673d8fcb307c3ad72b3b0e26d94",
+      "size": 2269
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-baseline-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-baseline-pytest.txt",
+      "sha256": "e19d1c41384eab2b6c8bfc38cd9d0a504337af7eb1c127b83d606f2061c0d3c5",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-build.txt",
+      "sha256": "f4d482a95ae0ea4fd73b449c04a2aeec6bd72c2fa3682ff234dca8cc1dfefbf4",
+      "size": 1364
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-final-pytest.txt",
+      "sha256": "1196366c2714761e9cf868fa23aac12e734de94913c6b4f3d638eb6530867ec8",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-isolation.json",
+      "sha256": "facc0cae909d247e90a552b24b35e8dbfef224e217d6b9895c1bb5557ec7e25b",
+      "size": 67304
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-isolation.txt",
+      "sha256": "11971dc30359d0b0f78a6d3f54bb43b88ba6b7f9781e3d66e75e2c1f29df502d",
+      "size": 1715
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-latest-build.txt",
+      "sha256": "53e3f612abd429c9ac95eba5f1b00143e3b6bee94de8b7117509083de1baf300",
+      "size": 1885
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-latest-install.txt",
+      "sha256": "634c5b6f28aa096ba66748dbcb3982ecfd93392940a2e4a087da4538e081beaa",
+      "size": 314
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-latest-isolation.json",
+      "sha256": "86ee0fb0f5181f8ebc17fd2e73937e2edaa9d880e3d141c3dadb01ece08e2664",
+      "size": 67304
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-latest-isolation.txt",
+      "sha256": "e7b61e65d89bf6eea4774e8af9776f715813471cc1e9c549c1379fa31843fbd6",
+      "size": 1684
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-latest-pytest.txt",
+      "sha256": "d87417b6d60f08bebd7ab7a8a89144b0316ac725f69ae68451eb6392b9215f9b",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-pytest.txt",
+      "sha256": "17e25e508b021ae24d128faa2d1b675ddc1f9d91a7c88c8491e9f8adfed84b72",
+      "size": 951
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-server.txt",
+      "sha256": "eaca9048ccace6c1aaea0c11951e648d1b16419a0204f69bf39af78b266107b1",
+      "size": 751665
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-transport.txt",
+      "sha256": "f00712343d0f5c45e038a6d18b28b117a4faec09c52da6bbc5acc38d79ac8a0f",
+      "size": 340
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-typecheck.txt",
+      "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+      "size": 51
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-build.txt",
+      "sha256": "f4d482a95ae0ea4fd73b449c04a2aeec6bd72c2fa3682ff234dca8cc1dfefbf4",
+      "size": 1364
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-isolation.json",
+      "sha256": "facc0cae909d247e90a552b24b35e8dbfef224e217d6b9895c1bb5557ec7e25b",
+      "size": 67304
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-isolation.txt",
+      "sha256": "11971dc30359d0b0f78a6d3f54bb43b88ba6b7f9781e3d66e75e2c1f29df502d",
+      "size": 1715
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-p0.txt",
+      "sha256": "6729930353214133fadca61fd2519653d9f5698d309eb6f8810bb8292efe0f1a",
+      "size": 2690
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-pytest.txt",
+      "sha256": "17e25e508b021ae24d128faa2d1b675ddc1f9d91a7c88c8491e9f8adfed84b72",
+      "size": 951
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-transport.txt",
+      "sha256": "f00712343d0f5c45e038a6d18b28b117a4faec09c52da6bbc5acc38d79ac8a0f",
+      "size": 340
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-typecheck.txt",
+      "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+      "size": 51
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/PR_D4-04_RASCUNHO.md",
+      "sha256": "61e202292a7505210f37b270580b0c85a1f3c1c188f0e414a2449b6dd3826b39",
+      "size": 1189
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review04-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review04-pytest.txt",
+      "sha256": "47a56d4aebee9aee2a83023d6305173699b021e2c1770b1e865f395a10abddde",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review04-runtime.json",
+      "sha256": "4400a89172bb5e1d6096c4556612e852048c902d31fdc9a9620f361fc05bfe78",
+      "size": 2042
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review04-runtime.txt",
+      "sha256": "c234886e8be1793802fb6797e9a6c8a4845cb1c5245cbbf37b915ff57d82ad71",
+      "size": 1081
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/PR_D4-04.md",
+      "sha256": "d79c92aa2e25a8d3d4e1a6de626bac1245f7d76f2e739427a1cbb5a593d41794",
+      "size": 2582
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-baseline-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-baseline-pytest.txt",
+      "sha256": "9f6a46078a9a975c0cb4ec7274d68fda201d8f0c15259ec69f1b5249955f8740",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-final-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-final-pytest.txt",
+      "sha256": "2fe571edfaff49a590339b0c552615c26c9db56e815275723af624c825ba165b",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-final-runtime.json",
+      "sha256": "9740509dedbd879c257b8867ca8b983c964559e5d1d36eaf93fbda4663a18fac",
+      "size": 2043
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-final-runtime.txt",
+      "sha256": "4fb1a4aab0287e504be66e7a3e042896d0cb241fff2fc8b79eb04c7ca05291c1",
+      "size": 1082
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-latest-pytest.txt",
+      "sha256": "78712c5d8ec5874003af2ec3999da1b85c4fdfc678d46f71450623b16e97d2c1",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-latest-runtime.json",
+      "sha256": "0a00a7cf2694b5a46b36aa618321dc677f30440b6b73dfb35f3d1850a68f8df1",
+      "size": 2043
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-latest-runtime.txt",
+      "sha256": "b6b120bba618810656ba6c6b685e246bf35dd20a7e8675979a9ec89d38ff074a",
+      "size": 1082
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-pytest.txt",
+      "sha256": "7afc4dd6799b8d3a50f881f12d0bdec73ac53de8467b52d55b87fd99a1e5d232",
+      "size": 1046
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-runtime.json",
+      "sha256": "ef28c6e5891ef020997025f1901b3e01625e46161ada3cb31c0303ea289916d2",
+      "size": 2043
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-runtime.txt",
+      "sha256": "e513070980e0344c99370e41e7885ab330c49661a12880ffb077662297581b7d",
+      "size": 1082
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-04-pytest.txt",
+      "sha256": "7afc4dd6799b8d3a50f881f12d0bdec73ac53de8467b52d55b87fd99a1e5d232",
+      "size": 1046
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-04-runtime.json",
+      "sha256": "ef28c6e5891ef020997025f1901b3e01625e46161ada3cb31c0303ea289916d2",
+      "size": 2043
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-04-runtime.txt",
+      "sha256": "e513070980e0344c99370e41e7885ab330c49661a12880ffb077662297581b7d",
+      "size": 1082
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/after-proof-final.txt",
+      "sha256": "9fd3ca8fee272d45d2216bb48f5123257f5b2b0f2c29cb4437fc1484fad1577c",
+      "size": 100
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/after-targeted.txt",
+      "sha256": "5d4b134a4772c02d103eaa538c13e2771947633fb94b2515b99cfc6c01f31993",
+      "size": 987
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/before.txt",
+      "sha256": "63c88b5626189174a265d7df82a1dfcced25996f2c712f25632d6afb8f98d83d",
+      "size": 3430
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/candidate.patch",
+      "sha256": "d679939eeecedf7a5149bb2dd1dfe1b3e0ef22cb30588f78cdba6f1806c88910",
+      "size": 1378
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/current-main-proof.txt",
+      "sha256": "bb0c1d5cc1322d3a4ff2ad556de0758d9fb2f9b2efe66c7c97fdfd2e322c976e",
+      "size": 6048
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/repeated-race.txt",
+      "sha256": "3be719b86393d780b372ca04c6a5c4b2b2f4ba4db1ddd2dd036fe5dcbeaac84a",
+      "size": 6580
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/NOTA_REVISAO_DEV1_DEV2.md",
+      "sha256": "3adc8936d2f470cd710796167c0beb347b99b24f3cf765365a0ba6623597ab9d",
+      "size": 6169
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/PR_D4-09.md",
+      "sha256": "d2ad6375a5753d0116dcc16eab78573a5d567800df9b51fc319201aa264c2911",
+      "size": 2879
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/transaction-review-final.txt",
+      "sha256": "2afa6e6496b7db7a2d7b5fe67393cf901892765ab9dae1b42c63bcd17b5f1d19",
+      "size": 5703
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/transaction-review.txt",
+      "sha256": "f13ff8d97976f367cc004e0c6a2585817c006977129bc5b191a795df313d7a36",
+      "size": 2549
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-baseline-exit.txt",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-baseline-pytest.txt",
+      "sha256": "cff3f6e71ed7f3e1a35f8e6dcf160c4d0f3ac4266c6d1a5f2454b734c9260778",
+      "size": 3580
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-final-pytest.txt",
+      "sha256": "cfcf3765e08c076256f1a706256933b0d8c3a9e849fe7c2c3269fa516a832631",
+      "size": 176
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-final-sixteen.txt",
+      "sha256": "48e867012499be07da1cd147f0a308e379b0b7ca707804679d5117cfbe97e6aa",
+      "size": 941
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-investigation.txt",
+      "sha256": "56350e5e0db9d6a999b31cece431bb6a8fd26ba85e80ebbdcb3d44f975104e78",
+      "size": 3182
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-latest-pytest.txt",
+      "sha256": "19e7aceb41ef997aa7819565b3da7b51ed9ed1d8cfaf9574469776bbdc15ab6d",
+      "size": 1415
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-pytest.txt",
+      "sha256": "b385eb43a49723b3cf1be38aa5760b7ac4d80e787920847dbf96339119ac2145",
+      "size": 22345
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-targeted.txt",
+      "sha256": "cc1ffb167773b11f3a184faef608bbdabe548b4cfa5f2cfb5f660c0a6f501bd9",
+      "size": 1601
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-09-pytest.txt",
+      "sha256": "b385eb43a49723b3cf1be38aa5760b7ac4d80e787920847dbf96339119ac2145",
+      "size": 22345
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-audit.txt",
+      "sha256": "4e4757ff226a44b5c448b1c4624619419c22d5272463dc19510b4754871a72f9",
+      "size": 32
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-final-audit.txt",
+      "sha256": "4e4757ff226a44b5c448b1c4624619419c22d5272463dc19510b4754871a72f9",
+      "size": 32
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-final-exit.txt",
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "size": 3
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-final-pytest.txt",
+      "sha256": "778ff41c2967216040c7e921ec52b30c34291f33f5850f5363b7b4b95cf2c4ae",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-lock.txt",
+      "sha256": "2aaf71d8828131e0d93aaf5e854dbb793944d883b55ed070feb27fa518590457",
+      "size": 66870
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-locked-install.txt",
+      "sha256": "8d3d53193388c8faa400d9248dd0324f9ffedf1ada2412fca0a0c13f737f988a",
+      "size": 6016
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-npm-audit.json",
+      "sha256": "7f172238e146f7a8c1aef156bade97384c58a4b8446cdb306777398f5d213592",
+      "size": 383
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-npm-ci.txt",
+      "sha256": "6d62000703bfc23bef28e84e5015fed4f8bb7c9a516b374a090b9a974bd3a0c3",
+      "size": 148
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-pytest.txt",
+      "sha256": "24826303166a7914f27d69d543737272ed6bb144ff9866cc7f997435db5a75d9",
+      "size": 1046
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-sbom.txt",
+      "sha256": "4e4757ff226a44b5c448b1c4624619419c22d5272463dc19510b4754871a72f9",
+      "size": 32
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-typecheck.txt",
+      "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+      "size": 51
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-06-baseline-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-06-baseline-pytest.txt",
+      "sha256": "c787ebc494b383c03bee270fdb25b938fd460b3f5ffcf8fae8e5e041d83406b4",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-06-pytest.txt",
+      "sha256": "debf3c345a10e453c3a09caccd72ff0d856203454c4e94a6a556268b91430148",
+      "size": 1046
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-07-baseline-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-07-baseline-pytest.txt",
+      "sha256": "7d55c0fdf2300795676320140f98de224e034ca3b6c1a4ca63b2b3d41bbfcb50",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-07-final-pytest.txt",
+      "sha256": "86ea0a7ac26ed6dd90572a1873623b87d6c352b34170f78fbe84982b4c9fd1b2",
+      "size": 181
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-07-pytest.txt",
+      "sha256": "cfa68450ef68df8e2bc98f592c378795f808136bdfb36079ae5274b7f6e90924",
+      "size": 1046
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-08-baseline-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-08-baseline-pytest.txt",
+      "sha256": "db9ab0caf947a92957bda25ca681b8730daf50abd6e17bd6c3659ab32953060a",
+      "size": 1073
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-08-pytest.txt",
+      "sha256": "965fc2764420cd212d9edf98dbe69c209a73c582ba2b21ac12cd26ed17211a91",
+      "size": 1047
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-10-baseline-exit.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-10-baseline-pytest.txt",
+      "sha256": "45badb6ce06c0fd56a8f3207a4c724b7657830dfdd37b24834f1b47092ac2bf8",
+      "size": 1047
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-evidence",
+      "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-10-pytest.txt",
+      "sha256": "3dedb6f6cf33622b79b9aa3599eba0a77feb8f0ad0e66cc5b85653e3ab2c830d",
+      "size": 1046
+    },
+    {
+      "branch": "backup/migration-20261106/worktree-DocRisk-dev4-race-baseline",
+      "repositoryPath": "api/tests/test_d4_09_consolidation_race.py",
+      "sha256": "cfb4d7f9390c4731ad79ae7a23f8b79572261a4fa86ca4fb0cc5a0ce5c196c84",
+      "size": 6019
+    },
+    {
+      "branch": "backup/migration-20261106/worktree-DocRisk-dev4-race-baseline",
+      "repositoryPath": "api/tests/test_d4_09_transaction_review.py",
+      "sha256": "70e8ca790d438765dd1aa4e23f4bfcbc479a8fbf5b7eed3922141b0fd33ec22d",
+      "size": 10899
+    },
+    {
+      "branch": "backup/migration-20261106/worktree-DocRisk-review42",
+      "repositoryPath": "api/tests/test_codex_demo_temp.py",
+      "sha256": "446d093b7146f389150075802e49b372f4f919c64993f23167fef03fe45dba78",
+      "size": 1955
+    },
+    {
+      "branch": "backup/migration-20261106/worktree-DocRisk-review44",
+      "repositoryPath": "api/tests/test_codex_demo_temp.py",
+      "sha256": "446d093b7146f389150075802e49b372f4f919c64993f23167fef03fe45dba78",
+      "size": 1955
+    },
+    {
+      "branch": "backup/migration-20261106/worktree-DocRisk-review45",
+      "repositoryPath": "api/tests/test_codex_demo_temp.py",
+      "sha256": "446d093b7146f389150075802e49b372f4f919c64993f23167fef03fe45dba78",
+      "size": 1955
+    },
+    {
+      "branch": "backup/migration-20261106/review49-evidence",
+      "repositoryPath": "docs/migration-20261106/review49/review-1.png",
+      "sha256": "3b97b2805e860911b89ebaf2b84f0da9747e100619b76503e2279ae00f21d980",
+      "size": 69703
+    },
+    {
+      "branch": "backup/migration-20261106/review49-evidence",
+      "repositoryPath": "docs/migration-20261106/review49/review-2.png",
+      "sha256": "07a4d671742ef58d883fdadced457197096e20531e2372f6531e722112e9f5d9",
+      "size": 93744
+    },
+    {
+      "branch": "backup/migration-20261106/review49-evidence",
+      "repositoryPath": "docs/migration-20261106/review49/review-3.png",
+      "sha256": "37f514d2e40cf66e9de09a6beee01dff5c17507e77374901e17491cdb53d877d",
+      "size": 43316
+    },
+    {
+      "branch": "backup/migration-20261106/review49-evidence",
+      "repositoryPath": "docs/migration-20261106/review49/review-preview.pdf",
+      "sha256": "2a7cae9b1c3c075c746afe1c6faea9ef4e4b656bef2e2f3757d25dd3093bdf9a",
+      "size": 133664
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/api-1.log",
+      "sha256": "4bc544452e0863c5ae05c1260622e1f8867f436ce9c951c974cf055f5abe2832",
+      "size": 821
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/api-2.log",
+      "sha256": "c817200a909a4311d4479db418a8bca850e1637f71bf72fc26f32c0c1bb6e4ba",
+      "size": 483
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/api-3.log",
+      "sha256": "c7082204e201d148cd4d1fadd08de11f95f046006c819f4e5208d11be719f183",
+      "size": 415
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/api-dup.log",
+      "sha256": "8a515a9466b96e0cbba6a4c0e0ca3d45b64bdc31bc7b67db09edee54aa90cb1b",
+      "size": 2882
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/C01.log",
+      "sha256": "4b447b01eda0e74567719582afa7b73380f5638912a1bad97ef99a120300be1a",
+      "size": 2593
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/C02.log",
+      "sha256": "60e3eff64789759726a55e39e77d5b88eaf75ce4d86e2a173231294665b4203e",
+      "size": 2661
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/C03.log",
+      "sha256": "087ac2b7588bf783f67989ca9db8db39e1c62bb2b70ca1b553799f1bd213ac53",
+      "size": 2699
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/api-1.log",
+      "sha256": "a3b47951be0eda6b7f9c82db7e27bf81c3adfeb77a2aef3f7ef00e76e1e74c3f",
+      "size": 822
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/api-2.log",
+      "sha256": "0f3e88d330272471c54ff99fb053630622d53326f8c71617a20f781d3edaf537",
+      "size": 549
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/api-3.log",
+      "sha256": "f718123f90582659b258dc1a542380d6f8a8c0ba5c95771864e64fdda025cd62",
+      "size": 417
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/api-dup.log",
+      "sha256": "151a413eb9a6285747b38ba361590d9ba8bb90ba7ab94b05b02689f3bdd75379",
+      "size": 3427
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/C01.log",
+      "sha256": "4710fd5c14a32df80ccfb9af17768dc4263f6ba6e8ba44f1fc6f6d44dd1d665e",
+      "size": 3128
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/C02.log",
+      "sha256": "6edec1869d2a57550b79286e9ab9048719fbffd930fbe30306725a164454ed33",
+      "size": 3197
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/C03.log",
+      "sha256": "3073bf42308fb4c3e612ad10586b72034739c6ee563627a1be8e01d01fc6db4d",
+      "size": 3234
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/api-1.log",
+      "sha256": "4fa92a64eabc47d9e5f4febf30248f9c0392f050cad94786838927218c603b72",
+      "size": 888
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/api-2.log",
+      "sha256": "290a43c42f1677a238ed0e9ad124ff11c9e30d6b15f65edc08dd11cb9c47121e",
+      "size": 549
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/api-3.log",
+      "sha256": "e04dcb7247a702c939ba9206c33e1edf9c4a711bbd0da8c167e445573b3a5e37",
+      "size": 417
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/api-dup.log",
+      "sha256": "f2149fee363b86bd38863a3a02711cdd3a4421412ae83fe44360131727f6d842",
+      "size": 3427
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/C01.log",
+      "sha256": "f5c258c9e6635a64fa623250e5473f86e9fde0341220c1c0b835a309beb8743d",
+      "size": 3128
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/C02.log",
+      "sha256": "857b0d464ae5376d4e4176c1232e4fdab72e36db51ac3a22c5f193f9c9a4dfc1",
+      "size": 3197
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/C03.log",
+      "sha256": "ee4a9b31da28b17cd1380070e0530caf8b63c2aa31ebe4b35a051f7b630bc3e0",
+      "size": 3234
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/api-1.log",
+      "sha256": "fa9891a79259375c39ab8383992209f9b1ef62bcec372a16229edb5681c9d539",
+      "size": 1020
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/api-2.log",
+      "sha256": "be55c3f844846389773ef7143207010b4e31c6ece4495177f4772b55434f053c",
+      "size": 681
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/api-3.log",
+      "sha256": "088f13a9aee1fbbe65b763eb6d5b05a78aab4060262ecfefea6fd9270e1e0b98",
+      "size": 417
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/api-dup.log",
+      "sha256": "3097c0d1847dc0ebebc9b96e18edf8e0734c8e5f068d368597e76c8477752fbc",
+      "size": 3427
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/C01.log",
+      "sha256": "68de6637b229c4ab90043a24023885c21d2708ec7089d8f00e5ae2c7a42306aa",
+      "size": 3128
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/C02.log",
+      "sha256": "6667cecc329b7da536846cefbbbbc063874284d531448d0c84e5f7506ef42d03",
+      "size": 3197
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/C03.log",
+      "sha256": "bbb11de190696d78ea33172a026e71f5ebe083df758fe8c1cf4d0744603b6c6e",
+      "size": 3234
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/api-1.log",
+      "sha256": "b29178a6ddb3e3ab915d38e0d496d9836e976f69944ae8cabedcaf7a70d185a0",
+      "size": 822
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/api-2.log",
+      "sha256": "43eb2c563f38f21d638abe4cbbdd0a1d021d62c6000d3e3b941e12ab04c38252",
+      "size": 481
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/api-3.log",
+      "sha256": "e262e8cc8cf3d4b7fd3d69d32796d4b05f910e248a394e19036226b567ddbf2f",
+      "size": 417
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/api-dup.log",
+      "sha256": "b9d86d5874e272aa713b07f05881af57299700fff40b13101edd12f4938d25d6",
+      "size": 3460
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/C01.log",
+      "sha256": "1541ef1ea92b53d40d9e661e238adf419cef6db5429f3dca9bfff1b39aaca604",
+      "size": 3150
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/C02.log",
+      "sha256": "f795f12ca779ffd026e0325a79260e5436240e24f919ede80c1c7162c3223b4d",
+      "size": 3219
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/C03.log",
+      "sha256": "66461de9282715952fcae96296fc153717ea3593ed90d6c0c5d9312459e3500a",
+      "size": 3256
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/api-1.log",
+      "sha256": "4830c50c109569d5e09e5066fa2870b4eb98626ed1f3bc497e20078e431ac602",
+      "size": 822
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/api-2.log",
+      "sha256": "88b4044d84a9c5469b0dea84eca92207ef8bf2ab9b2120063037970ffdf48b06",
+      "size": 549
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/api-3.log",
+      "sha256": "fc0e798c288f057c093cca75d890b801fb6e27e8a8ac1fda1188c32b334fb080",
+      "size": 417
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/api-dup.log",
+      "sha256": "4fe04344683f91853d8e761aa6f4cf7d968b014d7bfb4b5b98b08fda674197d2",
+      "size": 3429
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/C01.log",
+      "sha256": "520079b72185368574b97502fd8625ee6a6a8be7b5bdfec0e8470f0af6dd2095",
+      "size": 3130
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/C02.log",
+      "sha256": "ebfee0df1033eecaa495205905e1bb75bc887d4b6f9c7dccd219f33189b7c712",
+      "size": 3199
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/C03.log",
+      "sha256": "5a66b61f83432ff3f85f534622fd32fa99c4d0d4bcf0ce65ea1ae58c318c9a3d",
+      "size": 3236
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/api-1.log",
+      "sha256": "e1e42f1193f3cd658121d5a3092ee89a3b79683a0286b4888fe7e08ec8cde17e",
+      "size": 822
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/api-2.log",
+      "sha256": "3575ab8fb926b332b30c6dc02d6bf80799e5364086a9b62e6fcca393220b330c",
+      "size": 549
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/api-3.log",
+      "sha256": "aa4e9dae345fa6fb0afd54f0f4f4ec7fff414672f4189ad86ba1d0c564abf256",
+      "size": 417
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/api-dup.log",
+      "sha256": "29641e13cb039d5eb33bdfbfd8f9f5a669c1704356d7779477d55690e40f5e7a",
+      "size": 2918
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/C01.log",
+      "sha256": "b49dd4a2dfefd4d7c44028d24d4d5cebc1ed0409cdc717a61a8a5f32ed2819c9",
+      "size": 2617
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/C02.log",
+      "sha256": "c09d05252b3d8c78778139dd04e6daa490eb6def9f8baf50a91d5c8ea38cbd9e",
+      "size": 2686
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/C03.log",
+      "sha256": "58b1f517c0b1d2c719a0d2bd9021182c5e4389c2da922ab9c60d6f458b68bc21",
+      "size": 2722
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/api-1.log",
+      "sha256": "7a9e98eb4ebc96307fff8efe2972533f59847b2d14168e6ee0a349219dc82820",
+      "size": 20370
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/api-2.log",
+      "sha256": "c98391116a0124d5f5a3bfbf6f2c94131d967eb3d61b385f4b8cecf164f3c197",
+      "size": 2495
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/build.log",
+      "sha256": "a53ad86cbc443d9d8e3d3f6e6a2fe85b6b72d2e4f882bf68bfda86b011687259",
+      "size": 1319
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/contractor-connected.log",
+      "sha256": "70119a871b1531d3b595268bef433d70479d30209ae8b1be949714b0453565f5",
+      "size": 82
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/contractor-offline.log",
+      "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+      "size": 73
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/live.log",
+      "sha256": "386234d1ce29ca06e3ab2aba41337c7655015b9309ffd3eeabe2e98e1a00fa9f",
+      "size": 1262
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/offline.log",
+      "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+      "size": 54
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/smoke.log",
+      "sha256": "db533d147addb9b6d39c52bc4d54b0356960ebb74c521676bc1f7817daec236b",
+      "size": 525
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/uploads.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bkcxeewu/build.log",
+      "sha256": "11534f49c6cb860865012503796a55833758be2cc4ed171dd12496140ed2f2ad",
+      "size": 1300
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bkcxeewu/offline.log",
+      "sha256": "145026c13430003b4fb04e85a698d554f52ada43e19090c57d43257864efddcc",
+      "size": 1355
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/api-1.log",
+      "sha256": "117d420e53706676b7c83b8d1f66995bea696e2411e45a04bdfbcd45885359a3",
+      "size": 6266
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/api-2.log",
+      "sha256": "bbf574dfb75f9366e02a5ef351158dd8749ee4c09476d58bf8bc75e48df7a499",
+      "size": 1519
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/build.log",
+      "sha256": "3c733e4dd2760339fcb9f02219f661ac2e4b60a9edca87807850a62af673a560",
+      "size": 1301
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/contractor-connected.log",
+      "sha256": "f3be32e53c7b0e1b58eb27ca9410f87f02d9eaaaadb9818c22e7265eee3f12f5",
+      "size": 615
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/contractor-offline.log",
+      "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+      "size": 73
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/live.log",
+      "sha256": "e9573282ba89e5ab74a7a1a39208b301cdaf55580d14009f222033841b0aab56",
+      "size": 389
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/offline.log",
+      "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+      "size": 54
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/smoke.log",
+      "sha256": "5bf5707ffe8f52cc811b308fb267bb3a152ea861a5e320c506cfb85a07ade3fa",
+      "size": 542
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/uploads.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/api-1.log",
+      "sha256": "aa7fc0c5a02f234390404c7a47a1b397e1e1cadeeb9217fb9e09606852686c71",
+      "size": 6336
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/api-2.log",
+      "sha256": "c031b5e4ae7e509060e18fafa1b4e14d1bf019947e656635d6d1d138ec54deae",
+      "size": 1519
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/build.log",
+      "sha256": "09e9d95bfa4515385e24341df80a71e9e9def22d3f8213790a0f96a1e9c0c111",
+      "size": 1299
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/contractor-connected.log",
+      "sha256": "f3be32e53c7b0e1b58eb27ca9410f87f02d9eaaaadb9818c22e7265eee3f12f5",
+      "size": 615
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/contractor-offline.log",
+      "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+      "size": 73
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/live.log",
+      "sha256": "e9573282ba89e5ab74a7a1a39208b301cdaf55580d14009f222033841b0aab56",
+      "size": 389
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/offline.log",
+      "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+      "size": 54
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/smoke.log",
+      "sha256": "5bf5707ffe8f52cc811b308fb267bb3a152ea861a5e320c506cfb85a07ade3fa",
+      "size": 542
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/uploads.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/api-1.log",
+      "sha256": "7d46bd62f4dfe67e657d0a9997cb6435d60fc42c0ccb4db346a5a18064d9881a",
+      "size": 203
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/api-2.log",
+      "sha256": "2f78ccf383dd4babd3cbd9322d47254ed5df600d732c92e4d1507a88a4d5ede7",
+      "size": 203
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/build.log",
+      "sha256": "776267497553360496aae5005f554ca391ef1401983749838028dbdba00b8d00",
+      "size": 1316
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/contractor-connected.log",
+      "sha256": "60297320378b9fca6fe2108b6107dc47b78a617f4a4a1321056e54c1f96b791d",
+      "size": 1115
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/live.log",
+      "sha256": "9d9c1abfe78d13533b04037061da56cfe92056bfa251ec26e918b9aa46088e02",
+      "size": 1109
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/offline.log",
+      "sha256": "2f5275486d34b3c7214bcd7d7fabdbfdee98d76911d81bee056b1b1fcf23e32c",
+      "size": 1106
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/smoke.log",
+      "sha256": "8a24a522e2c67f770dd78d0d411fe5e684e0c6a1d5e4b64e628ed6fb174112ca",
+      "size": 1082
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/uploads.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/api-1.log",
+      "sha256": "be160d6b9077b5a0972261674865b7ada85da1714ec4c4e4a53878ee78f9e38d",
+      "size": 19955
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/api-2.log",
+      "sha256": "7b9cfdebe5b03ce5457288adc786b0593fafda2dcafb7cd49075ab097e1c8617",
+      "size": 1652
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/build.log",
+      "sha256": "67e0e0cae3472f350e73968f670c8d6cb35fc13a4f15f6eecd548831e39de0b6",
+      "size": 1317
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/contractor-connected.log",
+      "sha256": "70119a871b1531d3b595268bef433d70479d30209ae8b1be949714b0453565f5",
+      "size": 82
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/contractor-offline.log",
+      "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+      "size": 73
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/live.log",
+      "sha256": "320307a6d429fd4765078d464c047b75309b50627d43c78c9a9bfdd291a1e421",
+      "size": 401
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/offline.log",
+      "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+      "size": 54
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/smoke.log",
+      "sha256": "db533d147addb9b6d39c52bc4d54b0356960ebb74c521676bc1f7817daec236b",
+      "size": 525
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/uploads.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/api-1.log",
+      "sha256": "3ff2aad86bacbb3f8d9a6104eeab99e1facef05a3920eb2592c099dec8a4ec31",
+      "size": 20097
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/api-2.log",
+      "sha256": "4b961baba27d005fc80bf7ef68bef8115f86e16019a6608e6bf909f922ed7ccf",
+      "size": 3883
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/build.log",
+      "sha256": "ec594f9ac4f687d84f729e8907491ddaebc82a9fcfb99b6295d496699b5e1298",
+      "size": 1829
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/contractor-connected.log",
+      "sha256": "70119a871b1531d3b595268bef433d70479d30209ae8b1be949714b0453565f5",
+      "size": 82
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/contractor-offline.log",
+      "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+      "size": 73
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/live.log",
+      "sha256": "6034cb81d05e5722e63692e4599eaba444b2c5b5965b0e395c338f15c89e25e4",
+      "size": 359
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/offline.log",
+      "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+      "size": 54
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/smoke.log",
+      "sha256": "db533d147addb9b6d39c52bc4d54b0356960ebb74c521676bc1f7817daec236b",
+      "size": 525
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/uploads.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/api-1.log",
+      "sha256": "cdb7013120bce78f33ed784775b8f7f97621107030e010c5e1dbd6e6163b7c1b",
+      "size": 19881
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/api-2.log",
+      "sha256": "068c61f2d7ab57f66a7679944fbef08baecd6323da74c9007a1a0ad15291b6e7",
+      "size": 3883
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/build.log",
+      "sha256": "eb2967deeee05f91759a8fe78108e0950e56c798958c9cf8485804aa19e69c28",
+      "size": 1831
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/contractor-connected.log",
+      "sha256": "70119a871b1531d3b595268bef433d70479d30209ae8b1be949714b0453565f5",
+      "size": 82
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/contractor-offline.log",
+      "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+      "size": 73
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/live.log",
+      "sha256": "6034cb81d05e5722e63692e4599eaba444b2c5b5965b0e395c338f15c89e25e4",
+      "size": 359
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/offline.log",
+      "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+      "size": 54
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/smoke.log",
+      "sha256": "db533d147addb9b6d39c52bc4d54b0356960ebb74c521676bc1f7817daec236b",
+      "size": 525
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/uploads.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-UQvg3q/build.log",
+      "sha256": "7329811ea794fe30671912afc2f6d1b58a7d38e778d19165dfaa416ab43b9c3c",
+      "size": 856
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-v0q2k6dr/build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/api-1.log",
+      "sha256": "49a1e5c92267ae9ef136e4c23dc6b6b00588012698d575550518612588e8390d",
+      "size": 6266
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/api-2.log",
+      "sha256": "0cbbcfb8e4a59f75c188fd06b03bf687f687f99d02acde85d2516416f85a8d81",
+      "size": 1519
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/build.log",
+      "sha256": "22435b0f930aea45f0a7cb1c84750578d3eeee5b0ab65cf6754f531fc6ad8ab2",
+      "size": 1299
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/contractor-connected.log",
+      "sha256": "f3be32e53c7b0e1b58eb27ca9410f87f02d9eaaaadb9818c22e7265eee3f12f5",
+      "size": 615
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/contractor-offline.log",
+      "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+      "size": 73
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/live.log",
+      "sha256": "e9573282ba89e5ab74a7a1a39208b301cdaf55580d14009f222033841b0aab56",
+      "size": 389
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/offline.log",
+      "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+      "size": 54
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/smoke.log",
+      "sha256": "5bf5707ffe8f52cc811b308fb267bb3a152ea861a5e320c506cfb85a07ade3fa",
+      "size": 542
+    },
+    {
+      "branch": "backup/migration-20261106/dev4-raw-logs",
+      "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/uploads.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "failingTestsIntact": true,
+  "method": "fresh bare Git repository fetched directly from GitHub, no local alternates"
+}

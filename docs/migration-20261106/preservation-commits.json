@@ -1,0 +1,128 @@
+[
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "commit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0",
+    "parent": "cf9b09cefb0f9cf5d120012dd7a7f330c99569c8",
+    "group": "backup: preserve existing D4-03 files for notebook migration",
+    "files": 25
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "commit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678",
+    "parent": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0",
+    "group": "backup: preserve existing Dev4-integration-evidence files for notebook migration",
+    "files": 54
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "commit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9",
+    "parent": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678",
+    "group": "backup: preserve existing D4-01 files for notebook migration",
+    "files": 11
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "commit": "d7d19ff1507f6340c3032bea98f95a0a921455f2",
+    "parent": "dc913f93353fe24025c7fc2b1258eb0753b3dec9",
+    "group": "backup: preserve existing D4-02 files for notebook migration",
+    "files": 32
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "commit": "54238271e8be98f73aa9aac435a1524951d97e63",
+    "parent": "d7d19ff1507f6340c3032bea98f95a0a921455f2",
+    "group": "backup: preserve existing D4-04 files for notebook migration",
+    "files": 21
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "commit": "161d95899f62618142571159ee380a27550aa6d7",
+    "parent": "54238271e8be98f73aa9aac435a1524951d97e63",
+    "group": "backup: preserve existing D4-09 files for notebook migration",
+    "files": 19
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "commit": "6fdf538ea860d97a2081d789c8c512bf0116d992",
+    "parent": "161d95899f62618142571159ee380a27550aa6d7",
+    "group": "backup: preserve existing D4-05 files for notebook migration",
+    "files": 11
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "commit": "87351db3f0e7a35a504596745a92537261766bfa",
+    "parent": "6fdf538ea860d97a2081d789c8c512bf0116d992",
+    "group": "backup: preserve existing D4-06 files for notebook migration",
+    "files": 3
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "commit": "34cf011fec74511b7260f16e6d9810960ec6167c",
+    "parent": "87351db3f0e7a35a504596745a92537261766bfa",
+    "group": "backup: preserve existing D4-07 files for notebook migration",
+    "files": 4
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "commit": "c4b15433839794d76cd6f35dfa7d1b9ad6eed431",
+    "parent": "34cf011fec74511b7260f16e6d9810960ec6167c",
+    "group": "backup: preserve existing D4-08 files for notebook migration",
+    "files": 3
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "commit": "93cf0391102d007089337cd0704ecac3c0ee9020",
+    "parent": "c4b15433839794d76cd6f35dfa7d1b9ad6eed431",
+    "group": "backup: preserve existing D4-10 files for notebook migration",
+    "files": 3
+  },
+  {
+    "branch": "backup/migration-20261106/worktree-DocRisk-dev4-race-baseline",
+    "commit": "b271b5725e838acd64723edcb5d45cde3e3b5999",
+    "parent": "1148e76d4d550846604ab3ddb2f1602beb901982",
+    "group": "backup: preserve existing DocRisk-dev4-race-baseline files for notebook migration",
+    "files": 2
+  },
+  {
+    "branch": "backup/migration-20261106/worktree-DocRisk-review42",
+    "commit": "90f6ee1c4668442706744913772f5d1e905d4e97",
+    "parent": "a6d70067f7401f2b066eed9d87e7571c65cbd3c8",
+    "group": "backup: preserve existing DocRisk-review42 files for notebook migration",
+    "files": 1
+  },
+  {
+    "branch": "backup/migration-20261106/worktree-DocRisk-review44",
+    "commit": "2f67e40e8074e170badc978ead01fc99be566f01",
+    "parent": "e55ad03ab70a795428d8a0a23298a42189406e1b",
+    "group": "backup: preserve existing DocRisk-review44 files for notebook migration",
+    "files": 1
+  },
+  {
+    "branch": "backup/migration-20261106/worktree-DocRisk-review45",
+    "commit": "3bfdd38df2be6ee2e123c6d9e06aa07eb9b347a8",
+    "parent": "60a05a999bd41bf3ab32395334ae1a088b6b0efa",
+    "group": "backup: preserve existing DocRisk-review45 files for notebook migration",
+    "files": 1
+  },
+  {
+    "branch": "backup/migration-20261106/review49-evidence",
+    "commit": "8280616c4b583156a0020dbdbcb3d0e85a71c5c2",
+    "parent": "9421d74caeb349600439a19455e75c51290a6cec",
+    "group": "Dev3-review49-synthetic-preview",
+    "files": 4
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "commit": "010be502d47ae20dbd6ed4826cbf302d286ff175",
+    "parent": "cf9b09c",
+    "group": "D4-04-raw-runtime",
+    "files": 49
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "commit": "43d307da972c249193133397b9ca86f75cc1cecc",
+    "parent": "010be502d47ae20dbd6ed4826cbf302d286ff175",
+    "group": "D4-03-raw-rehearsals",
+    "files": 75
+  }
+]

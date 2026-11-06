@@ -1,0 +1,44 @@
+[
+  {
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "sha": "93cf0391102d007089337cd0704ecac3c0ee9020",
+    "remoteSha": "93cf0391102d007089337cd0704ecac3c0ee9020",
+    "verified": true
+  },
+  {
+    "branch": "backup/migration-20261106/worktree-DocRisk-dev4-race-baseline",
+    "sha": "b271b5725e838acd64723edcb5d45cde3e3b5999",
+    "remoteSha": "b271b5725e838acd64723edcb5d45cde3e3b5999",
+    "verified": true
+  },
+  {
+    "branch": "backup/migration-20261106/worktree-DocRisk-review42",
+    "sha": "90f6ee1c4668442706744913772f5d1e905d4e97",
+    "remoteSha": "90f6ee1c4668442706744913772f5d1e905d4e97",
+    "verified": true
+  },
+  {
+    "branch": "backup/migration-20261106/worktree-DocRisk-review44",
+    "sha": "2f67e40e8074e170badc978ead01fc99be566f01",
+    "remoteSha": "2f67e40e8074e170badc978ead01fc99be566f01",
+    "verified": true
+  },
+  {
+    "branch": "backup/migration-20261106/worktree-DocRisk-review45",
+    "sha": "3bfdd38df2be6ee2e123c6d9e06aa07eb9b347a8",
+    "remoteSha": "3bfdd38df2be6ee2e123c6d9e06aa07eb9b347a8",
+    "verified": true
+  },
+  {
+    "branch": "backup/migration-20261106/review49-evidence",
+    "sha": "8280616c4b583156a0020dbdbcb3d0e85a71c5c2",
+    "remoteSha": "8280616c4b583156a0020dbdbcb3d0e85a71c5c2",
+    "verified": true
+  },
+  {
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "sha": "43d307da972c249193133397b9ca86f75cc1cecc",
+    "remoteSha": "43d307da972c249193133397b9ca86f75cc1cecc",
+    "verified": true
+  }
+]

@@ -1,0 +1,2873 @@
+[
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\D4-03_PRE_CONGELAMENTO_E_VIDEO.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/D4-03_PRE_CONGELAMENTO_E_VIDEO.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "52b2562dd1ebae223648acf487194218ca2d48c0",
+    "sha256": "bda06ee4afb4a5e99980b6bb16303febbf903affcc47d3f73e49ff821c97d110",
+    "size": 3615,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-baseline-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-baseline-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-baseline-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-baseline-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "23b99498afa1cffc816713515d934fd446f409e3",
+    "sha256": "9fff4cf5b2b6c9bfc2cc163ac927e0f0eae3898175ea84fdc991a4fd34d4853e",
+    "size": 1073,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-final-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-final-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-final-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-final-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "83d03348c17b6f1bdd13539e1b4f01d71ff77659",
+    "sha256": "819cdc5626a190945843fe6e0c3f3e7073d0d873e33c179f864a3d0a21061813",
+    "size": 1073,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-final-rehearsal.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-final-rehearsal.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "bf99cdecf14343dfc2f14dab65ea5da43da4d230",
+    "sha256": "87a03e1efa4a65eaa6b60de4269f28c106d2cdbb0baf9d2aaa783b80060198e5",
+    "size": 1418,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-final-rehearsal.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-final-rehearsal.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "0726501f5d0639ce3193eb74aa46cc15cd3d6ceb",
+    "sha256": "9be3ce6d01233a61ba66b1ad418799afb4f3cad94549ddebc8c3951501847dcd",
+    "size": 609,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-install.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-install.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "826701dec6611c259fdfc1750642d86ec508b1f8",
+    "sha256": "42ae2399e5b623f6d8b2fb4cdb62d90f953a4652b259069cc73581c80a460c4d",
+    "size": 148,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-latest-install.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-latest-install.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "818c94507971a066c83a3b86e7cde0eab0c4fb05",
+    "sha256": "ce10124eecce49c82a36d8d0f835f4779a9d19869c2d5bff537550ef576bf95e",
+    "size": 148,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-latest-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-latest-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "cdb544bba1fb7ac8c5a098231862efeff81135a7",
+    "sha256": "0046815dfdbbe8705d25986eec842d63c0319c1b437fca3942ee25682c53536d",
+    "size": 1072,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-latest-rehearsal.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-latest-rehearsal.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "1fff6f1a2810ae37c1e64adb43da3d481c6f2f62",
+    "sha256": "dbfac3c84849be4d535fe93eb4dd128662cc7d9f6b6084e983745d30180b6568",
+    "size": 1413,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-latest-rehearsal.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-latest-rehearsal.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "e9658b488e34641d59ac1ff9dfed6993900fd07b",
+    "sha256": "efce6394261d4673d34bc0c37f4d5989e030081ce7745332144e2a4accff9d40",
+    "size": 604,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-p0.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-p0.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "9bfb14790ba3d52801595bd09d0f04d84c2e274a",
+    "sha256": "3beaae3bb87aac4481ec07dcbd92d6a996f14169d03b6abfca976f61fa594a11",
+    "size": 395,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "42bd2d7983d8628603c32f9d0f2283837ecd6acc",
+    "sha256": "c4d044d3ad42c191ce35c55b3c2d15560f94d74d80f162be8099b049ef794868",
+    "size": 965,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-rehearsal.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-rehearsal.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "52f8d61f77bb112850807a9e1141f6184e739cc4",
+    "sha256": "8369130e6b75b94e1dca9e019341f2c911a0096718c54922622259ef6585595d",
+    "size": 1755,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-rehearsal.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-rehearsal.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "96bdd0dceff57f2fb4b1ab4ddc619ccebee952bd",
+    "sha256": "34d32f5f690d8d7d5671c24ebda133626d81ed70d86c469ca9d67757d9cd8ae2",
+    "size": 926,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-transport.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-transport.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "e45375073ffd9e5fadc8e89fb10d9ec55ce1b16b",
+    "sha256": "f00712343d0f5c45e038a6d18b28b117a4faec09c52da6bbc5acc38d79ac8a0f",
+    "size": 340,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-03-typecheck.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-03-typecheck.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ae0dd0f0558eaa3674802e8e052ae0ef6271f5f2",
+    "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+    "size": 51,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-03-install.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-install.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "826701dec6611c259fdfc1750642d86ec508b1f8",
+    "sha256": "42ae2399e5b623f6d8b2fb4cdb62d90f953a4652b259069cc73581c80a460c4d",
+    "size": 148,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-03-p0.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-p0.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "9bfb14790ba3d52801595bd09d0f04d84c2e274a",
+    "sha256": "3beaae3bb87aac4481ec07dcbd92d6a996f14169d03b6abfca976f61fa594a11",
+    "size": 395,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-03-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "42bd2d7983d8628603c32f9d0f2283837ecd6acc",
+    "sha256": "c4d044d3ad42c191ce35c55b3c2d15560f94d74d80f162be8099b049ef794868",
+    "size": 965,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-03-rehearsal.json",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-rehearsal.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "52f8d61f77bb112850807a9e1141f6184e739cc4",
+    "sha256": "8369130e6b75b94e1dca9e019341f2c911a0096718c54922622259ef6585595d",
+    "size": 1755,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-03-rehearsal.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-rehearsal.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "96bdd0dceff57f2fb4b1ab4ddc619ccebee952bd",
+    "sha256": "34d32f5f690d8d7d5671c24ebda133626d81ed70d86c469ca9d67757d9cd8ae2",
+    "size": 926,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-03-transport.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-transport.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "e45375073ffd9e5fadc8e89fb10d9ec55ce1b16b",
+    "sha256": "f00712343d0f5c45e038a6d18b28b117a4faec09c52da6bbc5acc38d79ac8a0f",
+    "size": 340,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-03-typecheck.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-03-typecheck.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ae0dd0f0558eaa3674802e8e052ae0ef6271f5f2",
+    "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+    "size": 51,
+    "preservationCommit": "3443cd85c3eddeff2e660f4e9afca35af7fab4b0"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\ENTREGA_DEV4_ETAPA2.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/ENTREGA_DEV4_ETAPA2.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "2e54581ca67ba487233ec4b8b201cbcf8173dfea",
+    "sha256": "4de41bf5451ad0a1c52f62816dc9cb9da587f69e51703ee964107c763542b35c",
+    "size": 5731,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\build-delivery.cjs",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/build-delivery.cjs",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "10c7f3c907ea360c2c8a153baa4e114c633cd210",
+    "sha256": "ce262f09cdac0afc3356bfe3d019fe83be0b73adeddd08ab57fb8e9bec8ac2ce",
+    "size": 6907,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\full-suite-final-sha.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/full-suite-final-sha.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "52c06b266385a666f78e41e6a9ba7c4fb093d428",
+    "sha256": "76729f00da3a55ef43a0ee9fed0f675c78260c5189624c0a4043a59b503d4dd1",
+    "size": 1496,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\full-suite.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/full-suite.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "3b28112781e0cf8ad23bdf9abdc68cdf86feee0d",
+    "sha256": "98fcf7e9d8962413819dd93eb0fee0010606e1f296183b45c0cefa3804f794de",
+    "size": 1496,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\rehearsal-preserved-hash.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/rehearsal-preserved-hash.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c93c0013bc1917c1ec320deb4272e4c01c43b58b",
+    "sha256": "be93a2ff91420989bd1f871f49587816c99be2e5da62b067cc851afd381af969",
+    "size": 212,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review-snapshot.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review-snapshot.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "78f10f1e77132cdcfcc916ce9ed8bdf4faf38653",
+    "sha256": "1c6c89fa41896112f4691ec02f644ae49c824f94d7438c9b3da52276b12ee173",
+    "size": 1576,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\run-isolation.cjs",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/run-isolation.cjs",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "522ceee61cfdf07066dfff0e26ee9eb4c18585bc",
+    "sha256": "0bf69fa378658635a05919501aeaf194ecaf76653f524121b653199d50357fa5",
+    "size": 1081,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\run-review.cjs",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/run-review.cjs",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "00e13af427210e97fc76b65bf540d9643fbc9bc4",
+    "sha256": "fe51cc4389f61701d957fd2d7b58c199abfe14f3e2b99c310c79d7ea3cd9e3b5",
+    "size": 756,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\tested-sha.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/tested-sha.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "1dfc07b8881562a2c29cce16032a7d42fde3564f",
+    "sha256": "588f2a20747fbfc7e166ab8f6fb40df5a2204b0214d3e64563efbd4ad8f75db0",
+    "size": 41,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\RELATORIO_ETAPA3.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/RELATORIO_ETAPA3.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ea346246f497dbf4e6b63a8b81b91e7b75a73147",
+    "sha256": "5e59a63af8446482776f1a4214d1f18d206f86c5cd45330143349d192cd24719",
+    "size": 11043,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\aej-main-control.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/aej-main-control.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "13a2320ecb1ec9f29427d90054761f90116fda3b",
+    "sha256": "979820e21b6a282391e84b911232bb5497bdaa51185a6d8d83c6ed4952bb14f4",
+    "size": 2553,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\build-final-report.cjs",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/build-final-report.cjs",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "eccc2ff396498e95ef1fc41dbaf6db89e9298584",
+    "sha256": "28caee61c4a8b8b01d1c642568d1952386ea0c98f410b68b1f56e4ebb387a95b",
+    "size": 12025,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\build.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/build.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "f04c88bb6b968e762778cae762871ad4b3829887",
+    "sha256": "f4ef558fc19d6c9362bfd68300a9e51421a93c6023ead248083eabb42878af9a",
+    "size": 1885,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\combined-concurrency-repeated.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-concurrency-repeated.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "1454160ccd860d01a759ab7b65f1dc415bd2bd45",
+    "sha256": "002a3f277740e726c40bbf51d42e47e9a83f10911d6606b6651acf3a0659ddb0",
+    "size": 3290,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\combined-final-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-final-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "0dd04c4017ef081723f017498fa6b42542dd1344",
+    "sha256": "23677e3918d93304a82f148d8e4bbf9af5cc1fc0e9d9a7c124f8da17693fc4dc",
+    "size": 6395,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\combined-isolation.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-isolation.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "0b1785113de07531d59ff301f853c7c6de17c932",
+    "sha256": "415fc6fa0b96804776d18fffd4d747b894db4436ecdf2ec8fc43542d6d229080",
+    "size": 67304,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\combined-isolation.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-isolation.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "8c7bb3d0a8fadaf9681aa4324e129a1ee6756d06",
+    "sha256": "e7b61e65d89bf6eea4774e8af9776f715813471cc1e9c549c1379fa31843fbd6",
+    "size": 1684,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\combined-p0.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-p0.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "9bfb14790ba3d52801595bd09d0f04d84c2e274a",
+    "sha256": "3beaae3bb87aac4481ec07dcbd92d6a996f14169d03b6abfca976f61fa594a11",
+    "size": 395,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\combined-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "01622b730703a9188956a71dd5005fced1c9f71c",
+    "sha256": "e0843eb71347f624dc512f7915ba44653092d0c95e5abf5e5c91475aadc217f8",
+    "size": 3377,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\combined-runtime.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-runtime.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "4c755b20ad84b339d5edc1c291595d8d980a19db",
+    "sha256": "cb86289a8229dd60b47f600a00486cfae740c7f9f3268591bf88610320366142",
+    "size": 2042,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\combined-runtime.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-runtime.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "a4c4cb77ff43d5c65646a6f5380b9bc1d7c1ac4c",
+    "sha256": "3b385bf9e17f76174e02cfebf24c4af6fa62edee41b0301b20cec90acf343bfb",
+    "size": 1081,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\combined-server.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-server.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "da402e6fe7ce1d7529146adafe2893d9bbb52720",
+    "sha256": "b1cd7864db7da4c40ae4059e64aca0f96fde017b4e8d29b8334cdf123273ef0a",
+    "size": 752137,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\combined-transport.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/combined-transport.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ff33c5f442bf91e6829d10c8f50477b12bda1682",
+    "sha256": "ce9a7a1460480475e0df1c00925e79f2c4909a039a88236c3a91bf617589b456",
+    "size": 438,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\d409-final-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/d409-final-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "9b70afb233a4a8f89a57006410c69aafdcc91b70",
+    "sha256": "6c62d5b4c860ebf4cc5a1233d3965527906f62d186c887b73f69203435c78982",
+    "size": 6381,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\d409-final-sha.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/d409-final-sha.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "225eab38c6c6f862a571b87893493bef573993f5",
+    "sha256": "03b78e903672a20a3d9c69fecbccf493ac29bb1bf2948e54bd39e85fc09aafc3",
+    "size": 41,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\d409-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/d409-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "6124a73f50668c465e97895d89c78738bc91aa74",
+    "sha256": "aecab392e70dfc3b171960be0d1161ffc549a8c74335ec221fd5d7dc45684110",
+    "size": 3377,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\integration-base.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/integration-base.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "cfd9144154583f10f549a5c9ffa4955a27124893",
+    "sha256": "6afa2abc4bb44a51178c5968737c90424ce16845902a4d402c20cdf0e8811b40",
+    "size": 41,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\integration-included-commits.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/integration-included-commits.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "5ba45ba7a4aca5e9444f55fb15013fa9ab949cea",
+    "sha256": "e7754c5a1cc506c45ebccc144cea1fe8707356f4ec88abd29f481e7ecafdda83",
+    "size": 2362,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\integration-manifest.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/integration-manifest.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "38864dd8e1e57389d806b90b2130b23d42080212",
+    "sha256": "5b0c3d507adc20dd952932674dcdd24bad932d213c9aff01540677cbf40c31fa",
+    "size": 6663,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\integration-tested-sha.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/integration-tested-sha.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "4c33df8de33c52b74f7ac4e6e326f2ccd74493e6",
+    "sha256": "9b741e2a1b7a7840851bdf253be868094eecc33187b71f76da9e3d0a6ca97413",
+    "size": 41,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\main-risk-controls.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/main-risk-controls.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "d9c767174b6a9dcd91126984b314f1f764965d66",
+    "sha256": "5f10a6626199788a2cf4dcdea5260ca152656f16076df2de6cd4cd57fe6bdac6",
+    "size": 5561,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\npm-ci.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/npm-ci.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "3a8a4d519906e820acb38906ac655eab5a5f2867",
+    "sha256": "bacdba539877cf3be65943ebde522509ef4a8c05a13d3878e6c212dacece0845",
+    "size": 314,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\prepare-prs.cjs",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/prepare-prs.cjs",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "be4151edc5e6ec4566d58e50fbbbbd43da28b35c",
+    "sha256": "e55dbf113c5fc9781970761caf5f9fbac41352ae0b06719ac2b9c14e07321134",
+    "size": 7289,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\protected-refs-check.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/protected-refs-check.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "b921dba69a5cad3baf47cbf7271e91359de0fb7c",
+    "sha256": "074bb59ca1d093f501517db7a764f77fb795549b394f88374d1ef29511f6aefc",
+    "size": 36,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\protected-refs.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/protected-refs.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "20c05b9ff67b746d3e9c071dadf97ef2532134ab",
+    "sha256": "285dab96c4bf2da959e218185a31b1aed0b3b404a187fcc18117988159138280",
+    "size": 740,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\run-isolation.cjs",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/run-isolation.cjs",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "e9cd496821673ccc1cfe9ad1a8bc3f549e396adb",
+    "sha256": "21b860d57df57b768f036c635a7b9cdad3baca7d945a2ecaa4455b2cea9bb332",
+    "size": 1074,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\typecheck.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/typecheck.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ae0dd0f0558eaa3674802e8e052ae0ef6271f5f2",
+    "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+    "size": 51,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\RELATORIO_RECONCILIACAO_DEV4.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/RELATORIO_RECONCILIACAO_DEV4.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "5e3a096ef3291cbbc23bfa03ba936b4afc1e4aa3",
+    "sha256": "ae07cd7378b18ffd792b8523ea29a4ba7e97215d8418cbaeafdc4cd7217cf5ea",
+    "size": 12193,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\backups.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/backups.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "cf0afc769460e3b143981449f1a1882af50a11c4",
+    "sha256": "c9bdf22d9e810456cb157f224898f6efb0d2d78bd751cb64aa18ecef3d4053af",
+    "size": 640,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\base-install.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/base-install.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "38b9d991db86cdcb54b6c214f9504bb407233d4c",
+    "sha256": "395b10e6ca192516b1c96a26e550cb490501f314eccc75fda4abff292655df77",
+    "size": 11779,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\build-report.cjs",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/build-report.cjs",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "50dfeb1988d7353970c44fb82ef180238369c4e3",
+    "sha256": "3ea8b90489ba02717d54ee53e46e5480bd4ff8015c0bcba366a9a1a11bfb28b3",
+    "size": 13549,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\final-p0.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/final-p0.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "9bfb14790ba3d52801595bd09d0f04d84c2e274a",
+    "sha256": "3beaae3bb87aac4481ec07dcbd92d6a996f14169d03b6abfca976f61fa594a11",
+    "size": 395,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\final-snapshot.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/final-snapshot.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "2035aff02723a3fe75085239165743676d32f781",
+    "sha256": "2bfdd726680ca280ed68b90d6c6aa7913c1c2105c7962760e24e38a8a7bf11a1",
+    "size": 3428,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\final-transport.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/final-transport.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ff33c5f442bf91e6829d10c8f50477b12bda1682",
+    "sha256": "ce9a7a1460480475e0df1c00925e79f2c4909a039a88236c3a91bf617589b456",
+    "size": 438,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\final-typecheck.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/final-typecheck.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ae0dd0f0558eaa3674802e8e052ae0ef6271f5f2",
+    "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+    "size": 51,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\install.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/install.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c176a0b575ec6c8c243abb2014ca152dd76ce636",
+    "sha256": "f616a08f1b5593d36bc9aacb209213030ec8a3053b732a27d152a9a0556e1475",
+    "size": 17463,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\main-audit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/main-audit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "581712681accabafbb7ecd23eeffdd52b360928c",
+    "sha256": "6309337cb070132d0b5a5a0fb663e5e9f3e42f0f091d2c8880b66fd30dcbab1b",
+    "size": 2113,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\main-history.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/main-history.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "40183ca3b14df45961488d66de9ce679f74b3822",
+    "sha256": "e7fb7a6e1b45b3a21f504a9d30f21e7d12e93352e0e285bcfb023a023bb54b87",
+    "size": 4437,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\report-check.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/report-check.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "629433efa8d65d69af2afd4e3b4b2380fcde58df",
+    "sha256": "4face4dc1363542b99791f31d761acc61981d181d97188e9e01036c6b1d3c3b8",
+    "size": 1344,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\run-baseline-suites.cjs",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/run-baseline-suites.cjs",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "9f0ad4b83eba6ca3c3e3cbbe2d1e072af1268f2c",
+    "sha256": "beb25cdb890ffb493d0640175ee0fa3bd1cb0bb39ba533abd3e8f3af913b73e5",
+    "size": 1051,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\run-final-suites.cjs",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/run-final-suites.cjs",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "4af1906a8b779f6886159300fa9c96853b99af93",
+    "sha256": "53430b09829bd2596e64255c6c25930de751dbf344109dcb90aeceee974f1424",
+    "size": 1049,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\run-isolation.cjs",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/run-isolation.cjs",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "dece4716caf5be07250a6528db236c1736d57c4d",
+    "sha256": "1b029b4fad536fd6915a2e27135437752955d725c089635ada73232637a8edc8",
+    "size": 1075,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\backups.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/backups.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "cf0afc769460e3b143981449f1a1882af50a11c4",
+    "sha256": "c9bdf22d9e810456cb157f224898f6efb0d2d78bd751cb64aa18ecef3d4053af",
+    "size": 640,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\main-history.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/main-history.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "40183ca3b14df45961488d66de9ce679f74b3822",
+    "sha256": "e7fb7a6e1b45b3a21f504a9d30f21e7d12e93352e0e285bcfb023a023bb54b87",
+    "size": 4437,
+    "preservationCommit": "62cd45244a9fdad2356b1b90f62f4f3e7a3d8678"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\PR_D4-01_RASCUNHO.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/PR_D4-01_RASCUNHO.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "d5b17ee91d3931598699e1b82a54ac3f8bfb0a6e",
+    "sha256": "887319dc072d1946f2b8b3c7cd1c1e1d7311b49499d1404f5583b8986cee31b3",
+    "size": 855,
+    "preservationCommit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review01-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review01-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review01-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review01-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c95ef0903de5d084df0b54804251fd4d5f0661da",
+    "sha256": "b833420f85d24d0134dfe247a442ecb5cbdfc4332ed5905779345b03c3d82e8b",
+    "size": 1073,
+    "preservationCommit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\PR_D4-01.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/PR_D4-01.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "0dda369e4859cf1096aa01cd38c18bb1a8fdf12b",
+    "sha256": "30a1d556f267908613092902e5c06436a5851ab35efd602e579a8061544d4779",
+    "size": 2303,
+    "preservationCommit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-01-baseline-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-baseline-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-01-baseline-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-baseline-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "2a2da382fd09b29fb47578de5c8d72f10f42b1e8",
+    "sha256": "30c5d041b66ba8a4ce5ea04468cb6d61810b726fb72fd0c6c4394be664a4a6c8",
+    "size": 1073,
+    "preservationCommit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-01-final-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-final-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-01-final-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-final-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "47c6bb91a005929996df70e3894c527c160220d8",
+    "sha256": "e39e47b119c45c5f3b47572ac46059b23ff43be49a31e74dc74fd44f80bc723f",
+    "size": 1073,
+    "preservationCommit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-01-latest-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-latest-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "9ccc2aaae4f25507a1cae6ca4ddbef0c62dd2bf3",
+    "sha256": "7869f12a0d7fda44a2321e94e93b5bb50fbcb737fe2c6fb8ee305eb700fd9cb5",
+    "size": 1072,
+    "preservationCommit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-01-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-01-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "44a3968eff7c2c97724c8de271d27d3fdab0c60e",
+    "sha256": "b69cf988439b5903baf21fa7b15f50668cecb6bc243ff8e2528893debebddff1",
+    "size": 1032,
+    "preservationCommit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-01-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-01-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "44a3968eff7c2c97724c8de271d27d3fdab0c60e",
+    "sha256": "b69cf988439b5903baf21fa7b15f50668cecb6bc243ff8e2528893debebddff1",
+    "size": 1032,
+    "preservationCommit": "dc913f93353fe24025c7fc2b1258eb0753b3dec9"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\PR_D4-02_RASCUNHO.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/PR_D4-02_RASCUNHO.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "5595549a5a14bc16a035cfe6a030dd18177ae2d9",
+    "sha256": "55a8c7d993c3058854c3c668a37f41da31cd0a4eed8b052e243fbba8f16abf21",
+    "size": 1101,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review02-build.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-build.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "e4ec1281bafda405ab4129aca6eb77931546a805",
+    "sha256": "69f0b7982246c116c12f9d81cfac89faf0c06a30cecdb0b289ad57e71fe9ff95",
+    "size": 1886,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review02-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review02-install.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-install.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "89315bfebd1b55c23c34e7106bfb53a7dbbbfefe",
+    "sha256": "bdecf6a318a972e543cca4d958d5537bc70a87504f317e7f5735f2b636df3ad7",
+    "size": 313,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review02-isolation.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-isolation.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "4f6766bf4919f75940df65accd72063dae468006",
+    "sha256": "dd270e51a9a95f16ac13ee0eb14c83db1efad1aa7990b3cde08f3a37c067d34c",
+    "size": 67304,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review02-isolation.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-isolation.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "8c7bb3d0a8fadaf9681aa4324e129a1ee6756d06",
+    "sha256": "e7b61e65d89bf6eea4774e8af9776f715813471cc1e9c549c1379fa31843fbd6",
+    "size": 1684,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review02-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "d0c4653e8f2d019fbb34141f73cbe0dbcb0b1113",
+    "sha256": "3f4869905bd515fc545e6ba1e21ae0c875c21bf4e6a4cb9752080a15b27a932c",
+    "size": 1073,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review02-server.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-server.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "4e7d7581e265edf65a1c596e202915d5d90c31b0",
+    "sha256": "2bc2d5ea92053976dc301fbf792c5e1ae27e1cf5f0e9569ccee3ced82bc11486",
+    "size": 752045,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review02-typecheck.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review02-typecheck.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ae0dd0f0558eaa3674802e8e052ae0ef6271f5f2",
+    "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+    "size": 51,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\PR_D4-02.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/PR_D4-02.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "7e5d2473e36a839bc87bf962abe99abb70bb1b38",
+    "sha256": "224c90bba88392b32eec0f5f4115dbab039a1673d8fcb307c3ad72b3b0e26d94",
+    "size": 2269,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-baseline-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-baseline-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-baseline-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-baseline-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "8f381f3614bcf8c87d17f731c8ded32c5a716c41",
+    "sha256": "e19d1c41384eab2b6c8bfc38cd9d0a504337af7eb1c127b83d606f2061c0d3c5",
+    "size": 1073,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-build.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-build.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "04e2b61277f56cccc5184c6ad7b59684fdec1cd6",
+    "sha256": "f4d482a95ae0ea4fd73b449c04a2aeec6bd72c2fa3682ff234dca8cc1dfefbf4",
+    "size": 1364,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-final-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-final-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "784331f15003a8811486d73113cdf1854b10c07f",
+    "sha256": "1196366c2714761e9cf868fa23aac12e734de94913c6b4f3d638eb6530867ec8",
+    "size": 1073,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-isolation.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-isolation.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "0cf719e5e4f135f94201b349ec28cec9621667b1",
+    "sha256": "facc0cae909d247e90a552b24b35e8dbfef224e217d6b9895c1bb5557ec7e25b",
+    "size": 67304,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-isolation.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-isolation.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "5030c2a870b9893982562f88c0b8460538253522",
+    "sha256": "11971dc30359d0b0f78a6d3f54bb43b88ba6b7f9781e3d66e75e2c1f29df502d",
+    "size": 1715,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-latest-build.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-latest-build.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "4bb216b3d83a54460829e52d946c6dceed28b83a",
+    "sha256": "53e3f612abd429c9ac95eba5f1b00143e3b6bee94de8b7117509083de1baf300",
+    "size": 1885,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-latest-install.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-latest-install.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "6369ba1813708a8d970b8c73621a91655acc9765",
+    "sha256": "634c5b6f28aa096ba66748dbcb3982ecfd93392940a2e4a087da4538e081beaa",
+    "size": 314,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-latest-isolation.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-latest-isolation.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "43b981ce81df16101761c99c3715cb064f7341eb",
+    "sha256": "86ee0fb0f5181f8ebc17fd2e73937e2edaa9d880e3d141c3dadb01ece08e2664",
+    "size": 67304,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-latest-isolation.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-latest-isolation.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "8c7bb3d0a8fadaf9681aa4324e129a1ee6756d06",
+    "sha256": "e7b61e65d89bf6eea4774e8af9776f715813471cc1e9c549c1379fa31843fbd6",
+    "size": 1684,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-latest-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-latest-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "be46f58995f7910f22acd59ba021fc5d7199114a",
+    "sha256": "d87417b6d60f08bebd7ab7a8a89144b0316ac725f69ae68451eb6392b9215f9b",
+    "size": 1073,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "49d138a0a434e12f42253ee46bc1fe2f5cbe709a",
+    "sha256": "17e25e508b021ae24d128faa2d1b675ddc1f9d91a7c88c8491e9f8adfed84b72",
+    "size": 951,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-server.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-server.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "98d11876623e5f4528da14ef0729f8d808b22a90",
+    "sha256": "eaca9048ccace6c1aaea0c11951e648d1b16419a0204f69bf39af78b266107b1",
+    "size": 751665,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-transport.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-transport.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "e45375073ffd9e5fadc8e89fb10d9ec55ce1b16b",
+    "sha256": "f00712343d0f5c45e038a6d18b28b117a4faec09c52da6bbc5acc38d79ac8a0f",
+    "size": 340,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-02-typecheck.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-02-typecheck.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ae0dd0f0558eaa3674802e8e052ae0ef6271f5f2",
+    "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+    "size": 51,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-02-build.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-build.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "04e2b61277f56cccc5184c6ad7b59684fdec1cd6",
+    "sha256": "f4d482a95ae0ea4fd73b449c04a2aeec6bd72c2fa3682ff234dca8cc1dfefbf4",
+    "size": 1364,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-02-isolation.json",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-isolation.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "0cf719e5e4f135f94201b349ec28cec9621667b1",
+    "sha256": "facc0cae909d247e90a552b24b35e8dbfef224e217d6b9895c1bb5557ec7e25b",
+    "size": 67304,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-02-isolation.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-isolation.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "5030c2a870b9893982562f88c0b8460538253522",
+    "sha256": "11971dc30359d0b0f78a6d3f54bb43b88ba6b7f9781e3d66e75e2c1f29df502d",
+    "size": 1715,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-02-p0.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-p0.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "7eca348de89ee60fd86cc87ef73362cd4252727b",
+    "sha256": "6729930353214133fadca61fd2519653d9f5698d309eb6f8810bb8292efe0f1a",
+    "size": 2690,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-02-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "49d138a0a434e12f42253ee46bc1fe2f5cbe709a",
+    "sha256": "17e25e508b021ae24d128faa2d1b675ddc1f9d91a7c88c8491e9f8adfed84b72",
+    "size": 951,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-02-transport.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-transport.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "e45375073ffd9e5fadc8e89fb10d9ec55ce1b16b",
+    "sha256": "f00712343d0f5c45e038a6d18b28b117a4faec09c52da6bbc5acc38d79ac8a0f",
+    "size": 340,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-02-typecheck.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-02-typecheck.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ae0dd0f0558eaa3674802e8e052ae0ef6271f5f2",
+    "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+    "size": 51,
+    "preservationCommit": "d7d19ff1507f6340c3032bea98f95a0a921455f2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\PR_D4-04_RASCUNHO.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/PR_D4-04_RASCUNHO.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "0f89626cbacdc52a5a4495ae7588c17f225f12cd",
+    "sha256": "61e202292a7505210f37b270580b0c85a1f3c1c188f0e414a2449b6dd3826b39",
+    "size": 1189,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review04-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review04-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review04-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review04-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "a8b624094d9c6d41c0ecffcb0563971aeaaa4e88",
+    "sha256": "47a56d4aebee9aee2a83023d6305173699b021e2c1770b1e865f395a10abddde",
+    "size": 1073,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review04-runtime.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review04-runtime.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "e1ef6bfc50b767318e21798bd81dc0fa49ffb33d",
+    "sha256": "4400a89172bb5e1d6096c4556612e852048c902d31fdc9a9620f361fc05bfe78",
+    "size": 2042,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\review04-runtime.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/review04-runtime.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "59c1a7eaed232b15193a7bd52f80a2ebe626e395",
+    "sha256": "c234886e8be1793802fb6797e9a6c8a4845cb1c5245cbbf37b915ff57d82ad71",
+    "size": 1081,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\PR_D4-04.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/PR_D4-04.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "6364453d59946b71a337844572dca14b202bdd84",
+    "sha256": "d79c92aa2e25a8d3d4e1a6de626bac1245f7d76f2e739427a1cbb5a593d41794",
+    "size": 2582,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-baseline-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-baseline-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-baseline-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-baseline-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "aa46c6bb4455e3ffc0503c47bcb3b54fe8acefd6",
+    "sha256": "9f6a46078a9a975c0cb4ec7274d68fda201d8f0c15259ec69f1b5249955f8740",
+    "size": 1073,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-final-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-final-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-final-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-final-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "0f242cb4c751953fc8fd1f15900e88b4f9c9d9bc",
+    "sha256": "2fe571edfaff49a590339b0c552615c26c9db56e815275723af624c825ba165b",
+    "size": 1073,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-final-runtime.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-final-runtime.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "15c6c333027d432f8d5fbf4f50432e99d11d0cad",
+    "sha256": "9740509dedbd879c257b8867ca8b983c964559e5d1d36eaf93fbda4663a18fac",
+    "size": 2043,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-final-runtime.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-final-runtime.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "1e8f41f043dc181871b31cf2950a54e5dabbf9fc",
+    "sha256": "4fb1a4aab0287e504be66e7a3e042896d0cb241fff2fc8b79eb04c7ca05291c1",
+    "size": 1082,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-latest-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-latest-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "20ee1eb734ad1c4bbcc7e3a96edba34f3463ed79",
+    "sha256": "78712c5d8ec5874003af2ec3999da1b85c4fdfc678d46f71450623b16e97d2c1",
+    "size": 1073,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-latest-runtime.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-latest-runtime.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "a23b9cf9daa6d33b04089bd5456e0a77396d4d98",
+    "sha256": "0a00a7cf2694b5a46b36aa618321dc677f30440b6b73dfb35f3d1850a68f8df1",
+    "size": 2043,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-latest-runtime.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-latest-runtime.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "e12a7eaaee908734cae5a6ccfa664bc18ee5fdd6",
+    "sha256": "b6b120bba618810656ba6c6b685e246bf35dd20a7e8675979a9ec89d38ff074a",
+    "size": 1082,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "9c5b0dfac72532230b9fc298f782a9de7157f6ff",
+    "sha256": "7afc4dd6799b8d3a50f881f12d0bdec73ac53de8467b52d55b87fd99a1e5d232",
+    "size": 1046,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-runtime.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-runtime.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "9451f68d828ae8f3cf9a202c39a8cb408b44773c",
+    "sha256": "ef28c6e5891ef020997025f1901b3e01625e46161ada3cb31c0303ea289916d2",
+    "size": 2043,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-04-runtime.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-04-runtime.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "70f00ecf504cb6a2a3532f0cc31237d857c6d914",
+    "sha256": "e513070980e0344c99370e41e7885ab330c49661a12880ffb077662297581b7d",
+    "size": 1082,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-04-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-04-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "9c5b0dfac72532230b9fc298f782a9de7157f6ff",
+    "sha256": "7afc4dd6799b8d3a50f881f12d0bdec73ac53de8467b52d55b87fd99a1e5d232",
+    "size": 1046,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-04-runtime.json",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-04-runtime.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "9451f68d828ae8f3cf9a202c39a8cb408b44773c",
+    "sha256": "ef28c6e5891ef020997025f1901b3e01625e46161ada3cb31c0303ea289916d2",
+    "size": 2043,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-04-runtime.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-04-runtime.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "70f00ecf504cb6a2a3532f0cc31237d857c6d914",
+    "sha256": "e513070980e0344c99370e41e7885ab330c49661a12880ffb077662297581b7d",
+    "size": 1082,
+    "preservationCommit": "54238271e8be98f73aa9aac435a1524951d97e63"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\after-proof-final.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/after-proof-final.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "698028742815a4ddb515157901f0b87b9d6ab446",
+    "sha256": "9fd3ca8fee272d45d2216bb48f5123257f5b2b0f2c29cb4437fc1484fad1577c",
+    "size": 100,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\after-targeted.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/after-targeted.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "63e3c0a8029c5b7d773d57dbb64deb2180e75963",
+    "sha256": "5d4b134a4772c02d103eaa538c13e2771947633fb94b2515b99cfc6c01f31993",
+    "size": 987,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\before.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/before.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "68cda46ad547dc2687099cb195d6345ffdf62adf",
+    "sha256": "63c88b5626189174a265d7df82a1dfcced25996f2c712f25632d6afb8f98d83d",
+    "size": 3430,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\candidate.patch",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/candidate.patch",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "bd2b2756ae3993a39163a14dd1dad6b656381fef",
+    "sha256": "d679939eeecedf7a5149bb2dd1dfe1b3e0ef22cb30588f78cdba6f1806c88910",
+    "size": 1378,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\current-main-proof.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/current-main-proof.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "5210296e4d016e92bbe8b819d37ee354de3a8b76",
+    "sha256": "bb0c1d5cc1322d3a4ff2ad556de0758d9fb2f9b2efe66c7c97fdfd2e322c976e",
+    "size": 6048,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\investigation-evidence\\repeated-race.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/investigation-evidence/repeated-race.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "1f8c5d399ea5f3d0cf268e120ff7673a038aedf6",
+    "sha256": "3be719b86393d780b372ca04c6a5c4b2b2f4ba4db1ddd2dd036fe5dcbeaac84a",
+    "size": 6580,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\NOTA_REVISAO_DEV1_DEV2.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/NOTA_REVISAO_DEV1_DEV2.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "db672587b44349d5fde75f326adb381cf4b30182",
+    "sha256": "3adc8936d2f470cd710796167c0beb347b99b24f3cf765365a0ba6623597ab9d",
+    "size": 6169,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\PR_D4-09.md",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/PR_D4-09.md",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c0601598663aad6288cbc5a1043a49961035046a",
+    "sha256": "d2ad6375a5753d0116dcc16eab78573a5d567800df9b51fc319201aa264c2911",
+    "size": 2879,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\transaction-review-final.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/transaction-review-final.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "cc1e8d4f0646b1931e39d3de2763d0d1ae2a4481",
+    "sha256": "2afa6e6496b7db7a2d7b5fe67393cf901892765ab9dae1b42c63bcd17b5f1d19",
+    "size": 5703,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-adversarial\\stage3-evidence\\transaction-review.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-adversarial/stage3-evidence/transaction-review.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "3720a20a50a55754ab11af9f5b4b90e152014735",
+    "sha256": "f13ff8d97976f367cc004e0c6a2585817c006977129bc5b191a795df313d7a36",
+    "size": 2549,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-09-baseline-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-baseline-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "56a6051ca2b02b04ef92d5150c9ef600403cb1de",
+    "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "size": 1,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-09-baseline-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-baseline-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "26241d5b39846aadaec3b5ffbec52ff466499a97",
+    "sha256": "cff3f6e71ed7f3e1a35f8e6dcf160c4d0f3ac4266c6d1a5f2454b734c9260778",
+    "size": 3580,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-09-final-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-final-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "d75e74822bf348cf609a77e9a746ba8d1e40c9a9",
+    "sha256": "cfcf3765e08c076256f1a706256933b0d8c3a9e849fe7c2c3269fa516a832631",
+    "size": 176,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-09-final-sixteen.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-final-sixteen.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "4a9aa5bbed4e1ef2dac693bdc89d5c38d7854185",
+    "sha256": "48e867012499be07da1cd147f0a308e379b0b7ca707804679d5117cfbe97e6aa",
+    "size": 941,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-09-investigation.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-investigation.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "55c88ba60a1998e5ac69249e02507a2f9bb482fa",
+    "sha256": "56350e5e0db9d6a999b31cece431bb6a8fd26ba85e80ebbdcb3d44f975104e78",
+    "size": 3182,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-09-latest-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-latest-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "6b37f4e85a469bd237062ff0162544cc86c6e136",
+    "sha256": "19e7aceb41ef997aa7819565b3da7b51ed9ed1d8cfaf9574469776bbdc15ab6d",
+    "size": 1415,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-09-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "439a49b79c87bebca02f3cda5d2e92391a21acee",
+    "sha256": "b385eb43a49723b3cf1be38aa5760b7ac4d80e787920847dbf96339119ac2145",
+    "size": 22345,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-09-targeted.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-09-targeted.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "b2936a5d99532f6b09da6b74506790e30697c570",
+    "sha256": "cc1ffb167773b11f3a184faef608bbdabe548b4cfa5f2cfb5f660c0a6f501bd9",
+    "size": 1601,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-AI\\.git\\dev4-audit\\d4-09-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/git-metadata-dev4-audit/d4-09-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "439a49b79c87bebca02f3cda5d2e92391a21acee",
+    "sha256": "b385eb43a49723b3cf1be38aa5760b7ac4d80e787920847dbf96339119ac2145",
+    "size": 22345,
+    "preservationCommit": "161d95899f62618142571159ee380a27550aa6d7"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-05-audit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-audit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c7a167b8450533cfab139999ea51fa28abf38418",
+    "sha256": "4e4757ff226a44b5c448b1c4624619419c22d5272463dc19510b4754871a72f9",
+    "size": 32,
+    "preservationCommit": "6fdf538ea860d97a2081d789c8c512bf0116d992"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-05-final-audit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-final-audit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c7a167b8450533cfab139999ea51fa28abf38418",
+    "sha256": "4e4757ff226a44b5c448b1c4624619419c22d5272463dc19510b4754871a72f9",
+    "size": 32,
+    "preservationCommit": "6fdf538ea860d97a2081d789c8c512bf0116d992"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-05-final-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-final-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "18748286e5b8b4de5db905f87cdfed1a7d48fe60",
+    "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+    "size": 3,
+    "preservationCommit": "6fdf538ea860d97a2081d789c8c512bf0116d992"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-05-final-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-final-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "005061b5f0c2200e4309cd4fc2de2984ad75b809",
+    "sha256": "778ff41c2967216040c7e921ec52b30c34291f33f5850f5363b7b4b95cf2c4ae",
+    "size": 1073,
+    "preservationCommit": "6fdf538ea860d97a2081d789c8c512bf0116d992"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-05-lock.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-lock.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "eee751c74eb91517e8f11c047f028968081c854d",
+    "sha256": "2aaf71d8828131e0d93aaf5e854dbb793944d883b55ed070feb27fa518590457",
+    "size": 66870,
+    "preservationCommit": "6fdf538ea860d97a2081d789c8c512bf0116d992"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-05-locked-install.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-locked-install.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c186f72a6ade3b0826f0ea74900ae1c55ff0303e",
+    "sha256": "8d3d53193388c8faa400d9248dd0324f9ffedf1ada2412fca0a0c13f737f988a",
+    "size": 6016,
+    "preservationCommit": "6fdf538ea860d97a2081d789c8c512bf0116d992"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-05-npm-audit.json",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-npm-audit.json",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "1f37757b8971247f539d272d54bf2bc4dec0062e",
+    "sha256": "7f172238e146f7a8c1aef156bade97384c58a4b8446cdb306777398f5d213592",
+    "size": 383,
+    "preservationCommit": "6fdf538ea860d97a2081d789c8c512bf0116d992"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-05-npm-ci.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-npm-ci.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "39becede169a6afa2728658a17a80b279c67e91e",
+    "sha256": "6d62000703bfc23bef28e84e5015fed4f8bb7c9a516b374a090b9a974bd3a0c3",
+    "size": 148,
+    "preservationCommit": "6fdf538ea860d97a2081d789c8c512bf0116d992"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-05-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "5b4437c067e4d93108cb4aca376bb65073e05c37",
+    "sha256": "24826303166a7914f27d69d543737272ed6bb144ff9866cc7f997435db5a75d9",
+    "size": 1046,
+    "preservationCommit": "6fdf538ea860d97a2081d789c8c512bf0116d992"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-05-sbom.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-sbom.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c7a167b8450533cfab139999ea51fa28abf38418",
+    "sha256": "4e4757ff226a44b5c448b1c4624619419c22d5272463dc19510b4754871a72f9",
+    "size": 32,
+    "preservationCommit": "6fdf538ea860d97a2081d789c8c512bf0116d992"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-05-typecheck.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-05-typecheck.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ae0dd0f0558eaa3674802e8e052ae0ef6271f5f2",
+    "sha256": "ebdd7e9aa80f0812d1322157097ae3f90fb51d93e9396a2b4067790597ad3e49",
+    "size": 51,
+    "preservationCommit": "6fdf538ea860d97a2081d789c8c512bf0116d992"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-06-baseline-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-06-baseline-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "87351db3f0e7a35a504596745a92537261766bfa"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-06-baseline-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-06-baseline-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "2375d02d925fa7fe0a232a36643757aa434459b4",
+    "sha256": "c787ebc494b383c03bee270fdb25b938fd460b3f5ffcf8fae8e5e041d83406b4",
+    "size": 1073,
+    "preservationCommit": "87351db3f0e7a35a504596745a92537261766bfa"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-06-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-06-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "5a9801351296b1393dac297fef203b1bfd4b8a52",
+    "sha256": "debf3c345a10e453c3a09caccd72ff0d856203454c4e94a6a556268b91430148",
+    "size": 1046,
+    "preservationCommit": "87351db3f0e7a35a504596745a92537261766bfa"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-07-baseline-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-07-baseline-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "34cf011fec74511b7260f16e6d9810960ec6167c"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-07-baseline-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-07-baseline-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c935e0214b251e6fd2c9cc546aeae6b3421ef4ae",
+    "sha256": "7d55c0fdf2300795676320140f98de224e034ca3b6c1a4ca63b2b3d41bbfcb50",
+    "size": 1073,
+    "preservationCommit": "34cf011fec74511b7260f16e6d9810960ec6167c"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-07-final-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-07-final-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "ade9f1df9c6a4c03c8f103163cd712f0d9c73668",
+    "sha256": "86ea0a7ac26ed6dd90572a1873623b87d6c352b34170f78fbe84982b4c9fd1b2",
+    "size": 181,
+    "preservationCommit": "34cf011fec74511b7260f16e6d9810960ec6167c"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-07-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-07-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "f3944beebd9904e148e0cc31347229feab7e8557",
+    "sha256": "cfa68450ef68df8e2bc98f592c378795f808136bdfb36079ae5274b7f6e90924",
+    "size": 1046,
+    "preservationCommit": "34cf011fec74511b7260f16e6d9810960ec6167c"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-08-baseline-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-08-baseline-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "c4b15433839794d76cd6f35dfa7d1b9ad6eed431"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-08-baseline-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-08-baseline-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "b823c8c5b514123cc1e72be6b26e5a239d739cd2",
+    "sha256": "db9ab0caf947a92957bda25ca681b8730daf50abd6e17bd6c3659ab32953060a",
+    "size": 1073,
+    "preservationCommit": "c4b15433839794d76cd6f35dfa7d1b9ad6eed431"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-08-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-08-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "75295ce1397d6848b2ea4209baaa181eb8b9b4ac",
+    "sha256": "965fc2764420cd212d9edf98dbe69c209a73c582ba2b21ac12cd26ed17211a91",
+    "size": 1047,
+    "preservationCommit": "c4b15433839794d76cd6f35dfa7d1b9ad6eed431"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-10-baseline-exit.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-10-baseline-exit.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "c227083464fb9af8955c90d2924774ee50abb547",
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "size": 1,
+    "preservationCommit": "93cf0391102d007089337cd0704ecac3c0ee9020"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-10-baseline-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-10-baseline-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "a9b7efdf533f6ab0b6bf4e85f1eb704fe41be243",
+    "sha256": "45badb6ce06c0fd56a8f3207a4c724b7657830dfdd37b24834f1b47092ac2bf8",
+    "size": 1047,
+    "preservationCommit": "93cf0391102d007089337cd0704ecac3c0ee9020"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\dev4-evidence\\d4-10-pytest.txt",
+    "repositoryPath": "docs/migration-20261106/evidence/DocRisk-dev4-reconcile/dev4-evidence/d4-10-pytest.txt",
+    "branch": "backup/migration-20261106/dev4-evidence",
+    "blob": "f7c0a23531692fe7a5b62c4c025292f2289144bc",
+    "sha256": "3dedb6f6cf33622b79b9aa3599eba0a77feb8f0ad0e66cc5b85653e3ab2c830d",
+    "size": 1046,
+    "preservationCommit": "93cf0391102d007089337cd0704ecac3c0ee9020"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-race-baseline\\api\\tests\\test_d4_09_consolidation_race.py",
+    "repositoryPath": "api/tests/test_d4_09_consolidation_race.py",
+    "branch": "backup/migration-20261106/worktree-DocRisk-dev4-race-baseline",
+    "blob": "5a9afcd1361635bab492fc88d8669e55d56c7b8f",
+    "sha256": "cfb4d7f9390c4731ad79ae7a23f8b79572261a4fa86ca4fb0cc5a0ce5c196c84",
+    "size": 6019,
+    "preservationCommit": "b271b5725e838acd64723edcb5d45cde3e3b5999"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-race-baseline\\api\\tests\\test_d4_09_transaction_review.py",
+    "repositoryPath": "api/tests/test_d4_09_transaction_review.py",
+    "branch": "backup/migration-20261106/worktree-DocRisk-dev4-race-baseline",
+    "blob": "a0ab46d742905b3944120dbb48d0fc6fb0bb4277",
+    "sha256": "70e8ca790d438765dd1aa4e23f4bfcbc479a8fbf5b7eed3922141b0fd33ec22d",
+    "size": 10899,
+    "preservationCommit": "b271b5725e838acd64723edcb5d45cde3e3b5999"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-review42\\api\\tests\\test_codex_demo_temp.py",
+    "repositoryPath": "api/tests/test_codex_demo_temp.py",
+    "branch": "backup/migration-20261106/worktree-DocRisk-review42",
+    "blob": "0ef5d609404d3d27649f15b14e12e7634da5a056",
+    "sha256": "446d093b7146f389150075802e49b372f4f919c64993f23167fef03fe45dba78",
+    "size": 1955,
+    "preservationCommit": "90f6ee1c4668442706744913772f5d1e905d4e97"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-review44\\api\\tests\\test_codex_demo_temp.py",
+    "repositoryPath": "api/tests/test_codex_demo_temp.py",
+    "branch": "backup/migration-20261106/worktree-DocRisk-review44",
+    "blob": "0ef5d609404d3d27649f15b14e12e7634da5a056",
+    "sha256": "446d093b7146f389150075802e49b372f4f919c64993f23167fef03fe45dba78",
+    "size": 1955,
+    "preservationCommit": "2f67e40e8074e170badc978ead01fc99be566f01"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-review45\\api\\tests\\test_codex_demo_temp.py",
+    "repositoryPath": "api/tests/test_codex_demo_temp.py",
+    "branch": "backup/migration-20261106/worktree-DocRisk-review45",
+    "blob": "0ef5d609404d3d27649f15b14e12e7634da5a056",
+    "sha256": "446d093b7146f389150075802e49b372f4f919c64993f23167fef03fe45dba78",
+    "size": 1955,
+    "preservationCommit": "3bfdd38df2be6ee2e123c6d9e06aa07eb9b347a8"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-review49\\tmp\\pdfs\\review-1.png",
+    "repositoryPath": "docs/migration-20261106/review49/review-1.png",
+    "branch": "backup/migration-20261106/review49-evidence",
+    "blob": "fe3837d24e9a79026e8144e569f409c2cd91232f",
+    "sha256": "3b97b2805e860911b89ebaf2b84f0da9747e100619b76503e2279ae00f21d980",
+    "size": 69703,
+    "preservationCommit": "8280616c4b583156a0020dbdbcb3d0e85a71c5c2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-review49\\tmp\\pdfs\\review-2.png",
+    "repositoryPath": "docs/migration-20261106/review49/review-2.png",
+    "branch": "backup/migration-20261106/review49-evidence",
+    "blob": "8ec36ca078fd9f6be1904cbc0fe22fe19785d9a8",
+    "sha256": "07a4d671742ef58d883fdadced457197096e20531e2372f6531e722112e9f5d9",
+    "size": 93744,
+    "preservationCommit": "8280616c4b583156a0020dbdbcb3d0e85a71c5c2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-review49\\tmp\\pdfs\\review-3.png",
+    "repositoryPath": "docs/migration-20261106/review49/review-3.png",
+    "branch": "backup/migration-20261106/review49-evidence",
+    "blob": "8db8cf10d41adb9aeb8b7eaf2a074badc78ab571",
+    "sha256": "37f514d2e40cf66e9de09a6beee01dff5c17507e77374901e17491cdb53d877d",
+    "size": 43316,
+    "preservationCommit": "8280616c4b583156a0020dbdbcb3d0e85a71c5c2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-review49\\tmp\\pdfs\\review-preview.pdf",
+    "repositoryPath": "docs/migration-20261106/review49/review-preview.pdf",
+    "branch": "backup/migration-20261106/review49-evidence",
+    "blob": "e294555ab082588864ef5383762129f106a97ba3",
+    "sha256": "2a7cae9b1c3c075c746afe1c6faea9ef4e4b656bef2e2f3757d25dd3093bdf9a",
+    "size": 133664,
+    "preservationCommit": "8280616c4b583156a0020dbdbcb3d0e85a71c5c2"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-1ynuo4h5\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "4db3685d696997859b73c69a78134f7bfbd9bad7",
+    "sha256": "4bc544452e0863c5ae05c1260622e1f8867f436ce9c951c974cf055f5abe2832",
+    "size": 821,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-1ynuo4h5\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "14380775766dc8e256e0540174dcf48ce69e418a",
+    "sha256": "c817200a909a4311d4479db418a8bca850e1637f71bf72fc26f32c0c1bb6e4ba",
+    "size": 483,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-1ynuo4h5\\api-3.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/api-3.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "36a16a968e005e0dd18a7dc8024454a0ea251fdd",
+    "sha256": "c7082204e201d148cd4d1fadd08de11f95f046006c819f4e5208d11be719f183",
+    "size": 415,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-1ynuo4h5\\api-dup.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/api-dup.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "006e0b58044f551c29d87e89c3c90ee3df09f999",
+    "sha256": "8a515a9466b96e0cbba6a4c0e0ca3d45b64bdc31bc7b67db09edee54aa90cb1b",
+    "size": 2882,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-1ynuo4h5\\C01.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/C01.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "29c451bd4e05934cdf5a0baa91be9879ed8e4a90",
+    "sha256": "4b447b01eda0e74567719582afa7b73380f5638912a1bad97ef99a120300be1a",
+    "size": 2593,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-1ynuo4h5\\C02.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/C02.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "faff0085f3c5affa6af01f034c121cdc010ccf25",
+    "sha256": "60e3eff64789759726a55e39e77d5b88eaf75ce4d86e2a173231294665b4203e",
+    "size": 2661,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-1ynuo4h5\\C03.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-1ynuo4h5/C03.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "ae66f969cf0fff99a60517714aa18e9af4123e4c",
+    "sha256": "087ac2b7588bf783f67989ca9db8db39e1c62bb2b70ca1b553799f1bd213ac53",
+    "size": 2699,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-2z0tyg4e\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "2163415089f8635fed02a7dc1c6a83ed7a229322",
+    "sha256": "a3b47951be0eda6b7f9c82db7e27bf81c3adfeb77a2aef3f7ef00e76e1e74c3f",
+    "size": 822,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-2z0tyg4e\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "6cc37dc0dadeb77ade04ea92825dad974fc88a25",
+    "sha256": "0f3e88d330272471c54ff99fb053630622d53326f8c71617a20f781d3edaf537",
+    "size": 549,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-2z0tyg4e\\api-3.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/api-3.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "155b3e480ee35201d01ded306f10038420ab759c",
+    "sha256": "f718123f90582659b258dc1a542380d6f8a8c0ba5c95771864e64fdda025cd62",
+    "size": 417,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-2z0tyg4e\\api-dup.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/api-dup.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "06e9e301e356193c3f2a2784fe26a6a64e39c0e5",
+    "sha256": "151a413eb9a6285747b38ba361590d9ba8bb90ba7ab94b05b02689f3bdd75379",
+    "size": 3427,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-2z0tyg4e\\C01.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/C01.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "5effe6543e65adbd56e4d8c9b9cbaf139aa12e93",
+    "sha256": "4710fd5c14a32df80ccfb9af17768dc4263f6ba6e8ba44f1fc6f6d44dd1d665e",
+    "size": 3128,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-2z0tyg4e\\C02.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/C02.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "98eb6e0f9313efbd171e0b5aae597f0c0d05d16e",
+    "sha256": "6edec1869d2a57550b79286e9ab9048719fbffd930fbe30306725a164454ed33",
+    "size": 3197,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-2z0tyg4e\\C03.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-2z0tyg4e/C03.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "3a5f2373a436984717111e81de546595c3c26623",
+    "sha256": "3073bf42308fb4c3e612ad10586b72034739c6ee563627a1be8e01d01fc6db4d",
+    "size": 3234,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-5zl_vy9c\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "065c2034e5101064be41a1fbd6e5f8ca27243838",
+    "sha256": "4fa92a64eabc47d9e5f4febf30248f9c0392f050cad94786838927218c603b72",
+    "size": 888,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-5zl_vy9c\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "66cad3bbc1b9d3952363b999ffd295f2f2792bc2",
+    "sha256": "290a43c42f1677a238ed0e9ad124ff11c9e30d6b15f65edc08dd11cb9c47121e",
+    "size": 549,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-5zl_vy9c\\api-3.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/api-3.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "d4a85825a40d276dd1f8565de713852f0d83a038",
+    "sha256": "e04dcb7247a702c939ba9206c33e1edf9c4a711bbd0da8c167e445573b3a5e37",
+    "size": 417,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-5zl_vy9c\\api-dup.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/api-dup.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "a28019dc51e45dac226c4bd3f73496a8cade3988",
+    "sha256": "f2149fee363b86bd38863a3a02711cdd3a4421412ae83fe44360131727f6d842",
+    "size": 3427,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-5zl_vy9c\\C01.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/C01.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "5ea02d158a56f67e990cc430ed3c316f2b9d3625",
+    "sha256": "f5c258c9e6635a64fa623250e5473f86e9fde0341220c1c0b835a309beb8743d",
+    "size": 3128,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-5zl_vy9c\\C02.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/C02.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "250a2a946bfde41e8c718fad69ad1b6df064c3e9",
+    "sha256": "857b0d464ae5376d4e4176c1232e4fdab72e36db51ac3a22c5f193f9c9a4dfc1",
+    "size": 3197,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-5zl_vy9c\\C03.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-5zl_vy9c/C03.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "c85bf7427c1ee4bc7117f81a0481a8c9013b5413",
+    "sha256": "ee4a9b31da28b17cd1380070e0530caf8b63c2aa31ebe4b35a051f7b630bc3e0",
+    "size": 3234,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-e64f91ta\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "1708cca5e3af7ef74d3c4c78d37053d09bf330ed",
+    "sha256": "fa9891a79259375c39ab8383992209f9b1ef62bcec372a16229edb5681c9d539",
+    "size": 1020,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-e64f91ta\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "ce02cefaf31d1a900ba813e91f7b20c26e44047f",
+    "sha256": "be55c3f844846389773ef7143207010b4e31c6ece4495177f4772b55434f053c",
+    "size": 681,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-e64f91ta\\api-3.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/api-3.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "f0768274a48b4c83ebd4e5840663d2e4f4113b16",
+    "sha256": "088f13a9aee1fbbe65b763eb6d5b05a78aab4060262ecfefea6fd9270e1e0b98",
+    "size": 417,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-e64f91ta\\api-dup.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/api-dup.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "d2174bff344f4ed855aa622c5a316de84890b9c1",
+    "sha256": "3097c0d1847dc0ebebc9b96e18edf8e0734c8e5f068d368597e76c8477752fbc",
+    "size": 3427,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-e64f91ta\\C01.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/C01.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e00566539fbfb32f3d89d4a14c46044582db18df",
+    "sha256": "68de6637b229c4ab90043a24023885c21d2708ec7089d8f00e5ae2c7a42306aa",
+    "size": 3128,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-e64f91ta\\C02.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/C02.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "14442c2677a305080dec1e2bf56a9daebeb71133",
+    "sha256": "6667cecc329b7da536846cefbbbbc063874284d531448d0c84e5f7506ef42d03",
+    "size": 3197,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-e64f91ta\\C03.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-e64f91ta/C03.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "01d237dbb71a2f21776accfb6f5659f7cce233a2",
+    "sha256": "bbb11de190696d78ea33172a026e71f5ebe083df758fe8c1cf4d0744603b6c6e",
+    "size": 3234,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-ejrwnb6s\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "4a0e48e5ba7984aa46ffbc5c33646532da2f4363",
+    "sha256": "b29178a6ddb3e3ab915d38e0d496d9836e976f69944ae8cabedcaf7a70d185a0",
+    "size": 822,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-ejrwnb6s\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "aa20036e3a1e6bd499ba4a36c05c1646f104a144",
+    "sha256": "43eb2c563f38f21d638abe4cbbdd0a1d021d62c6000d3e3b941e12ab04c38252",
+    "size": 481,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-ejrwnb6s\\api-3.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/api-3.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "abdff2646e8809fa2f80d44c629ccccd0b24d09a",
+    "sha256": "e262e8cc8cf3d4b7fd3d69d32796d4b05f910e248a394e19036226b567ddbf2f",
+    "size": 417,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-ejrwnb6s\\api-dup.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/api-dup.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "d7c28524e58e0d9f22c529b98cd9f68c5346eeac",
+    "sha256": "b9d86d5874e272aa713b07f05881af57299700fff40b13101edd12f4938d25d6",
+    "size": 3460,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-ejrwnb6s\\C01.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/C01.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "98716345ff0119c1a589deae40e2f9a7a2a47e1c",
+    "sha256": "1541ef1ea92b53d40d9e661e238adf419cef6db5429f3dca9bfff1b39aaca604",
+    "size": 3150,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-ejrwnb6s\\C02.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/C02.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "0c0917f688cb0576c02699a307b29867a147ce85",
+    "sha256": "f795f12ca779ffd026e0325a79260e5436240e24f919ede80c1c7162c3223b4d",
+    "size": 3219,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-ejrwnb6s\\C03.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-ejrwnb6s/C03.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "780e037b5f9df0da7a6db1ff0c04a88b5d6fd71e",
+    "sha256": "66461de9282715952fcae96296fc153717ea3593ed90d6c0c5d9312459e3500a",
+    "size": 3256,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-jvfm9i8w\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "de8bed21fcde675b7407536f437898c139242997",
+    "sha256": "4830c50c109569d5e09e5066fa2870b4eb98626ed1f3bc497e20078e431ac602",
+    "size": 822,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-jvfm9i8w\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "fee7d34b7e8a588e3c3784d5a5fe95cc58b51a08",
+    "sha256": "88b4044d84a9c5469b0dea84eca92207ef8bf2ab9b2120063037970ffdf48b06",
+    "size": 549,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-jvfm9i8w\\api-3.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/api-3.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "988661eb09fe770df30d728c37a6c4f6f43811c9",
+    "sha256": "fc0e798c288f057c093cca75d890b801fb6e27e8a8ac1fda1188c32b334fb080",
+    "size": 417,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-jvfm9i8w\\api-dup.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/api-dup.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "0ad9f9a62ccc16d89b64d1877cc2bf4dab83e763",
+    "sha256": "4fe04344683f91853d8e761aa6f4cf7d968b014d7bfb4b5b98b08fda674197d2",
+    "size": 3429,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-jvfm9i8w\\C01.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/C01.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "20da73b006fe1df79d7334d495d6f9e7b9a3c7c0",
+    "sha256": "520079b72185368574b97502fd8625ee6a6a8be7b5bdfec0e8470f0af6dd2095",
+    "size": 3130,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-jvfm9i8w\\C02.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/C02.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "763cac147392874d5f4a587b146066d401df2568",
+    "sha256": "ebfee0df1033eecaa495205905e1bb75bc887d4b6f9c7dccd219f33189b7c712",
+    "size": 3199,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-jvfm9i8w\\C03.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-jvfm9i8w/C03.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "6fc706e14d0cb4fb600de33e05db6411e77d1f62",
+    "sha256": "5a66b61f83432ff3f85f534622fd32fa99c4d0d4bcf0ce65ea1ae58c318c9a3d",
+    "size": 3236,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-kawlr9el\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "252d7fb278ae14bcc0e1e56d9e8ed91e0e1ce689",
+    "sha256": "e1e42f1193f3cd658121d5a3092ee89a3b79683a0286b4888fe7e08ec8cde17e",
+    "size": 822,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-kawlr9el\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "f989bbc9300e16ce3798e8a598b44ac8d9a29aba",
+    "sha256": "3575ab8fb926b332b30c6dc02d6bf80799e5364086a9b62e6fcca393220b330c",
+    "size": 549,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-kawlr9el\\api-3.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/api-3.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "256152f318d0a537f0eacb37fe33ebae3ce47850",
+    "sha256": "aa4e9dae345fa6fb0afd54f0f4f4ec7fff414672f4189ad86ba1d0c564abf256",
+    "size": 417,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-kawlr9el\\api-dup.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/api-dup.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "40031587af81cafd882dfadc35bbd65301c034bc",
+    "sha256": "29641e13cb039d5eb33bdfbfd8f9f5a669c1704356d7779477d55690e40f5e7a",
+    "size": 2918,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-kawlr9el\\C01.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/C01.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "8e821ebc45c43fe76752c36f7043442fe4f77b5f",
+    "sha256": "b49dd4a2dfefd4d7c44028d24d4d5cebc1ed0409cdc717a61a8a5f32ed2819c9",
+    "size": 2617,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-kawlr9el\\C02.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/C02.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "d9de4d4620a420d4cc6d68e3ff527f59b315d67c",
+    "sha256": "c09d05252b3d8c78778139dd04e6daa490eb6def9f8baf50a91d5c8ea38cbd9e",
+    "size": 2686,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-d4-04-kawlr9el\\C03.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-d4-04-kawlr9el/C03.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "cae5d88ffff28973167960ef35a40ac8ac6b1f00",
+    "sha256": "58b1f517c0b1d2c719a0d2bd9021182c5e4389c2da922ab9c60d6f458b68bc21",
+    "size": 2722,
+    "preservationCommit": "010be502d47ae20dbd6ed4826cbf302d286ff175"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-AEezZg\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "8e915dbda84b7855d1d9aa4f3cdb94f57ffc8c1a",
+    "sha256": "7a9e98eb4ebc96307fff8efe2972533f59847b2d14168e6ee0a349219dc82820",
+    "size": 20370,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-AEezZg\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "fc75768d354c374d773060dec55dfb5b40b1981e",
+    "sha256": "c98391116a0124d5f5a3bfbf6f2c94131d967eb3d61b385f4b8cecf164f3c197",
+    "size": 2495,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-AEezZg\\build.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/build.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "7287df4717b72acdce7f3f92aee4ec5774dbab9e",
+    "sha256": "a53ad86cbc443d9d8e3d3f6e6a2fe85b6b72d2e4f882bf68bfda86b011687259",
+    "size": 1319,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-AEezZg\\contractor-connected.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/contractor-connected.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "61adc7aee37d056fc70dc7ecc0101dbcf001e095",
+    "sha256": "70119a871b1531d3b595268bef433d70479d30209ae8b1be949714b0453565f5",
+    "size": 82,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-AEezZg\\contractor-offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/contractor-offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e16ccd4242d7ad758e85dec395c89da4b3f91b5c",
+    "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+    "size": 73,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-AEezZg\\live.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/live.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "d2108540950716243cd3f7dccade5fa3eae35852",
+    "sha256": "386234d1ce29ca06e3ab2aba41337c7655015b9309ffd3eeabe2e98e1a00fa9f",
+    "size": 1262,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-AEezZg\\offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "6baaecfee59be65458c39ed38d5c55656484bb5c",
+    "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+    "size": 54,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-AEezZg\\smoke.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/smoke.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "194c96ee85806bec6de259643d89434dd27f09da",
+    "sha256": "db533d147addb9b6d39c52bc4d54b0356960ebb74c521676bc1f7817daec236b",
+    "size": 525,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-AEezZg\\uploads.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-AEezZg/uploads.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bkcxeewu\\build.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bkcxeewu/build.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "1034690f47bbb7124f024ae7e99498da68cad2dc",
+    "sha256": "11534f49c6cb860865012503796a55833758be2cc4ed171dd12496140ed2f2ad",
+    "size": 1300,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bkcxeewu\\offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bkcxeewu/offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "c1b2046ab326fce630078a3c1c5a2aab5c48ea6b",
+    "sha256": "145026c13430003b4fb04e85a698d554f52ada43e19090c57d43257864efddcc",
+    "size": 1355,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bS1HAG\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "594426de385f3c6239d46a400194f0f5221beb6e",
+    "sha256": "117d420e53706676b7c83b8d1f66995bea696e2411e45a04bdfbcd45885359a3",
+    "size": 6266,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bS1HAG\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "3644cd1f9b86bc9c1d579b4135bef6ee7182055a",
+    "sha256": "bbf574dfb75f9366e02a5ef351158dd8749ee4c09476d58bf8bc75e48df7a499",
+    "size": 1519,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bS1HAG\\build.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/build.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "5bdfdc4f6fefa644a38211ff5711dd7b9819b6ea",
+    "sha256": "3c733e4dd2760339fcb9f02219f661ac2e4b60a9edca87807850a62af673a560",
+    "size": 1301,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bS1HAG\\contractor-connected.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/contractor-connected.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "bf4fa2d480cd7107c3fc3fd7bdf53cdee27318f8",
+    "sha256": "f3be32e53c7b0e1b58eb27ca9410f87f02d9eaaaadb9818c22e7265eee3f12f5",
+    "size": 615,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bS1HAG\\contractor-offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/contractor-offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e16ccd4242d7ad758e85dec395c89da4b3f91b5c",
+    "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+    "size": 73,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bS1HAG\\live.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/live.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "203b9c11bae9bcba8018753c305bd10d48cc2499",
+    "sha256": "e9573282ba89e5ab74a7a1a39208b301cdaf55580d14009f222033841b0aab56",
+    "size": 389,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bS1HAG\\offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "6baaecfee59be65458c39ed38d5c55656484bb5c",
+    "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+    "size": 54,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bS1HAG\\smoke.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/smoke.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "1cb6609b151269892cf2dae2c255039bced55f8b",
+    "sha256": "5bf5707ffe8f52cc811b308fb267bb3a152ea861a5e320c506cfb85a07ade3fa",
+    "size": 542,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bS1HAG\\uploads.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bS1HAG/uploads.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bYrWL5\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "6321a942b51ad5b9e9eb7a36ca122dad0b79a6fd",
+    "sha256": "aa7fc0c5a02f234390404c7a47a1b397e1e1cadeeb9217fb9e09606852686c71",
+    "size": 6336,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bYrWL5\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "12e2eb453fdfe290b786006008af46894c5351ad",
+    "sha256": "c031b5e4ae7e509060e18fafa1b4e14d1bf019947e656635d6d1d138ec54deae",
+    "size": 1519,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bYrWL5\\build.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/build.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "32bda763f8e0c952f1c69168cafbc1ed3bd4ca36",
+    "sha256": "09e9d95bfa4515385e24341df80a71e9e9def22d3f8213790a0f96a1e9c0c111",
+    "size": 1299,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bYrWL5\\contractor-connected.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/contractor-connected.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "bf4fa2d480cd7107c3fc3fd7bdf53cdee27318f8",
+    "sha256": "f3be32e53c7b0e1b58eb27ca9410f87f02d9eaaaadb9818c22e7265eee3f12f5",
+    "size": 615,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bYrWL5\\contractor-offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/contractor-offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e16ccd4242d7ad758e85dec395c89da4b3f91b5c",
+    "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+    "size": 73,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bYrWL5\\live.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/live.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "203b9c11bae9bcba8018753c305bd10d48cc2499",
+    "sha256": "e9573282ba89e5ab74a7a1a39208b301cdaf55580d14009f222033841b0aab56",
+    "size": 389,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bYrWL5\\offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "6baaecfee59be65458c39ed38d5c55656484bb5c",
+    "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+    "size": 54,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bYrWL5\\smoke.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/smoke.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "1cb6609b151269892cf2dae2c255039bced55f8b",
+    "sha256": "5bf5707ffe8f52cc811b308fb267bb3a152ea861a5e320c506cfb85a07ade3fa",
+    "size": 542,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-bYrWL5\\uploads.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-bYrWL5/uploads.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-f8o4Qn\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "a42a6eb015cbdfaaa75f279aedaa255575693fb1",
+    "sha256": "7d46bd62f4dfe67e657d0a9997cb6435d60fc42c0ccb4db346a5a18064d9881a",
+    "size": 203,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-f8o4Qn\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "961a82ccab0b6c22d9fc0e65c09ab43005ebc4c7",
+    "sha256": "2f78ccf383dd4babd3cbd9322d47254ed5df600d732c92e4d1507a88a4d5ede7",
+    "size": 203,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-f8o4Qn\\build.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/build.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "dc9a8c8ffbf6e4aafa559747073bd9119f512c26",
+    "sha256": "776267497553360496aae5005f554ca391ef1401983749838028dbdba00b8d00",
+    "size": 1316,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-f8o4Qn\\contractor-connected.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/contractor-connected.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "94aebc1f0440e7f416ee5cb06c08e26a91cf4328",
+    "sha256": "60297320378b9fca6fe2108b6107dc47b78a617f4a4a1321056e54c1f96b791d",
+    "size": 1115,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-f8o4Qn\\live.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/live.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "500dbb5ead060b0f2fcff97bbb5fbed76ba2fae3",
+    "sha256": "9d9c1abfe78d13533b04037061da56cfe92056bfa251ec26e918b9aa46088e02",
+    "size": 1109,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-f8o4Qn\\offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "cd3d82a7f8891c452719313109edf3e6b6791c35",
+    "sha256": "2f5275486d34b3c7214bcd7d7fabdbfdee98d76911d81bee056b1b1fcf23e32c",
+    "size": 1106,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-f8o4Qn\\smoke.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/smoke.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "204b13d77c2412b4fdb4ec1f30f20a967f6c255a",
+    "sha256": "8a24a522e2c67f770dd78d0d411fe5e684e0c6a1d5e4b64e628ed6fb174112ca",
+    "size": 1082,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-f8o4Qn\\uploads.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-f8o4Qn/uploads.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-LylsJq\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "9ad3cbbc63dbf8c58844d877033457db599514ee",
+    "sha256": "be160d6b9077b5a0972261674865b7ada85da1714ec4c4e4a53878ee78f9e38d",
+    "size": 19955,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-LylsJq\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "a85049d6f19e58f3b4896122aef0974222a95981",
+    "sha256": "7b9cfdebe5b03ce5457288adc786b0593fafda2dcafb7cd49075ab097e1c8617",
+    "size": 1652,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-LylsJq\\build.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/build.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "acbb71a8b6ea6a94143398f8fd0e11aaa8e7af17",
+    "sha256": "67e0e0cae3472f350e73968f670c8d6cb35fc13a4f15f6eecd548831e39de0b6",
+    "size": 1317,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-LylsJq\\contractor-connected.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/contractor-connected.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "61adc7aee37d056fc70dc7ecc0101dbcf001e095",
+    "sha256": "70119a871b1531d3b595268bef433d70479d30209ae8b1be949714b0453565f5",
+    "size": 82,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-LylsJq\\contractor-offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/contractor-offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e16ccd4242d7ad758e85dec395c89da4b3f91b5c",
+    "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+    "size": 73,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-LylsJq\\live.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/live.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "04bac90f493099ed0151b20f3b4a44dd87550cc4",
+    "sha256": "320307a6d429fd4765078d464c047b75309b50627d43c78c9a9bfdd291a1e421",
+    "size": 401,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-LylsJq\\offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "6baaecfee59be65458c39ed38d5c55656484bb5c",
+    "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+    "size": 54,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-LylsJq\\smoke.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/smoke.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "194c96ee85806bec6de259643d89434dd27f09da",
+    "sha256": "db533d147addb9b6d39c52bc4d54b0356960ebb74c521676bc1f7817daec236b",
+    "size": 525,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-LylsJq\\uploads.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-LylsJq/uploads.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-mX2RfE\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "cec4469172d87098b3c2feead69dd839b0da1510",
+    "sha256": "3ff2aad86bacbb3f8d9a6104eeab99e1facef05a3920eb2592c099dec8a4ec31",
+    "size": 20097,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-mX2RfE\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "27676bbdb0af26281b72f5af90fd395e7c550c05",
+    "sha256": "4b961baba27d005fc80bf7ef68bef8115f86e16019a6608e6bf909f922ed7ccf",
+    "size": 3883,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-mX2RfE\\build.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/build.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "c3ee9f15fe255b48f79121fd74c5309ab34e8cee",
+    "sha256": "ec594f9ac4f687d84f729e8907491ddaebc82a9fcfb99b6295d496699b5e1298",
+    "size": 1829,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-mX2RfE\\contractor-connected.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/contractor-connected.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "61adc7aee37d056fc70dc7ecc0101dbcf001e095",
+    "sha256": "70119a871b1531d3b595268bef433d70479d30209ae8b1be949714b0453565f5",
+    "size": 82,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-mX2RfE\\contractor-offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/contractor-offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e16ccd4242d7ad758e85dec395c89da4b3f91b5c",
+    "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+    "size": 73,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-mX2RfE\\live.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/live.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "4a9fee85d2c4bfbffb6dedcda2c1ec33e1c9c9a8",
+    "sha256": "6034cb81d05e5722e63692e4599eaba444b2c5b5965b0e395c338f15c89e25e4",
+    "size": 359,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-mX2RfE\\offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "6baaecfee59be65458c39ed38d5c55656484bb5c",
+    "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+    "size": 54,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-mX2RfE\\smoke.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/smoke.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "194c96ee85806bec6de259643d89434dd27f09da",
+    "sha256": "db533d147addb9b6d39c52bc4d54b0356960ebb74c521676bc1f7817daec236b",
+    "size": 525,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-mX2RfE\\uploads.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-mX2RfE/uploads.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-ovGIkF\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "8d3b634aae519a0699ae3be9bc4169ea74d1f06a",
+    "sha256": "cdb7013120bce78f33ed784775b8f7f97621107030e010c5e1dbd6e6163b7c1b",
+    "size": 19881,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-ovGIkF\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "96463a11262b6e2b64076e5a35941af33489f0d7",
+    "sha256": "068c61f2d7ab57f66a7679944fbef08baecd6323da74c9007a1a0ad15291b6e7",
+    "size": 3883,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-ovGIkF\\build.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/build.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "7ff21d0273b622938380b2a746638ffea7644b8f",
+    "sha256": "eb2967deeee05f91759a8fe78108e0950e56c798958c9cf8485804aa19e69c28",
+    "size": 1831,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-ovGIkF\\contractor-connected.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/contractor-connected.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "61adc7aee37d056fc70dc7ecc0101dbcf001e095",
+    "sha256": "70119a871b1531d3b595268bef433d70479d30209ae8b1be949714b0453565f5",
+    "size": 82,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-ovGIkF\\contractor-offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/contractor-offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e16ccd4242d7ad758e85dec395c89da4b3f91b5c",
+    "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+    "size": 73,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-ovGIkF\\live.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/live.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "4a9fee85d2c4bfbffb6dedcda2c1ec33e1c9c9a8",
+    "sha256": "6034cb81d05e5722e63692e4599eaba444b2c5b5965b0e395c338f15c89e25e4",
+    "size": 359,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-ovGIkF\\offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "6baaecfee59be65458c39ed38d5c55656484bb5c",
+    "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+    "size": 54,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-ovGIkF\\smoke.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/smoke.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "194c96ee85806bec6de259643d89434dd27f09da",
+    "sha256": "db533d147addb9b6d39c52bc4d54b0356960ebb74c521676bc1f7817daec236b",
+    "size": 525,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-ovGIkF\\uploads.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-ovGIkF/uploads.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-UQvg3q\\build.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-UQvg3q/build.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "6880fb8cb03ed51dfa22eaf56cfdaecad510b92b",
+    "sha256": "7329811ea794fe30671912afc2f6d1b58a7d38e778d19165dfaa416ab43b9c3c",
+    "size": 856,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-v0q2k6dr\\build.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-v0q2k6dr/build.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-xLziaM\\api-1.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/api-1.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "1add86e0fdfebe98ffd9949b3cd6ff5bb12325df",
+    "sha256": "49a1e5c92267ae9ef136e4c23dc6b6b00588012698d575550518612588e8390d",
+    "size": 6266,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-xLziaM\\api-2.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/api-2.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "b3c3da474720dde9f4f70530978a8239a7cf745b",
+    "sha256": "0cbbcfb8e4a59f75c188fd06b03bf687f687f99d02acde85d2516416f85a8d81",
+    "size": 1519,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-xLziaM\\build.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/build.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "7fa0533742c7b023d5737e060f109bccdd50ef31",
+    "sha256": "22435b0f930aea45f0a7cb1c84750578d3eeee5b0ab65cf6754f531fc6ad8ab2",
+    "size": 1299,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-xLziaM\\contractor-connected.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/contractor-connected.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "bf4fa2d480cd7107c3fc3fd7bdf53cdee27318f8",
+    "sha256": "f3be32e53c7b0e1b58eb27ca9410f87f02d9eaaaadb9818c22e7265eee3f12f5",
+    "size": 615,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-xLziaM\\contractor-offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/contractor-offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e16ccd4242d7ad758e85dec395c89da4b3f91b5c",
+    "sha256": "87ac285d82ec1c7323840fc63180fe58adfedb1f3bab2c973c9ebff8233e4cc6",
+    "size": 73,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-xLziaM\\live.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/live.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "203b9c11bae9bcba8018753c305bd10d48cc2499",
+    "sha256": "e9573282ba89e5ab74a7a1a39208b301cdaf55580d14009f222033841b0aab56",
+    "size": 389,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-xLziaM\\offline.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/offline.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "6baaecfee59be65458c39ed38d5c55656484bb5c",
+    "sha256": "0d5a0cc4a691cf5116ce6a5601864867ae6d893ed4bb0314719574166fe53359",
+    "size": 54,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-xLziaM\\smoke.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/smoke.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "1cb6609b151269892cf2dae2c255039bced55f8b",
+    "sha256": "5bf5707ffe8f52cc811b308fb267bb3a152ea861a5e320c506cfb85a07ade3fa",
+    "size": 542,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  },
+  {
+    "source": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-xLziaM\\uploads.log",
+    "repositoryPath": "docs/migration-20261106/raw-logs/docrisk-ensaio-xLziaM/uploads.log",
+    "branch": "backup/migration-20261106/dev4-raw-logs",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "preservationCommit": "43d307da972c249193133397b9ca86f75cc1cecc"
+  }
+]
