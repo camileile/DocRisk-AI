@@ -25,7 +25,7 @@ A inspeção responsiva automatizada não substitui auditoria manual de acessibi
 
 ## Reconciliação com D1-06 (#41)
 
-A revisão usa a ação `corrigir_campos` e o histórico por campo já existente em `document_field_reviews`, sem segunda tabela ou formulário duplicado. O visualizador envia `motivo`, `esperado_em` e `fontes` por campo; a fonte validada é registrada no histórico canônico. A revisão com página conferida aceita ausência explícita (`null`) e mantém o documento em revisão até aprovação. O contrato anterior com `motivo` e `fonte` textual continua compatível.
+A revisão usa a ação `corrigir_campos` e o histórico por campo já existente em `document_field_reviews`, sem segunda tabela ou formulário duplicado. O visualizador envia `motivo`, `esperado_em` e `fontes` por campo; a fonte validada é registrada no histórico canônico. A revisão com página conferida aceita ausência explícita (`null`) e mantém o documento em revisão até aprovação. Desde H07, o contrato anterior com `fonte` textual é rejeitado: todos os clientes devem enviar IDs de páginas em `fontes` e o `updated_at` lido em `esperado_em`.
 
 ## Complemento — revisão manual iniciada pelo Analista
 
