@@ -181,15 +181,18 @@ export type ApiUploadReceipt = {
 // A API F1 aceita um arquivo por lote, em multipart/form-data.
 // Não definir Content-Type manualmente: o navegador precisa inserir o boundary.
 export const MAX_API_UPLOAD_BYTES = 20 * 1024 * 1024;
-export const API_UPLOAD_EXTENSIONS = [".pdf", ".png", ".jpg", ".jpeg", ".tif", ".tiff"] as const;
+export const API_UPLOAD_EXTENSIONS = [".pdf", ".png", ".jpg", ".jpeg", ".tif", ".tiff", ".aej", ".txt"] as const;
 
 export function validateApiUploadFile(file: File): string | null {
   const name = file.name.toLocaleLowerCase("en-US");
   if (!API_UPLOAD_EXTENSIONS.some((ext) => name.endsWith(ext))) {
-    return "Formato não aceito pela integração: envie PDF, PNG, JPEG ou TIFF. AEJ ainda está pendente.";
+    return "Formato não aceito: envie PDF, PNG, JPEG, TIFF ou AEJ.";
   }
-  if (!file.size || file.size > MAX_API_UPLOAD_BYTES) {
-    return "O arquivo deve ter conteúdo e no máximo 20 MB neste ambiente de testes.";
+  const limite = name.endsWith(".aej") || name.endsWith(".txt") ? 10 * 1024 * 1024 : MAX_API_UPLOAD_BYTES;
+  if (!file.size || file.size > limite) {
+    return name.endsWith(".aej") || name.endsWith(".txt")
+      ? "O AEJ deve ter conteúdo e no máximo 10 MB."
+      : "O arquivo deve ter conteúdo e no máximo 20 MB neste ambiente de testes.";
   }
   return null;
 }

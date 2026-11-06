@@ -2,7 +2,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Download } from "lucide-react";
 import { useSession } from "@/components/demo-provider";
 import {
   DocumentBadge,
@@ -12,8 +12,9 @@ import {
   PageImage,
   PageIntro,
 } from "@/components/workspace-parts";
-import { formatHours, pageList, typeLabels, type DocDetail } from "@/lib/api";
+import { downloadBatchSource, formatHours, pageList, typeLabels, type DocDetail } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
+import { useState } from "react";
 
 export default function Page() {
   return (
@@ -32,22 +33,53 @@ function money(value: number | null | undefined) {
 function DocumentDetail() {
   const id = useSearchParams().get("id");
   const { me } = useSession();
+  const [sourceBusy, setSourceBusy] = useState(false);
+  const [sourceError, setSourceError] = useState("");
   const { data: d, error, loading, reload } = useApi<DocDetail>(id ? `/api/documents/${id}` : null);
   if (!id) return <EmptyState title="Documento não informado." text="Abra um documento a partir da lista." />;
   if (loading) return <LoadingState />;
   if (error || !d) return <ErrorState message={error ?? "Documento não encontrado"} onRetry={reload} />;
   const bernhoeft = me?.org_tipo === "BERNHOEFT";
+  const batchId = d.batch_id;
+  async function downloadSource() {
+    setSourceBusy(true);
+    setSourceError("");
+    try {
+      await downloadBatchSource(batchId);
+    } catch (err) {
+      setSourceError(err instanceof Error ? err.message : "Falha ao baixar o arquivo original");
+    } finally {
+      setSourceBusy(false);
+    }
+  }
   return (
     <>
       <Link href="/painel/documentos" className="batch-back">
         <ArrowLeft size={16} /> Documentos
       </Link>
       <PageIntro
-        eyebrow={`DOCUMENTO #${d.id} · LOTE #${d.batch_id} · ${pageList(d.paginas)}`}
+        eyebrow={`DOCUMENTO #${d.id} · LOTE #${d.batch_id} · ${d.aej ? `AEJ vínculo ${d.aej.worker_link_id}` : pageList(d.paginas)}`}
         title={typeLabels[d.tipo] ?? d.tipo}
         description={`Trabalhador ${d.worker_id ?? "não identificado"} · competência ${d.competencia ?? "não identificada"} · versão ${d.versao}`}
         action={<DocumentBadge status={d.status} />}
       />
+      {d.aej && (me?.org_tipo === "BERNHOEFT" || me?.org_tipo === "FORNECEDORA") && (
+        <section className="workspace-card">
+          <h2>Documento estruturado AEJ</h2>
+          <p>O arquivo original e as linhas de origem foram preservados. Assinatura P7S não validada.</p>
+          <button className="button secondary" disabled={sourceBusy} onClick={() => void downloadSource()}>
+            <Download size={16} /> {sourceBusy ? "Baixando…" : "Baixar arquivo AEJ original"}
+          </button>
+          {sourceError && <p className="api-error" role="alert">{sourceError}</p>}
+          {bernhoeft && d.aej.days?.map((day) => (
+            <div key={day.date} className="aej-day">
+              <h3>{day.date} · horário {day.schedule_code ?? "não identificado"}</h3>
+              <p className="muted">Jornada: {day.contract_minutes ?? "—"} min · trabalhado: {day.worked_minutes ?? "—"} min · excedente diário: {day.observed_daily_excess_minutes ?? "não calculado"} min</p>
+              <p>Linhas de origem: {day.source_lines.join(", ") || "—"}</p>
+            </div>
+          ))}
+        </section>
+      )}
       <div className="dashboard-grid">
         <section className="workspace-card">
           <h2>Leitura do documento</h2>

@@ -54,7 +54,7 @@ export default function BatchesPage() {
                     {b.issue_id && <small className="muted"> · reenvio da pendência {b.issue_id}</small>}
                   </td>
                   <td>{b.filename}</td>
-                  <td>{b.total_pages}</td>
+                  <td>{b.tipo_arquivo === "AEJ" ? "AEJ estruturado" : b.total_pages}</td>
                   <td>
                     <BatchBadge status={b.status} />
                     {b.erro && <small className="muted block">{b.erro}</small>}

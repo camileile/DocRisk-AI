@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 import sqlite3
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
 
 from .. import config, db
@@ -150,6 +151,108 @@ def list_workers(contract_id: str, user: Usuario = Depends(usuario_atual),
                               (contract_id,)).fetchall())
 
 
+def _substituir_espelho_anterior(conn: sqlite3.Connection, contract_id: str, worker_id: str,
+                                 competencia: str, novo_id: int, novo_status: StatusDocumento) -> None:
+    """O espelho AEJ recém-associado vira a versão vigente do par: o anterior (PDF ou outro AEJ)
+    passa a SUBSTITUIDO, como no reenvio, para nunca haver dois espelhos vigentes."""
+    anterior = conn.execute(
+        "SELECT id, versao FROM documents WHERE contract_id=? AND tipo='ESPELHO_PONTO' AND worker_id=? "
+        "AND competencia=? AND status<>? AND id<>? ORDER BY versao DESC, id DESC LIMIT 1",
+        (contract_id, worker_id, competencia, StatusDocumento.SUBSTITUIDO.value, novo_id),
+    ).fetchone()
+    if anterior is None:
+        return
+    conn.execute("UPDATE documents SET status=?, updated_at=? WHERE id=?",
+                 (StatusDocumento.SUBSTITUIDO.value, db.agora(), anterior["id"]))
+    conn.execute("UPDATE documents SET versao=?, substitui_id=? WHERE id=?",
+                 (int(anterior["versao"]) + 1, anterior["id"], novo_id))
+    f3.atualizar_por_nova_versao(conn, int(anterior["id"]), novo_status)
+
+
+@router.get("/api/contracts/{contract_id}/aej-mappings")
+def list_aej_mappings(contract_id: str, user: Usuario = Depends(usuario_atual),
+                      conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, str]]:
+    _require_ber_user(user)
+    _contract_or_404(conn, user, contract_id)
+    return _rows(conn.execute(
+        "SELECT m.worker_link_id, m.worker_id, w.nome AS worker_name "
+        "FROM aej_worker_mappings m JOIN workers w ON w.id=m.worker_id "
+        "WHERE m.contract_id=? ORDER BY m.worker_link_id", (contract_id,)).fetchall())
+
+
+@router.put("/api/contracts/{contract_id}/aej-mappings/{worker_link_id}")
+def put_aej_mapping(contract_id: str, worker_link_id: str, worker_id: str = Body(embed=True),
+                    user: Usuario = Depends(usuario_atual),
+                    conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, str]:
+    _require_ber_user(user)
+    _contract_or_404(conn, user, contract_id)
+    if not worker_link_id.isdigit() or not worker_id.strip():
+        raise HTTPException(422, "Informe vínculo AEJ numérico e trabalhador do contrato.")
+    trabalhador = conn.execute("SELECT id FROM workers WHERE id=? AND contract_id=?",
+                               (worker_id.strip(), contract_id)).fetchone()
+    if trabalhador is None:
+        raise HTTPException(422, "Trabalhador não pertence ao contrato.")
+    conflito = conn.execute(
+        "SELECT worker_link_id FROM aej_worker_mappings WHERE contract_id=? AND worker_id=? "
+        "AND worker_link_id<>?", (contract_id, worker_id.strip(), worker_link_id),
+    ).fetchone()
+    if conflito:
+        raise HTTPException(409, f"Trabalhador já associado ao vínculo AEJ {conflito[0]}.")
+    atual = conn.execute(
+        "SELECT worker_id FROM aej_worker_mappings WHERE contract_id=? AND worker_link_id=?",
+        (contract_id, worker_link_id),
+    ).fetchone()
+    if atual and atual[0] != worker_id.strip():
+        ja_processado = conn.execute(
+            "SELECT 1 FROM aej_documents ad JOIN documents d ON d.id=ad.document_id "
+            "WHERE d.contract_id=? AND ad.worker_link_id=? AND d.worker_id IS NOT NULL LIMIT 1",
+            (contract_id, worker_link_id),
+        ).fetchone()
+        if ja_processado:
+            raise HTTPException(409, "Vínculo já aplicado a documentos. Não altere o mapeamento retroativamente.")
+    conn.execute(
+        "INSERT INTO aej_worker_mappings (contract_id, worker_link_id, worker_id, created_by, created_at) "
+        "VALUES (?, ?, ?, ?, ?) ON CONFLICT(contract_id, worker_link_id) DO UPDATE SET "
+        "worker_id=excluded.worker_id, created_by=excluded.created_by, created_at=excluded.created_at",
+        (contract_id, worker_link_id, worker_id.strip(), user.id, db.agora()),
+    )
+    pares: set[tuple[str, str]] = set()
+    pendentes = conn.execute(
+        "SELECT d.id, d.competencia, ad.calculation_json FROM aej_documents ad "
+        "JOIN documents d ON d.id=ad.document_id WHERE d.contract_id=? AND ad.worker_link_id=? "
+        "AND d.worker_id IS NULL ORDER BY d.id", (contract_id, worker_link_id),
+    ).fetchall()
+    for doc in pendentes:  # em ordem de chegada: o AEJ mais recente termina como versão vigente
+        detail = _json_object(doc["calculation_json"])
+        warnings = [w for w in detail.get("warnings", [])
+                    if w != "Vínculo AEJ sem mapeamento explícito para trabalhador do contrato."]
+        detail["worker_id"] = worker_id.strip()
+        detail["warnings"] = warnings
+        dias = detail.get("days", [])
+        horas = None
+        status = StatusDocumento.REVISAO_HUMANA
+        if detail.get("calculation_status") == "CALCULATED" and dias and not warnings:
+            horas = round(sum(int(d.get("observed_daily_excess_minutes") or 0) for d in dias) / 60, 2)
+            status = StatusDocumento.APTO
+        detail["hours"] = horas
+        conn.execute(
+            "UPDATE documents SET worker_id=?, status=?, confianca=?, campos_json=?, motivos_revisao=?, "
+            "updated_at=? WHERE id=?",
+            (worker_id.strip(), status.value, 1.0 if horas is not None else 0.0,
+             json.dumps({"horas_extras_h": horas}), json.dumps(warnings, ensure_ascii=False),
+             db.agora(), doc["id"]),
+        )
+        conn.execute("UPDATE aej_documents SET calculation_json=? WHERE document_id=?",
+                     (json.dumps(detail, ensure_ascii=False), doc["id"]))
+        _substituir_espelho_anterior(conn, contract_id, worker_id.strip(), doc["competencia"],
+                                     int(doc["id"]), status)
+        pares.add((worker_id.strip(), doc["competencia"]))
+    for mapped_worker, competencia in sorted(pares):
+        f3.conciliar(conn, contract_id, mapped_worker, competencia)
+    auditar(conn, user, "AEJ_VINCULO_MAPEADO", f"{contract_id}:{worker_link_id}")
+    return {"contract_id": contract_id, "worker_link_id": worker_link_id, "worker_id": worker_id.strip()}
+
+
 @router.post("/api/supplier/batches", status_code=202)
 async def upload_batch(contract_id: str = Form(...), file: UploadFile = File(...),
                        user: Usuario = Depends(usuario_atual),
@@ -192,6 +295,24 @@ def get_batch(batch_id: int, user: Usuario = Depends(usuario_atual),
     return {key: row[key] for key in (
         "id", "contract_id", "uploaded_by", "filename", "sha256", "tipo_arquivo", "status",
         "total_pages", "issue_id", "erro", "created_at", "finished_at")}
+
+
+@router.get("/api/batches/{batch_id}/source")
+def batch_source(batch_id: int, user: Usuario = Depends(usuario_atual),
+                 conn: sqlite3.Connection = Depends(get_conn)) -> FileResponse:
+    _require_batch_reader(user)
+    row = _batch_or_404(conn, user, batch_id)
+    if user.org_tipo not in {"BERNHOEFT", "FORNECEDORA"}:
+        raise HTTPException(403, "Acesso ao arquivo original não permitido.")
+    path = Path(row["arquivo"]).resolve()
+    try:
+        path.relative_to(config.UPLOAD_DIR.resolve())
+    except ValueError as exc:
+        raise HTTPException(404, "Arquivo original não encontrado.") from exc
+    if not path.is_file():
+        raise HTTPException(404, "Arquivo original não encontrado.")
+    nome = Path(row["filename"]).name or f"lote-{batch_id}"
+    return FileResponse(path, media_type="application/octet-stream", filename=nome)
 
 
 @router.get("/api/batches/{batch_id}/documents")
@@ -250,6 +371,8 @@ def review_document(document_id: int, payload: dict[str, Any],
                     conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     exigir_papel(user, [Papel.ANALISTA_BH])
     doc = _document_or_404(conn, user, document_id)
+    if conn.execute("SELECT 1 FROM aej_documents WHERE document_id=?", (document_id,)).fetchone():
+        raise HTTPException(409, "Documento AEJ deve ser conferido na tela de cálculo estruturado.")
     action = str(payload.get("acao", "")).strip().lower()
     now = db.agora()
     if action == "aprovar":
@@ -416,7 +539,50 @@ def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
             "AND worker_id=? AND competencia=? ORDER BY versao, id",
             (row["contract_id"], row["tipo"], row["worker_id"], row["competencia"])).fetchall())
     item["versoes"] = versoes
+    aej = conn.execute("SELECT calculation_json FROM aej_documents WHERE document_id=?", (document_id,)).fetchone()
+    if aej is not None and user.org_tipo == "BERNHOEFT":
+        item["aej"] = _json_object(aej["calculation_json"])
     return item
+
+
+@router.patch("/api/documents/{document_id}/aej-review")
+def review_aej_document(document_id: int, payload: dict[str, Any] = Body(...),
+                        user: Usuario = Depends(usuario_atual),
+                        conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
+    _require_ber_user(user)
+    doc = _document_or_404(conn, user, document_id)
+    if conn.execute("SELECT 1 FROM aej_documents WHERE document_id=?", (document_id,)).fetchone() is None:
+        raise HTTPException(409, "Documento não é uma derivação AEJ.")
+    if doc["status"] != StatusDocumento.REVISAO_HUMANA.value:
+        raise HTTPException(409, "Documento AEJ não está aguardando revisão.")
+    if not doc["worker_id"]:
+        raise HTTPException(409, "Mapeie primeiro o vínculo AEJ para um trabalhador do contrato.")
+    horas = payload.get("horas_extras_h")
+    justificativa = str(payload.get("justificativa", "")).strip()
+    if (isinstance(horas, bool) or not isinstance(horas, (int, float)) or
+            not math.isfinite(horas) or horas < 0):
+        raise HTTPException(422, "Informe horas_extras_h numérico, não negativo, após conferir o AEJ.")
+    if not justificativa:
+        raise HTTPException(422, "Justificativa obrigatória para ajuste manual do cálculo AEJ.")
+    calculo = conn.execute("SELECT calculation_json FROM aej_documents WHERE document_id=?",
+                           (document_id,)).fetchone()
+    detail = _json_object(calculo["calculation_json"])
+    detail["hours"] = float(horas)
+    detail["calculation_status"] = "HUMAN_CONFIRMED"
+    detail["human_review"] = {"hours_override": float(horas), "justification": justificativa[:500],
+                              "reviewer_id": user.id, "reviewed_at": db.agora()}
+    now = db.agora()
+    conn.execute(
+        "UPDATE documents SET status=?, confianca=1, campos_json=?, revisado_por=?, updated_at=? WHERE id=?",
+        (StatusDocumento.APTO.value, json.dumps({"horas_extras_h": float(horas)}), user.id, now, document_id),
+    )
+    conn.execute("UPDATE aej_documents SET calculation_json=? WHERE document_id=?",
+                 (json.dumps(detail, ensure_ascii=False), document_id))
+    if doc["worker_id"] and doc["competencia"]:
+        f3.conciliar(conn, doc["contract_id"], doc["worker_id"], doc["competencia"])
+    auditar(conn, user, "AEJ_DOCUMENTO_REVISTO", str(document_id))
+    return {"id": document_id, "status": StatusDocumento.APTO.value,
+            "horas_extras_h": float(horas)}
 
 
 def _document_view(conn: sqlite3.Connection, user: Usuario, row: sqlite3.Row) -> dict[str, Any]:
@@ -425,6 +591,13 @@ def _document_view(conn: sqlite3.Connection, user: Usuario, row: sqlite3.Row) ->
     item["motivos_pendencia"] = _json_list(item["motivos_pendencia"])
     item["motivos_revisao"] = _json_list(item["motivos_revisao"])
     item["campos"] = _json_object(item.pop("campos_json"))
+    aej = conn.execute("SELECT worker_link_id, calculation_json FROM aej_documents WHERE document_id=?",
+                       (item["id"],)).fetchone()
+    if aej is not None:
+        derivacao = _json_object(aej["calculation_json"])
+        item["aej"] = {"origem": "AEJ", "worker_link_id": aej["worker_link_id"],
+                       "calculation_status": derivacao.get("calculation_status"),
+                       "p7s_validated": False}
     if user.org_tipo == "FORNECEDORA":
         if item["status"] == StatusDocumento.REVISAO_HUMANA.value:
             item["status"] = "EM_ANALISE"

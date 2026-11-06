@@ -153,6 +153,49 @@ CREATE TABLE IF NOT EXISTS ai_cache (
   created_at      TEXT NOT NULL
 );
 
+-- AEJ: fonte original permanece em batches.arquivo, com hash em batches.sha256.
+-- Estas tabelas guardam linhas sem perda e a derivação usada pelo ESPELHO_PONTO.
+CREATE TABLE IF NOT EXISTS aej_worker_mappings (
+  contract_id     TEXT NOT NULL REFERENCES contracts(id),
+  worker_link_id  TEXT NOT NULL,
+  worker_id       TEXT NOT NULL REFERENCES workers(id),
+  created_by      TEXT REFERENCES users(id),
+  created_at      TEXT NOT NULL,
+  PRIMARY KEY (contract_id, worker_link_id),
+  UNIQUE (contract_id, worker_id)
+);
+
+CREATE TABLE IF NOT EXISTS aej_imports (
+  batch_id       INTEGER PRIMARY KEY REFERENCES batches(id),
+  schema_version TEXT NOT NULL,
+  period_start   TEXT NOT NULL,
+  period_end     TEXT NOT NULL,
+  validation_json TEXT NOT NULL,
+  p7s_present    INTEGER NOT NULL DEFAULT 0,
+  parser_version TEXT NOT NULL,
+  created_at     TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS aej_records (
+  batch_id       INTEGER NOT NULL REFERENCES batches(id),
+  line_number    INTEGER NOT NULL,
+  record_type    TEXT NOT NULL,
+  worker_link_id TEXT,
+  raw_line       TEXT NOT NULL,
+  PRIMARY KEY (batch_id, line_number)
+);
+CREATE INDEX IF NOT EXISTS ix_aej_records_worker
+  ON aej_records (batch_id, worker_link_id, record_type);
+
+CREATE TABLE IF NOT EXISTS aej_documents (
+  document_id     INTEGER PRIMARY KEY REFERENCES documents(id),
+  batch_id        INTEGER NOT NULL REFERENCES batches(id),
+  worker_link_id  TEXT NOT NULL,
+  competencia     TEXT NOT NULL,
+  calculation_json TEXT NOT NULL,
+  created_at      TEXT NOT NULL
+);
+
 -- Busca no OCR, sem acentos; filtrar SEMPRE por contract_id dos contratos do usuário
 CREATE VIRTUAL TABLE IF NOT EXISTS page_fts USING fts5(
   texto, page_id UNINDEXED, contract_id UNINDEXED,

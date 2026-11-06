@@ -16,6 +16,7 @@ ESCOPO = ("Conferência documental de espelho de ponto, holerite e comprovante d
           "trabalhador e competência, com comparação da quantidade de horas extras registradas no "
           "ponto e informadas no holerite.")
 LIMITACOES = [
+    "Horas derivadas de AEJ são excedentes diários observados sobre durJornada; não apuram banco semanal e a assinatura P7S não é validada.",
     "Divergências são indícios a conferir, não constituem conclusão jurídica nem passivo trabalhista.",
     "Diferenças podem decorrer de compensação, banco de horas ou pagamento em outra competência.",
     "Valores em reais não são comparados com quantidades de horas.",
@@ -31,7 +32,9 @@ def _evidencias(insumos_json: str) -> list[dict[str, Any]]:
     except (TypeError, ValueError):
         return []
     return [{"tipo": i.get("tipo"), "documento": i.get("doc_id"), "versao": i.get("versao"),
-             "lote": i.get("batch_id"), "paginas": i.get("paginas", [])} for i in insumos]
+             "lote": i.get("batch_id"), "paginas": i.get("paginas", []),
+             "origem": i.get("origem"), "vinculo_aej": i.get("worker_link_id"),
+             "linhas_origem": i.get("linhas_origem", [])} for i in insumos]
 
 
 def snapshot_parecer(conn: sqlite3.Connection, contract_id: str, competencia: str) -> dict[str, Any]:
