@@ -20,10 +20,22 @@ Validação: `npm run typecheck`, `npm run build` (exportação estática em `ou
 
 Para verificar a navegação pública sem iniciar a API, gere `npm run build`, sirva `out/` via HTTP e execute `node scripts/offline-smoke.cjs` com Playwright instalado. A CI verifica esta navegação antes de iniciar o backend e também executa o teste de integração real com arquivos sintéticos.
 
+## Site institucional multipágina
+
+A landing em `/` apresenta uma visão curta do produto. O menu superior, o rodapé e os cartões da home levam a páginas próprias, não a seções da mesma landing:
+
+- `/solucao`: proposta da plataforma, base documental modular, evidências, responsabilidades e revisão humana.
+- `/como-funciona`: etapas do processamento, triagem de arquivos ilegíveis, divergências a conferir, revisão e indicadores.
+- `/modulos`: núcleo compartilhado, módulo Trabalhista em desenvolvimento/validação e **três módulos futuros claramente rotulados**.
+- `/contato`: mantém o contato institucional existente.
+
+O botão **Acesso** continua no fluxo operacional da PR #52: `/entrar` com Clerk ou `/operacao` no teste local; a demo offline só em `/demo`. As páginas institucionais permanecem públicas nos dois builds. Os painéis internos e permissões não são alterados. As páginas reutilizam a identidade visual e estilos em `app/marketing-pages.css`. A navegação é verificada com Playwright, inclusive no viewport de celular.
+
 ## Páginas
 
 | Rota | Perfis | API |
 | --- | --- | --- |
+| `/`, `/solucao`, `/como-funciona`, `/modulos`, `/contato` | público | nenhuma (site institucional) |
 | `/demo` | seis perfis fictícios | nenhuma API, somente leitura |
 | `/entrar` | perfis operacionais (Clerk) | login e vínculos reais, se configurados |
 | `/operacao` | perfis operacionais (modo token local) | `/api/me` e `/api/contracts` através de token de teste |
