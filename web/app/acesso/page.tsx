@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Check,
   Layers3,
+  LockKeyhole,
 } from "lucide-react";
 import { useDemo } from "@/components/demo-provider";
 import type { DemoRole } from "@/lib/demo";
@@ -83,6 +84,12 @@ export default function Access() {
                 name: "Gestor da contratante",
                 text: "Consultar os pareceres publicados do Contrato Alfa.",
               },
+              {
+                value: "ADMIN_BH" as const,
+                icon: LockKeyhole,
+                name: "Administrador Bernhoeft",
+                text: "Explorar eventos sintéticos de auditoria e acessos negados.",
+              },
             ].map(({ value, icon: Icon, name, text }) => (
               <label
                 key={value}
@@ -111,7 +118,11 @@ export default function Access() {
             onClick={() => {
               setRole(selected);
               router.push(
-                selected === "GESTOR_CONTR" ? "/contratante" : "/painel",
+                selected === "GESTOR_CONTR"
+                  ? "/contratante"
+                  : selected === "ADMIN_BH"
+                    ? "/administracao"
+                    : "/painel",
               );
             }}
           >
@@ -119,8 +130,8 @@ export default function Access() {
           </button>
           <p className="demo-disclosure">
             Esta é uma navegação demonstrativa, sem autenticação. Nenhum
-            documento real é enviado. O perfil de administrador será
-            desenvolvido em uma próxima etapa.
+            documento real é enviado. A área administrativa exibe apenas eventos
+            sintéticos, sem acesso a logs reais.
           </p>
         </div>
       </div>
