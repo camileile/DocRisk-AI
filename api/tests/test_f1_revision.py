@@ -458,7 +458,8 @@ def test_publish_new_report_version_replaces_previous(banco, monkeypatch):
     assert previous["status"] == "SUBSTITUIDO_POR_VERSAO"
     assert current["status"] == "APROVADO_PUBLICADO"
     assert current["versao"] == 2
-    assert json.loads(current["conteudo_json"]) == {"versao": 2}
+    assert json.loads(current["conteudo_json"])["versao"] == 2
+    assert json.loads(current["conteudo_json"])["parecer"]["versao"] == 2
 
 
 def test_publish_rejects_changed_preview_and_an_older_draft(banco, monkeypatch):
@@ -493,8 +494,8 @@ def test_publish_rejects_changed_preview_and_an_older_draft(banco, monkeypatch):
     assert preview.status_code == stale_preview.status_code == 200
     assert stale_publish.status_code == 409
     assert current_preview.status_code == publish_newer.status_code == 200
-    assert preview.json()["conteudo_json"] == {"estado": "prévia"}
-    assert publish_newer.json()["conteudo_json"] == {"estado": "atualizado"}
+    assert preview.json()["conteudo_json"]["estado"] == "prévia"
+    assert publish_newer.json()["conteudo_json"]["estado"] == "atualizado"
     assert publish_older.status_code == 409
     with db.tx() as conn:
         old = conn.execute("SELECT status, conteudo_json FROM reports WHERE id=?", (older["id"],)).fetchone()
@@ -671,4 +672,5 @@ def test_publicar_depois_da_previa_ignora_horario_de_geracao(banco, monkeypatch)
         publicado = client.post(f"/api/reports/{rid}/publish", headers=_headers(),
                                 json={"conteudo_sha256": previa["conteudo_sha256"]})
     assert publicado.status_code == 200, publicado.text
-    assert publicado.json()["conteudo_json"]["gerado_em"] != previa["conteudo_json"]["gerado_em"]
+    # D3-08 preserva inclusive o horário da cópia conferida, sem invalidar o hash por tempo.
+    assert publicado.json()["conteudo_json"] == previa["conteudo_json"]

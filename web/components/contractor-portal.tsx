@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ReportPdfButton } from "./report-pdf-button";
 import { ReportView } from "./report-view";
 import { EmptyState, ErrorState, LoadingState, PageIntro } from "./workspace-parts";
 import { api, formatDate, type Report, type ReportContent } from "@/lib/api";
@@ -134,7 +135,7 @@ function PublishedReports({ query, selectedId }: { query: string; selectedId: st
         {rows.map((r) => <option key={r.id} value={r.id}>{r.contract_id} · {r.competencia} · versão {r.versao} · publicado em {formatDate(r.publicado_em)}</option>)}
       </select>
     </label></div>
-    {"resumo" in current.conteudo_json ? <section className="workspace-card"><ReportView content={current.conteudo_json as ReportContent} /></section>
+    {"resumo" in current.conteudo_json ? <section className="workspace-card"><ReportPdfButton report={current} /><ReportView content={current.conteudo_json as ReportContent} report={current} /></section>
       : <EmptyState title="Conteúdo do parecer indisponível." text="Solicite à Bernhoeft a verificação desta publicação." />}
   </>;
 }

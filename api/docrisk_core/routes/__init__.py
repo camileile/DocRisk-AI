@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 import re
@@ -15,8 +14,8 @@ from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, 
 from fastapi.responses import FileResponse, Response
 from pydantic import ValidationError
 
-from .. import config, db
-from ..api_models import FieldReviewRequest, ReportCreate, ReportPublish, ReportResponse
+from .. import config, db, report_document, report_pdf
+from ..api_models import FieldReviewRequest, ReportCreate, ReportEditorial, ReportPublish, ReportResponse
 from ..auth import (Usuario, auditar, contratos_do_usuario, exigir_contrato,
                     exigir_papel, usuario_atual)
 from ..contracts import (CamposPagina, CategoriaPendencia, PAPEIS_BERNHOEFT,
@@ -88,19 +87,17 @@ def _reconcile_pairs(conn: sqlite3.Connection, contract_id: str,
         f3.conciliar(conn, contract_id, worker_id, competencia)
 
 
-def _report_result(row: sqlite3.Row | dict[str, Any]) -> dict[str, Any]:
+def _report_result(row: sqlite3.Row | dict[str, Any], conn: sqlite3.Connection | None = None) -> dict[str, Any]:
     result = dict(row)
     result["conteudo_json"] = _json_object(result.get("conteudo_json"))
     result["conteudo_sha256"] = _hash_report_content(result["conteudo_json"])
+    if conn is not None:
+        result["recomendacoes"] = report_document.editorial(conn, result["id"])
     return result
 
 
 def _hash_report_content(content: dict[str, Any]) -> str:
-    # "gerado_em" muda a cada geração (segundos): fora do hash, senão publicar mais de 1 s
-    # depois da prévia daria sempre "conteúdo alterado". O hash cobre só o que o analista confere.
-    conferido = {k: v for k, v in content.items() if k != "gerado_em"}
-    canonical = json.dumps(conferido, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    return report_document.content_hash(content)
 
 
 def _contract_or_404(conn: sqlite3.Connection, user: Usuario, contract_id: str) -> None:
@@ -923,9 +920,10 @@ def create_report(payload: ReportCreate, user: Usuario = Depends(usuario_atual),
         "VALUES (?, ?, ?, ?, ?, ?, ?)",
         (contract_id, competencia, latest + 1, StatusParecer.RASCUNHO.value,
          payload.observacoes, user.id, now))
+    conn.execute("INSERT INTO report_editorial (report_id,recomendacoes) VALUES (?,?)", (cursor.lastrowid,payload.recomendacoes.strip()))
     auditar(conn, user, "PARECER_RASCUNHO_CRIADO", str(cursor.lastrowid))
     return _report_result(conn.execute(
-        "SELECT * FROM reports WHERE id=?", (cursor.lastrowid,)).fetchone())
+        "SELECT * FROM reports WHERE id=?", (cursor.lastrowid,)).fetchone(), conn)
 
 
 @router.get("/api/reports", response_model=list[ReportResponse], response_model_exclude_unset=True)
@@ -942,24 +940,42 @@ def list_reports(user: Usuario = Depends(usuario_atual),
         (*ids, StatusParecer.RASCUNHO.value, StatusParecer.EM_REVISAO.value,
          StatusParecer.APROVADO_PUBLICADO.value, StatusParecer.SUBSTITUIDO_POR_VERSAO.value),
     ).fetchall()
-    return [_report_result(row) for row in rows]
+    return [_report_result(row, conn) for row in rows]
+
+
+@router.patch("/api/reports/{report_id}", response_model=ReportResponse, response_model_exclude_unset=True)
+def edit_report(report_id: int, payload: ReportEditorial, user: Usuario = Depends(usuario_atual),
+                conn: sqlite3.Connection = Depends(get_conn)):
+    _require_analyst(user)
+    conn.execute("BEGIN IMMEDIATE")
+    row = conn.execute("SELECT * FROM reports WHERE id=?", (report_id,)).fetchone()
+    if row is None:
+        raise HTTPException(404, "Parecer não encontrado")
+    _contract_or_404(conn,user,row["contract_id"])
+    if row["status"] != StatusParecer.RASCUNHO.value:
+        raise HTTPException(409, "Somente rascunhos podem ser editados")
+    if _hash_report_content(report_document.current_content(conn,row,user)) != payload.conteudo_sha256:
+        raise HTTPException(409, "Conteúdo alterado desde a prévia; atualize antes de editar")
+    conn.execute("INSERT INTO report_editorial (report_id,recomendacoes) VALUES (?,?) ON CONFLICT(report_id) DO UPDATE SET recomendacoes=excluded.recomendacoes",
+                 (report_id,payload.recomendacoes.strip()))
+    auditar(conn,user,"PARECER_RECOMENDACOES_EDITADAS",str(report_id))
+    return _report_result(row,conn)
 
 
 @router.get("/api/reports/{report_id}/preview", response_model=ReportResponse,
             response_model_exclude_unset=True)
 def preview_report(report_id: int, user: Usuario = Depends(usuario_atual),
                    conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
-    """Prévia do parecer com as análises ATUAIS (nada é gravado). Só Bernhoeft."""
+    """Prévia conferível; guarda uma cópia por conteúdo/analista sem publicar o rascunho."""
     _require_analyst(user)
     report = conn.execute("SELECT * FROM reports WHERE id=?", (report_id,)).fetchone()
     if report is None:
         raise HTTPException(404, "Parecer não encontrado")
     _contract_or_404(conn, user, report["contract_id"])
     if report["status"] != StatusParecer.RASCUNHO.value:
-        return _report_result(report)
-    result = _report_result(report)
-    result["conteudo_json"] = parecer.snapshot_parecer(conn, report["contract_id"], report["competencia"])
-    result["conteudo_sha256"] = _hash_report_content(result["conteudo_json"])
+        return _report_result(report, conn)
+    result = _report_result(report, conn)
+    result["conteudo_json"], result["conteudo_sha256"] = report_document.cache_preview(conn, report, user)
     return result
 
 
@@ -985,12 +1001,18 @@ def publish_report(report_id: int, payload: ReportPublish | None = None, user: U
     if publicada is not None and int(publicada) >= int(report["versao"]):
         raise HTTPException(409, "Já existe versão publicada igual ou mais recente")
     try:
-        snapshot = parecer.snapshot_parecer(conn, report["contract_id"], report["competencia"])
+        snapshot = report_document.current_content(conn, report, user)
     except NotImplementedError as exc:
         raise HTTPException(503, "Geração de parecer ainda não está disponível (F3)") from exc
     conteudo_sha256 = _hash_report_content(snapshot)
     if conteudo_sha256 != payload.conteudo_sha256:
         raise HTTPException(409, "Conteúdo alterado desde a prévia; atualize e confira antes de publicar")
+    checked = conn.execute("SELECT conteudo_json FROM report_previews WHERE report_id=? AND user_id=? AND conteudo_sha256=?",
+                           (report_id,user.id,payload.conteudo_sha256)).fetchone()
+    if checked is None:
+        raise HTTPException(409, "Atualize e confira a prévia antes de publicar")
+    # Publicar exatamente a cópia apresentada, sem regenerar o horário nem metadados.
+    snapshot = json.loads(checked[0])
     now = db.agora()
     updated = conn.execute(
         "UPDATE reports SET status=?, conteudo_json=?, publicado_em=?, publicado_por=? "
@@ -1006,7 +1028,41 @@ def publish_report(report_id: int, payload: ReportPublish | None = None, user: U
                                   StatusParecer.APROVADO_PUBLICADO.value))
     auditar(conn, user, "PARECER_PUBLICADO", str(report_id))
     return _report_result(conn.execute(
-        "SELECT * FROM reports WHERE id=?", (report_id,)).fetchone())
+        "SELECT * FROM reports WHERE id=?", (report_id,)).fetchone(), conn)
+
+
+@router.get("/api/reports/{report_id}/pdf", response_class=Response, responses={200: {"content": {"application/pdf": {}}, "description": "Parecer em PDF"}})
+def export_report_pdf(report_id: int, conteudo_sha256: str | None = Query(default=None, pattern=r"^[0-9a-f]{64}$"),
+                      user: Usuario = Depends(usuario_atual), conn: sqlite3.Connection = Depends(get_conn)):
+    exigir_papel(user,[Papel.ANALISTA_BH,Papel.GESTOR_CONTR])
+    row = conn.execute("SELECT * FROM reports WHERE id=?",(report_id,)).fetchone()
+    if row is None:
+        raise HTTPException(404,"Parecer não encontrado")
+    _contract_or_404(conn,user,row["contract_id"])
+    draft = row["status"] == StatusParecer.RASCUNHO.value
+    if user.papel == Papel.GESTOR_CONTR and (user.org_tipo != "CONTRATANTE" or row["status"] != StatusParecer.APROVADO_PUBLICADO.value):
+        raise HTTPException(404,"Parecer publicado não encontrado")
+    result = _report_result(row)
+    if draft:
+        if not conteudo_sha256:
+            raise HTTPException(422,"Confira a prévia antes de exportar o rascunho")
+        current = report_document.current_content(conn,row,user)
+        checked = conn.execute("SELECT conteudo_json FROM report_previews WHERE report_id=? AND user_id=? AND conteudo_sha256=?",
+                               (report_id,user.id,conteudo_sha256)).fetchone()
+        if checked is None or _hash_report_content(current) != conteudo_sha256:
+            raise HTTPException(409,"Conteúdo alterado; atualize a prévia antes de exportar")
+        result["conteudo_json"] = json.loads(checked[0])
+    elif row["status"] not in {StatusParecer.APROVADO_PUBLICADO.value,StatusParecer.SUBSTITUIDO_POR_VERSAO.value}:
+        raise HTTPException(409,"Parecer ainda não possui conteúdo publicado")
+    try:
+        pdf = report_pdf.render(result,draft=draft)
+    except ValueError as exc:
+        raise HTTPException(409,str(exc)) from exc
+    auditar(conn,user,"PARECER_PDF_BAIXADO",str(report_id))
+    return Response(pdf,media_type="application/pdf",headers={
+        "Content-Disposition":f'attachment; filename="parecer-{report_id}-v{row["versao"]}{"-previa" if draft else ""}.pdf"',
+        "Cache-Control":"no-store",
+    })
 
 
 @router.get("/api/client/reports", response_model=list[ReportResponse],

@@ -32,4 +32,4 @@ pythonpath = ["."]
 include = ["docrisk_core*"]
 
 [tool.setuptools.package-data]
-docrisk_core = ["db/schema.sql"]
+docrisk_core = ["db/schema.sql", "assets/*.svg", "assets/*.png", "assets/fonts/*.ttf", "assets/fonts/*.txt", "assets/fonts/*.md"]

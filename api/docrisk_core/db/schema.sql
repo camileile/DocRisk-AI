@@ -257,3 +257,17 @@ CREATE TABLE IF NOT EXISTS platform_settings (
   contato TEXT NOT NULL DEFAULT ''
 );
 INSERT OR IGNORE INTO platform_settings (id,nome) VALUES (1,'DocRisk AI');
+
+-- Texto público do rascunho e prévias conferíveis, separados das observações internas.
+CREATE TABLE IF NOT EXISTS report_editorial (
+  report_id INTEGER PRIMARY KEY REFERENCES reports(id),
+  recomendacoes TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS report_previews (
+  report_id INTEGER NOT NULL REFERENCES reports(id),
+  user_id TEXT NOT NULL REFERENCES users(id),
+  conteudo_sha256 TEXT NOT NULL,
+  conteudo_json TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (report_id,user_id,conteudo_sha256)
+);

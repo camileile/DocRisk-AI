@@ -355,3 +355,15 @@
   .api-upload-progress > div { align-items: flex-start; flex-direction: column; }
   .api-upload-selected { align-items: flex-start; }
 }
+.report-brand { width: 180px; height: auto; margin-bottom: 14px; }
+.report-responsibility { display: grid; grid-template-columns: minmax(130px, 220px) minmax(0, 1fr); gap: 8px 16px; margin: 20px 0 0; font-size: 13px; }
+.report-responsibility dt { color: #5c506b; }
+.report-responsibility dd { margin: 0; overflow-wrap: anywhere; }
+.report-editorial { margin: 18px 0; padding: 16px; border: 1px solid #ddd6fe; border-radius: 10px; }
+.report-editorial .filter-label { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+.report-editorial textarea { width: 100%; padding: 10px; font: inherit; border: 1px solid #bcb4ce; border-radius: 8px; margin-bottom: 12px; }
+.report-publish-check { display: flex; flex-direction: column; gap: 14px; border-top: 1px solid #ddd6fe; padding-top: 20px; }
+.report-publish-check label { display: flex; align-items: flex-start; gap: 10px; line-height: 1.6; }
+.report-publish-check input { margin-top: 5px; }
+.report-publish-check .button { align-self: flex-start; }
+@media (max-width: 600px) { .report-responsibility { grid-template-columns: 1fr; gap: 4px; } .report-responsibility dd { margin-bottom: 8px; } }
