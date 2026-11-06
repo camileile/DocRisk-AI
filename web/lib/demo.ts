@@ -1,4 +1,4 @@
-export type DemoRole = "ANALISTA_BH" | "OPERADOR_FORN" | "GESTOR_CONTR";
+export type DemoRole = "ADMIN_BH" | "ANALISTA_BH" | "OPERADOR_FORN" | "GESTOR_CONTR";
 export type DocumentStatus = "APTO" | "PENDENTE_CORRECAO" | "REVISAO_HUMANA";
 export type IssueStatus = "ABERTA" | "REENVIADA" | "RESOLVIDA";
 export const contracts = [
