@@ -63,13 +63,13 @@ async function run() {
     await page.goto(base + "/acesso/", { waitUntil: "domcontentloaded" });
 
     console.log("[F1 1/5] Token inválido mantém o usuário fora da área API");
-    await page.getByRole("textbox", { name: "Token Bearer de teste" }).fill("token-incorreto");
+    await page.getByLabel("Token Bearer de teste").fill("token-incorreto");
     await page.getByRole("button", { name: "Conectar API de testes" }).click();
     await page.getByRole("alert").getByText(/Token inválido/).waitFor();
     assert(page.url().includes("/acesso"));
 
     console.log("[F1 2/5] Identidade e contratos autorizados do analista");
-    await page.getByRole("textbox", { name: "Token Bearer de teste" }).fill("test-analyst-token");
+    await page.getByLabel("Token Bearer de teste").fill("test-analyst-token");
     await page.getByRole("button", { name: "Conectar API de testes" }).click();
     await page.waitForURL((url) => url.pathname.startsWith("/painel"));
     await page.getByText("Acesso confirmado como Analista F1 Teste").waitFor();
@@ -100,7 +100,7 @@ async function run() {
 
     console.log("[F1 5/5] Fornecedora vê somente dados autorizados, sem revisão interna");
     await page.goto(base + "/acesso/");
-    await page.getByRole("textbox", { name: "Token Bearer de teste" }).fill("test-supplier-token");
+    await page.getByLabel("Token Bearer de teste").fill("test-supplier-token");
     await page.getByRole("button", { name: "Conectar API de testes" }).click();
     await page.waitForURL((url) => url.pathname.startsWith("/painel"));
     await page.getByRole("link", { name: "Lotes enviados", exact: true }).click();
