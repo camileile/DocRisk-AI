@@ -114,3 +114,5 @@ dependências do npm ci instalado no worktree de reconciliação.
 Status: CONCLUÍDA LOCALMENTE para isolamento. CI remoto não executado.
 
 Base final f085df4: 387 aprovados, 1 ignorado (225,87s), Python 3.13.14/Pillow12.3. Isolamento 26/26 após Clerk; PR47 altera somente backend/docs, frontend idêntico ao ensaiado. TypeScript/build/P0/transporte aprovados no frontend equivalente do ensaio final. Status CONCLUÍDA LOCALMENTE; sem CI remoto.
+
+Preparação de revisão 2026-11-06: cópia codex/d4-02-review-1148, base 1148e76 (PR49), original preservada. Suíte: 399 aprovados, 1 ignorado (112,88s). Build e TypeScript aprovados; isolamento repetido no frontend atual: 26/26 sem transporte operacional. Diff limitado a script/workflow/documentação, sem reintroduzir demo antiga. Dev3 revisa cobertura/seletores, Dev4 revisa CI. Sem publicação.
