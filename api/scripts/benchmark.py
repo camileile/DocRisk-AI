@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import platform
 import sys
 import tempfile
 import time
@@ -118,12 +119,21 @@ def main() -> None:
         paginas_min = 300 / (decorrido / 60)
         media = decorrido / 300
         pct = lambda n, total: f"{100*n/total:.1f}% ({n}/{total})"
-        conteudo = f"""# Benchmark do lote de 100 trabalhadores
+        conteudo = f"""# Benchmark TextLayer do lote de 100 trabalhadores
+
+## Escopo e amostra
+
+- Medido: processamento local com `AI_PROVIDER=textlayer`; não houve chamada ao Gemini.
+- Amostra: lote totalmente sintético, gerado por `gerar_parametrizado`; semente {gabarito['semente']}.
+- Distribuição: {json.dumps(gabarito['distribuicao'], ensure_ascii=False, sort_keys=True)}.
+- Uso correto: medição de vazão local e conferência contra o gabarito gerado para este lote.
+- Limite: os acertos neste conjunto sintético não medem precisão visual nem generalização para documentos reais.
 
 ## Execução
 
 - Data: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}
 - Leitor: `textlayer` (determinístico, sem chamadas de IA remotas)
+- Ambiente: Python {platform.python_version()}, {platform.platform()}, processador `{platform.processor() or 'não informado'}`
 - Lote: 300 páginas, 100 trabalhadores, 300 documentos; status `{lote['status']}`
 - Tempo total medido: {decorrido:.2f} s
 - Vazão: {paginas_min:.1f} páginas/min
@@ -138,13 +148,13 @@ def main() -> None:
 - Tipos de documento: {pct(tipos, len(gabarito['documentos']))}
 - Conciliação (status e resultado): {pct(conciliacoes, len(gabarito['conciliacao']))}
 
-## Estimativa Gemini por página
+## Estimativa de custo Gemini (não medida)
 
 - Resolução de renderização: aproximadamente {int(largura)}×{int(altura)} px (150 DPI)
 - Tokens visuais estimados: {tokens_imagem} por página ({tiles} blocos × 258 tokens)
 - Modelo/preço: Gemini 3.5 Flash, entrada padrão, US$ {preco_milhao:.2f}/1M tokens
 - Estimativa: US$ {custo_pagina:.6f}/página; US$ {custo_lote:.4f}/300 páginas
-- A estimativa inclui apenas tokens visuais; prompt e saída JSON não estão incluídos. O preço e a regra de blocos foram consultados em 2026-11-06 na [tabela oficial](https://ai.google.dev/gemini-api/docs/pricing) e na [documentação de tokens de imagem](https://ai.google.dev/gemini-api/docs/image-understanding).
+- A estimativa inclui apenas tokens visuais; prompt e saída JSON não estão incluídos. Não é resultado de execução do Gemini. Preço e regra visual consultados em 2026-11-06 na [tabela oficial](https://ai.google.dev/gemini-api/docs/pricing) e na [documentação de tokens de imagem](https://ai.google.dev/gemini-api/docs/tokens).
 
 ## Reprodução
 
