@@ -893,8 +893,11 @@ def create_report(payload: ReportCreate, user: Usuario = Depends(usuario_atual),
          payload.observacoes, user.id, now))
     conn.execute("INSERT INTO report_editorial (report_id,recomendacoes) VALUES (?,?)", (cursor.lastrowid,payload.recomendacoes.strip()))
     auditar(conn, user, "PARECER_RASCUNHO_CRIADO", str(cursor.lastrowid))
-    return _report_result(conn.execute(
+    result = _report_result(conn.execute(
         "SELECT * FROM reports WHERE id=?", (cursor.lastrowid,)).fetchone(), conn)
+    # Não responder 201 antes de confirmar a persistência do rascunho.
+    conn.commit()
+    return result
 
 
 @router.get("/api/reports", response_model=list[ReportResponse], response_model_exclude_unset=True)
@@ -930,7 +933,9 @@ def edit_report(report_id: int, payload: ReportEditorial, user: Usuario = Depend
     conn.execute("INSERT INTO report_editorial (report_id,recomendacoes) VALUES (?,?) ON CONFLICT(report_id) DO UPDATE SET recomendacoes=excluded.recomendacoes",
                  (report_id,payload.recomendacoes.strip()))
     auditar(conn,user,"PARECER_RECOMENDACOES_EDITADAS",str(report_id))
-    return _report_result(row,conn)
+    result = _report_result(row,conn)
+    conn.commit()
+    return result
 
 
 @router.get("/api/reports/{report_id}/preview", response_model=ReportResponse,
@@ -947,6 +952,8 @@ def preview_report(report_id: int, user: Usuario = Depends(usuario_atual),
         return _report_result(report, conn)
     result = _report_result(report, conn)
     result["conteudo_json"], result["conteudo_sha256"] = report_document.cache_preview(conn, report, user)
+    # A próxima chamada pode publicar imediatamente a prévia recém-conferida.
+    conn.commit()
     return result
 
 
@@ -998,8 +1005,10 @@ def publish_report(report_id: int, payload: ReportPublish | None = None, user: U
                                   report["competencia"], report_id,
                                   StatusParecer.APROVADO_PUBLICADO.value))
     auditar(conn, user, "PARECER_PUBLICADO", str(report_id))
-    return _report_result(conn.execute(
+    result = _report_result(conn.execute(
         "SELECT * FROM reports WHERE id=?", (report_id,)).fetchone(), conn)
+    conn.commit()
+    return result
 
 
 @router.get("/api/reports/{report_id}/pdf", response_class=Response, responses={200: {"content": {"application/pdf": {}}, "description": "Parecer em PDF"}})
