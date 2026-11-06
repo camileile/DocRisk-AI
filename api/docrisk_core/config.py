@@ -57,3 +57,11 @@ MAX_LADO_PX = int(os.getenv("MAX_LADO_PX", "2200"))
 
 #: Processa o lote na própria requisição (testes). Em uso normal, fica 0 (worker).
 SYNC = _bool("DOCRISK_SYNC")
+
+# Login produtivo: o modo token é permitido somente com DOCRISK_DEMO_MODE=1.
+AUTH_MODE = os.getenv("DOCRISK_AUTH_MODE", "token").strip().lower()
+CLERK_ISSUER = os.getenv("CLERK_ISSUER", "").strip().rstrip("/")
+CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY", "").strip()
+CLERK_AUDIENCE = os.getenv("CLERK_AUDIENCE", "").strip()
+CLERK_AUTHORIZED_PARTIES = tuple(x.strip() for x in os.getenv("CLERK_AUTHORIZED_PARTIES", "").split(",") if x.strip())
+CLERK_INVITE_REDIRECT_URL = os.getenv("CLERK_INVITE_REDIRECT_URL", "").strip()

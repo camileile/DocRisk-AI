@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
+import { authEntry } from "@/lib/auth-mode";
 import { useSession } from "./demo-provider";
 import { homeFor, roleLabels, type Papel } from "@/lib/api";
 import { LoadingState } from "./workspace-parts";
@@ -51,7 +52,7 @@ export function SessionGate({ allowed, children }: { allowed: Papel[]; children:
         <h1>{me ? "Redirecionando para a sua área…" : "Entre com um perfil para continuar."}</h1>
         {error && !me && <p>{error}</p>}
         {!me && (
-          <Link className="button" href="/acesso">
+          <Link className="button" href={authEntry()}>
             Entrar <ArrowUpRight size={18} />
           </Link>
         )}
@@ -132,7 +133,7 @@ function Workspace({ children }: { children: ReactNode }) {
             className="sidebar-link"
             onClick={() => {
               logout();
-              router.push("/acesso");
+              router.push(authEntry());
             }}
           >
             <LogOut size={17} /> Sair

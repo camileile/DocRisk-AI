@@ -48,9 +48,9 @@ def test_operator_management_is_scoped_and_demo_only(banco, monkeypatch):
         assert client.post(path, headers=h, json={"nome": "   "}).status_code == 422
         assert client.post(path, headers=h, json={"nome": "Operador", "org_id": "ORG-GAMA", "papel": "ADMIN_BH"}).status_code == 422
         monkeypatch.setattr(config, "DEMO_MODE", False)
-        assert client.post(path, headers=h, json={"nome": "Operador"}).status_code == 403
-        assert client.patch(path + "/u-oper-beta/status", headers=h, json={"ativo": False}).status_code == 403
-        assert client.get(path, headers=h).status_code == 200
+        assert client.post(path, headers=h, json={"nome": "Operador"}).status_code == 401
+        assert client.patch(path + "/u-oper-beta/status", headers=h, json={"ativo": False}).status_code == 401
+        assert client.get(path, headers=h).status_code == 401
 
 
 def test_manager_reprocesses_own_company_batch_only(banco, monkeypatch):

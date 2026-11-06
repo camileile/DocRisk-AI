@@ -90,6 +90,24 @@ CREATE TABLE IF NOT EXISTS doc_pages (
   posicao      INTEGER NOT NULL      -- 1..n dentro do documento
 );
 
+-- Histórico imutável de correções manuais de campos extraídos.
+CREATE TABLE IF NOT EXISTS document_field_reviews (
+  id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+  document_id          INTEGER NOT NULL REFERENCES documents(id),
+  field_name           TEXT NOT NULL,
+  original_value_json  TEXT NOT NULL,
+  corrected_value_json TEXT NOT NULL,
+  author_id            TEXT NOT NULL REFERENCES users(id),
+  reason               TEXT NOT NULL,
+  source               TEXT NOT NULL,
+  document_version     INTEGER NOT NULL,
+  revision_number      INTEGER NOT NULL,
+  created_at           TEXT NOT NULL,
+  UNIQUE (document_id, revision_number)
+);
+CREATE INDEX IF NOT EXISTS ix_document_field_reviews_document
+  ON document_field_reviews (document_id, revision_number);
+
 CREATE TABLE IF NOT EXISTS issues (
   id              INTEGER PRIMARY KEY AUTOINCREMENT,
   contract_id     TEXT NOT NULL REFERENCES contracts(id),
@@ -260,3 +278,39 @@ CREATE TABLE IF NOT EXISTS platform_settings (
   contato TEXT NOT NULL DEFAULT ''
 );
 INSERT OR IGNORE INTO platform_settings (id,nome) VALUES (1,'DocRisk AI');
+
+-- Identidades produtivas são independentes dos tokens demonstrativos.
+CREATE TABLE IF NOT EXISTS identity_links (
+  id TEXT PRIMARY KEY,
+  issuer TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  user_id TEXT UNIQUE REFERENCES users(id),
+  platform_account_id TEXT UNIQUE REFERENCES platform_accounts(id),
+  ativo INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL,
+  CHECK ((user_id IS NULL) != (platform_account_id IS NULL))
+);
+CREATE INDEX IF NOT EXISTS ix_identity_subject ON identity_links(issuer,subject,ativo);
+CREATE TABLE IF NOT EXISTS identity_invitations (
+  id TEXT PRIMARY KEY,
+  email TEXT NOT NULL,
+  nome TEXT NOT NULL,
+  org_id TEXT NOT NULL REFERENCES organizations(id),
+  role TEXT NOT NULL,
+  invited_by TEXT NOT NULL,
+  invited_link_id TEXT NOT NULL REFERENCES identity_links(id),
+  provider_id TEXT,
+  status TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  accepted_by TEXT,
+  accepted_at TEXT
+);
+CREATE INDEX IF NOT EXISTS ix_identity_invite_email ON identity_invitations(email,status);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ix_pending_identity_invite
+  ON identity_invitations(email,org_id,role) WHERE status IN ('CREATING','PENDING');
+CREATE TRIGGER IF NOT EXISTS identity_kind_exclusive BEFORE INSERT ON identity_links
+WHEN EXISTS (SELECT 1 FROM identity_links WHERE issuer=NEW.issuer AND subject=NEW.subject
+             AND (platform_account_id IS NULL) != (NEW.platform_account_id IS NULL))
+BEGIN SELECT RAISE(ABORT,'Identidade institucional independente'); END;

@@ -26,10 +26,10 @@ GET /api/contracts/{contract_id}/aej-mappings lista os mapeamentos existentes. O
 
 ## Estimativa e revisão
 
-O parser agrupa as marcações pelo vínculo, data e sequência entrada/saída. Compara o tempo observado nos pares com durJornada do horário contratual, em minutos, e soma apenas excedentes diários observados. É uma medida de triagem, não uma conclusão legal de horas extras: o cálculo não apura banco de horas semanal ou regras externas ao arquivo.
+O parser agrupa as marcações pelo vínculo e sequência entrada/saída, atribuindo a jornada à data da entrada. Uma saída até 24 horas depois pode cruzar a meia-noite. Compara o tempo observado nos pares com durJornada do horário contratual, em minutos, e soma apenas excedentes por jornada observada. É uma medida de triagem, não uma conclusão legal de horas extras: o cálculo não apura banco de horas semanal ou regras externas ao arquivo.
 
 O leiaute oficial define durJornada em minutos e associa as marcações ao vínculo e à sequência do par entrada/saída ([Anexo VI da Portaria MTP 671/2021, compilada pelo MTE](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/portarias-1/portarias-vigentes-3/PDFPortarian671de8denovembrode2021compilada07.01.2026.pdf)).
 
-Marcações desconsideradas, incluídas manualmente, pré-assinaladas, por exceção, pares incompletos/ambíguos, horário não identificado, registros de ausência/compensação e vínculo não mapeado exigem revisão. Nesses casos o sistema não envia um total presumido à conciliação. A revisão mostra datas, marcações, linhas de origem e permite ao analista confirmar horas com justificativa; o valor confirmado e o revisor ficam registrados sem apagar o cálculo original.
+Marcações fora do período do cabeçalho, horários duplicados, intervalos sobrepostos, saída sem entrada, pares incompletos/ambíguos, código de horário repetido ou não identificado, jornada acima de 24 horas, marcações desconsideradas/incluídas/pré-assinaladas/por exceção, registros de ausência/compensação e vínculo não mapeado exigem revisão. O sistema mantém todas as linhas originais, invalida o total automático afetado e não envia horas presumidas à conciliação. A revisão mostra avisos, datas, marcações e linhas de origem e permite ao analista confirmar horas com justificativa; o valor confirmado e o revisor ficam registrados sem apagar o cálculo original.
 
 O parser não valida criptograficamente a assinatura P7S. O documento e a interface identificam essa limitação. O resultado STRUCTURAL_PARTIAL continua indicando validação estrutural parcial.

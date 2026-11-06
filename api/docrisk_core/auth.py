@@ -6,7 +6,7 @@ from typing import Iterable
 
 from fastapi import Header, HTTPException
 
-from . import db
+from . import config, db
 from .contracts import Papel
 
 
@@ -19,10 +19,19 @@ class Usuario:
     papel: Papel
 
 
-def usuario_atual(authorization: str = Header(default="")) -> Usuario:
+def usuario_atual(authorization: str = Header(default=""), x_docrisk_link: str = Header(default="")) -> Usuario:
     esquema, _, token = authorization.partition(" ")
     if esquema.lower() != "bearer" or not token.strip():
         raise HTTPException(status_code=401, detail="Token bearer obrigatório",
+                            headers={"WWW-Authenticate": "Bearer"})
+    if config.AUTH_MODE == "clerk":
+        from .clerk_identity import authenticate
+        from .identity_links import resolve_link
+        principal = authenticate(token.strip())
+        with db.tx() as conn:
+            return resolve_link(conn, principal, x_docrisk_link)
+    if config.AUTH_MODE != "token" or not config.DEMO_MODE:
+        raise HTTPException(401, "Conecte-se pelo login produtivo.",
                             headers={"WWW-Authenticate": "Bearer"})
     with db.tx() as conn:
         row = conn.execute(

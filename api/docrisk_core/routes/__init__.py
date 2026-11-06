@@ -6,21 +6,24 @@ import math
 import re
 import sqlite3
 import unicodedata
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import pymupdf
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse, Response
+from pydantic import ValidationError
 
 from .. import config, db
-from ..api_models import ReportCreate, ReportPublish, ReportResponse
+from ..api_models import FieldReviewRequest, ReportCreate, ReportPublish, ReportResponse
 from ..auth import (Usuario, auditar, contratos_do_usuario, exigir_contrato,
                     exigir_papel, usuario_atual)
-from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT,
+from ..contracts import (CamposPagina, CategoriaPendencia, PAPEIS_BERNHOEFT,
                          PAPEIS_FORNECEDORA, TIPOS_FOCO, Papel, StatusDocumento,
                          StatusParecer, StatusPendencia, StatusLote, TipoDocumento)
 from ..pipeline.render import ArquivoInvalido
+from .. import field_review
 from ..pipeline import integracao_f3 as f3, revisao, worker
 from ..privacidade import SemCamadaDeTexto, anonimizar_pdf, mascarar_texto
 from ..rules import metricas, metricas_analista, parecer, pendencias, portal_contratante
@@ -139,7 +142,7 @@ def _require_batch_reader(user: Usuario) -> None:
 
 @router.get("/api/demo/users")
 def demo_users(conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, str]]:
-    if not config.DEMO_MODE:
+    if not config.DEMO_MODE or config.AUTH_MODE == "clerk":
         raise HTTPException(404, "Rota não encontrada")
     rows = conn.execute(
         "SELECT u.id, u.nome, u.org_id, o.tipo AS org_tipo, u.role, u.token "
@@ -473,6 +476,69 @@ def review_document(document_id: int, payload: dict[str, Any],
         _reconcile_pairs(conn, doc["contract_id"], par_antes,
                          _document_pair({"tipo": doc["tipo"], "worker_id": doc["worker_id"],
                                          "competencia": doc["competencia"]}))
+    elif action == "corrigir_campos":
+        if "fontes" in payload:
+            if doc["status"] not in {StatusDocumento.REVISAO_HUMANA.value, StatusDocumento.PENDENTE_CORRECAO.value}:
+                raise HTTPException(409, "A edição exige documento em revisão ou pendente de correção")
+            field_review.corrigir(conn, doc, payload, user.id)
+            _reconcile_pairs(conn, doc["contract_id"], _document_pair(doc))
+            auditar(conn, user, "DOCUMENTO_CORRIGIR_CAMPOS", str(document_id))
+            return {"document_id": document_id, "acao": action, "status": doc["status"]}
+        if doc["status"] == StatusDocumento.SUBSTITUIDO.value:
+            raise HTTPException(409, "Documento substituído não pode receber correções")
+        try:
+            request = FieldReviewRequest.model_validate(payload)
+        except ValidationError as exc:
+            raise HTTPException(422, "Informe campos, motivo e fonte válidos para a correção") from exc
+        corrections = request.campos
+        reason = request.motivo
+        source = request.fonte
+        allowed_fields = set(CamposPagina.model_fields)
+        unknown_fields = set(corrections) - allowed_fields
+        if unknown_fields:
+            raise HTTPException(422, f"Campo(s) não reconhecido(s): {', '.join(sorted(unknown_fields))}")
+
+        atuais = _json_object(doc["campos_json"])
+        corrigidos: dict[str, Any] = {}
+        for field_name, raw_value in corrections.items():
+            if raw_value is None:
+                raise HTTPException(422, f"Informe um valor para {field_name}")
+            try:
+                valor = getattr(CamposPagina.model_validate({field_name: raw_value}), field_name)
+            except ValidationError as exc:
+                raise HTTPException(422, f"Valor inválido para {field_name}") from exc
+            if valor is None or (isinstance(valor, (int, float)) and not math.isfinite(valor)):
+                raise HTTPException(422, f"Valor inválido para {field_name}")
+            if field_name == "data_pagamento":
+                if not isinstance(valor, str):
+                    raise HTTPException(422, "data_pagamento deve estar no formato DD/MM/AAAA")
+                try:
+                    datetime.strptime(valor, "%d/%m/%Y")
+                except ValueError as exc:
+                    raise HTTPException(422, "data_pagamento deve estar no formato DD/MM/AAAA") from exc
+            corrigidos[field_name] = valor
+
+        revision = int(conn.execute(
+            "SELECT COALESCE(MAX(revision_number), 0) + 1 FROM document_field_reviews WHERE document_id=?",
+            (document_id,),
+        ).fetchone()[0])
+        for field_name, valor in corrigidos.items():
+            original = atuais.get(field_name)
+            conn.execute(
+                "INSERT INTO document_field_reviews (document_id, field_name, original_value_json, "
+                "corrected_value_json, author_id, reason, source, document_version, revision_number, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (document_id, field_name, json.dumps(original, ensure_ascii=False, allow_nan=False),
+                 json.dumps(valor, ensure_ascii=False, allow_nan=False), user.id, reason[:1000], source[:500],
+                 int(doc["versao"]), revision, now),
+            )
+            atuais[field_name] = valor
+            revision += 1
+        conn.execute(
+            "UPDATE documents SET campos_json=?, revisado_por=?, updated_at=? WHERE id=?",
+            (json.dumps(atuais, ensure_ascii=False, allow_nan=False), user.id, now, document_id),
+        )
+        _reconcile_pairs(conn, doc["contract_id"], _document_pair(doc))
     elif action in {"dividir", "unir_proximo"}:
         try:
             if action == "dividir":
@@ -482,7 +548,7 @@ def review_document(document_id: int, payload: dict[str, Any],
         except revisao.RevisaoInvalida as exc:
             raise HTTPException(409 if exc.conflito else 422, str(exc)) from exc
     else:
-        raise HTTPException(422, "Ação deve ser aprovar, dividir, unir_proximo ou solicitar_correcao")
+        raise HTTPException(422, "Ação deve ser aprovar, corrigir_campos, dividir, unir_proximo ou solicitar_correcao")
     auditar(conn, user, f"DOCUMENTO_{action.upper()}", str(document_id))
     return {"document_id": document_id, "acao": action, "status": conn.execute(
         "SELECT status FROM documents WHERE id=?", (document_id,)).fetchone()[0]}
@@ -563,19 +629,22 @@ def list_documents(status: str | None = None, tipo: str | None = None,
 
 
 @router.get("/api/documents/{document_id}")
-def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
+def get_document(document_id: int, include_page_text: bool = True, user: Usuario = Depends(usuario_atual),
                  conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     """Documento com as páginas e o texto (OCR) de cada uma, vinculados à imagem original."""
     _require_batch_reader(user)
     row = _document_or_404(conn, user, document_id)
     item = _document_view(conn, user, row)
+    text_column = ", p.texto" if include_page_text else ""
     paginas = conn.execute(
-        "SELECT p.id, p.ordem, p.texto FROM doc_pages dp JOIN pages p ON p.id=dp.page_id "
+        f"SELECT p.id, p.ordem{text_column} FROM doc_pages dp JOIN pages p ON p.id=dp.page_id "
         "WHERE dp.document_id=? ORDER BY dp.posicao", (document_id,)).fetchall()
     item["paginas_detalhe"] = [
         {"page_id": int(p["id"]), "ordem": int(p["ordem"]),
-         "texto": (p["texto"] or "") if user.org_tipo == "BERNHOEFT"
-         else mascarar_texto(p["texto"] or "")[0]} for p in paginas]
+         **({"texto": (p["texto"] or "") if user.org_tipo == "BERNHOEFT"
+             else mascarar_texto(p["texto"] or "")[0]} if include_page_text else {})} for p in paginas]
+    if user.papel == Papel.ANALISTA_BH:
+        item["evidencias_campos"] = field_review.evidencias(conn, document_id)
     versoes = []
     if row["worker_id"] and row["competencia"]:
         versoes = _rows(conn.execute(
@@ -587,10 +656,39 @@ def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
             if version["status"] == StatusDocumento.REVISAO_HUMANA.value:
                 version["status"] = "EM_ANALISE"
     item["versoes"] = versoes
+    if user.org_tipo == "BERNHOEFT":
+        field_reviews = conn.execute(
+            "SELECT fr.field_name, fr.original_value_json, fr.corrected_value_json, fr.author_id, "
+            "u.nome AS author_name, fr.reason, fr.source, fr.document_version, fr.revision_number, "
+            "fr.created_at FROM document_field_reviews fr JOIN users u ON u.id=fr.author_id "
+            "WHERE fr.document_id=? ORDER BY fr.revision_number",
+            (document_id,),
+        ).fetchall()
+        item["revisoes_campos"] = [
+            {**dict(review), "valor_original": json.loads(review["original_value_json"]),
+             "valor_corrigido": json.loads(review["corrected_value_json"])}
+            for review in field_reviews
+        ]
     aej = conn.execute("SELECT calculation_json FROM aej_documents WHERE document_id=?", (document_id,)).fetchone()
     if aej is not None and user.org_tipo == "BERNHOEFT":
         item["aej"] = _json_object(aej["calculation_json"])
     return item
+
+
+@router.get("/api/documents/{document_id}/pages/{page_id}")
+def document_page(document_id: int, page_id: int, user: Usuario = Depends(usuario_atual),
+                  conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Texto de uma única página, com as mesmas permissões do documento."""
+    _require_batch_reader(user)
+    _document_or_404(conn, user, document_id)
+    page = conn.execute(
+        "SELECT p.id, p.ordem, p.texto FROM doc_pages dp JOIN pages p ON p.id=dp.page_id "
+        "WHERE dp.document_id=? AND dp.page_id=?", (document_id, page_id)).fetchone()
+    if page is None:
+        raise HTTPException(404, "Página não pertence ao documento")
+    return {"page_id": page_id, "ordem": page["ordem"],
+            "texto": (page["texto"] or "") if user.papel == Papel.ANALISTA_BH
+            else mascarar_texto(page["texto"] or "")[0]}
 
 
 @router.get("/api/documents/{document_id}/anonimizado")
