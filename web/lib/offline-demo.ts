@@ -137,6 +137,39 @@ export function demoRead(path: string, role: Papel): unknown {
   if (route === "/api/contracts") return DEMO_CONTRACTS;
   if (route === "/api/bernhoeft/metrics" && (role === "ADMIN_BH" || role === "ANALISTA_BH")) return METRICS;
   if (route === "/api/audit" && role === "ADMIN_BH") return AUDIT;
+  if (role === "ADMIN_BH" && route === "/api/admin/registry") return {
+    empresas: [
+      { id: "demo-contr", nome: "Contratante Fictícia Alfa", tipo: "CONTRATANTE", cnpj: null },
+      { id: "demo-forn", nome: "Fornecedora Fictícia Beta", tipo: "FORNECEDORA", cnpj: null },
+    ],
+    contratos: DEMO_CONTRACTS.map((c) => ({
+      ...c, contratante_nome: "Contratante Fictícia Alfa",
+      fornecedora_nome: "Fornecedora Fictícia Beta",
+      inicio: null, fim: null, status: "ATIVO",
+    })),
+    usuarios: [
+      { id: "demo-admin", nome: "Administrador (fictício)", org_id: "demo-bh",
+        org_nome: "Bernhoeft (demonstração)", papel: "ADMIN_BH", ativo: 1 },
+      { id: "demo-analista", nome: "Analista (fictício)", org_id: "demo-bh",
+        org_nome: "Bernhoeft (demonstração)", papel: "ANALISTA_BH", ativo: 1 },
+      { id: "demo-gestor-contr", nome: "Gestor (fictício)", org_id: "demo-contr",
+        org_nome: "Contratante Fictícia Alfa", papel: "GESTOR_CONTR", ativo: 1 },
+      { id: "demo-gestor-forn", nome: "Gestor (fictício)", org_id: "demo-forn",
+        org_nome: "Fornecedora Fictícia Beta", papel: "GESTOR_FORN", ativo: 1 },
+    ],
+  };
+  if (role === "ADMIN_BH" && route === "/api/admin/overview") {
+    const c = url.searchParams.get("contratante_id");
+    return {
+      contratantes: c && c !== "demo-contr" ? 0 : 1,
+      fornecedoras: c && c !== "demo-contr" ? 0 : 1,
+      contratos_ativos: c && c !== "demo-contr" ? 0 : 1,
+      contratos_vencendo_30d: 0,
+      contratos_sem_prazo: c && c !== "demo-contr" ? 0 : 1,
+      operacao: METRICS,
+    };
+  }
+
   if (role === "GESTOR_CONTR") {
     if (route === "/api/client/reports") return REPORTS;
     throw new Error("A contratante acessa apenas pareceres publicados.");
