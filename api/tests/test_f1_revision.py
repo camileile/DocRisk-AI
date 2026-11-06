@@ -108,6 +108,82 @@ def test_approve_validates_worker_and_competencia(banco):
     assert worker_result.status_code == competence_result.status_code == 422
 
 
+def test_structured_field_review_preserves_history_and_reconciles(banco, monkeypatch):
+    from docrisk_core.rules import conciliacao
+
+    batch_id = _api_lote()
+    doc = _doc_with_pages(batch_id, [3, 4])
+    original = json.loads(doc["campos_json"])
+    calls = []
+    monkeypatch.setattr(conciliacao, "conciliar",
+                        lambda conn, contract_id, worker_id, competencia:
+                        calls.append((contract_id, worker_id, competencia)))
+    with TestClient(app) as client:
+        first = client.patch(
+            f"/api/documents/{doc['id']}/review", headers=_headers(),
+            json={"acao": "corrigir_campos", "campos": {"horas_extras_h": 10,
+                                                              "horas_extras_valor": 150.5},
+                  "motivo": "Conferido no comprovante", "fonte": "Holerite, página 2"},
+        )
+        second = client.patch(
+            f"/api/documents/{doc['id']}/review", headers=_headers(),
+            json={"acao": "corrigir_campos", "campos": {"horas_extras_h": 11},
+                  "motivo": "Segunda conferência", "fonte": "Espelho de ponto, página 4"},
+        )
+        detail = client.get(f"/api/documents/{doc['id']}", headers=_headers())
+
+    assert first.status_code == second.status_code == detail.status_code == 200
+    assert calls == [("CT-001", "T001", "10/2026")] * 2
+    reviews = detail.json()["revisoes_campos"]
+    assert [r["revision_number"] for r in reviews] == [1, 2, 3]
+    assert all(r["author_id"] == "u-analista" and r["document_version"] == doc["versao"]
+               for r in reviews)
+    assert reviews[0]["valor_original"] == original["horas_extras_h"]
+    assert reviews[0]["valor_corrigido"] == 10
+    assert reviews[1]["valor_original"] == original["horas_extras_valor"]
+    assert reviews[1]["valor_corrigido"] == 150.5
+    assert reviews[2]["valor_original"] == 10 and reviews[2]["valor_corrigido"] == 11
+    assert reviews[0]["reason"] == "Conferido no comprovante"
+    assert reviews[0]["source"] == "Holerite, página 2"
+    assert detail.json()["campos"]["horas_extras_h"] == 11
+    assert detail.json()["campos"]["horas_extras_valor"] == 150.5
+
+
+def test_structured_field_review_validates_and_hides_history_from_supplier(banco):
+    batch_id = _api_lote()
+    doc = _doc_with_pages(batch_id, [3, 4])
+    before = json.loads(doc["campos_json"])
+    with TestClient(app) as client:
+        missing_reason = client.patch(
+            f"/api/documents/{doc['id']}/review", headers=_headers(),
+            json={"acao": "corrigir_campos", "campos": {"horas_extras_h": 9},
+                  "fonte": "página 2"},
+        )
+        unknown_field = client.patch(
+            f"/api/documents/{doc['id']}/review", headers=_headers(),
+            json={"acao": "corrigir_campos", "campos": {"cpf": "123"},
+                  "motivo": "Conferência", "fonte": "página 2"},
+        )
+        negative_value = client.patch(
+            f"/api/documents/{doc['id']}/review", headers=_headers(),
+            json={"acao": "corrigir_campos", "campos": {"horas_extras_h": -2},
+                  "motivo": "Conferência", "fonte": "página 2"},
+        )
+        corrected = client.patch(
+            f"/api/documents/{doc['id']}/review", headers=_headers(),
+            json={"acao": "corrigir_campos", "campos": {"horas_extras_h": 9},
+                  "motivo": "Conferência", "fonte": "página 2"},
+        )
+        supplier_detail = client.get(f"/api/documents/{doc['id']}", headers=_headers("u-oper-beta"))
+
+    assert missing_reason.status_code == unknown_field.status_code == negative_value.status_code == 422
+    assert corrected.status_code == supplier_detail.status_code == 200
+    assert "revisoes_campos" not in supplier_detail.json()
+    assert q("SELECT COUNT(*) AS n FROM document_field_reviews WHERE document_id=?", doc["id"])[0]["n"] == 1
+    assert json.loads(q("SELECT campos_json FROM documents WHERE id=?", doc["id"])[0]["campos_json"])[
+        "horas_extras_valor"] == before["horas_extras_valor"]
+
+
 def test_approve_and_request_correction_reconcile_affected_pair(banco, monkeypatch):
     from docrisk_core.rules import conciliacao
 
