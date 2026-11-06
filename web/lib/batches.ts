@@ -49,6 +49,21 @@ const completedEvents = (received: string, time: string): Batch["events"] => [
 ];
 export const batches: Batch[] = [
   {
+    id: "LOTE-008",
+    contract: "CTR-001",
+    competence: "10/2026",
+    filename: "agrupamento-sintetico-08.pdf",
+    format: "PDF",
+    sizeLabel: "1,2 MB",
+    receivedAt: "2026-11-05T15:00:00-03:00",
+    status: "CONCLUIDO",
+    totalPages: 4,
+    readPages: 4,
+    stage: "Processamento concluído",
+    events: completedEvents("15:00", "15:02"),
+  },
+
+  {
     id: "LOTE-007",
     contract: "CTR-001",
     competence: "10/2026",

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  ClipboardCheck,
   Package,
   Files,
   CircleAlert,
@@ -21,6 +22,7 @@ const navigation = [
   { href: "/painel", label: "Visão geral", icon: LayoutDashboard },
   { href: "/painel/lotes", label: "Lotes enviados", icon: Package },
   { href: "/painel/documentos", label: "Documentos", icon: Files },
+  { href: "/painel/revisao", label: "Fila de revisão", icon: ClipboardCheck },
   { href: "/painel/pendencias", label: "Pendências", icon: CircleAlert },
   { href: "/painel/envio", label: "Prévia de envio", icon: Upload },
 ];
@@ -52,7 +54,10 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
   const title =
     (path.startsWith("/painel/lotes/")
       ? "Detalhes do lote"
-      : navigation.find((item) => item.href === path)?.label) ?? "Visão geral";
+      : path.startsWith("/painel/revisao/")
+        ? "Conferência documental"
+        : navigation.find((item) => item.href === path)?.label) ??
+    "Visão geral";
   return (
     <div className="workspace">
       <aside
@@ -82,8 +87,10 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
         </div>
         <nav aria-label="Navegação do painel">
           {navigation
-            .filter(
-              (item) => role !== "ANALISTA_BH" || item.href !== "/painel/envio",
+            .filter((item) =>
+              role === "ANALISTA_BH"
+                ? item.href !== "/painel/envio"
+                : item.href !== "/painel/revisao",
             )
             .map(({ href, label, icon: Icon }) => (
               <Link

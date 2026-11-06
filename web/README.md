@@ -20,6 +20,8 @@ Validação: `npm run build` e `npm run typecheck`. A exportação estática fic
 | `/painel/lotes` | Histórico, busca e filtros dos lotes enviados |
 | `/painel/lotes/[id]` | Arquivo, etapas, leitura, documentos e pendências vinculadas |
 | `/painel/documentos` | Busca, situação e detalhes de referência documental |
+| `/painel/revisao` | Fila de revisão documental do analista |
+| `/painel/revisao/[id]` | Conferência das páginas e preparação da decisão |
 | `/painel/pendencias` | Busca, filtros e orientações de correção |
 | `/painel/envio` | Prévia local de seleção de arquivos sintéticos |
 
@@ -43,7 +45,7 @@ Os exemplos sintéticos estão em `lib/demo.ts`; os estados seguem os nomes de `
 - Detalhes de evidência usam referências sintéticas; não exibem um PDF original inexistente.
 - Busca e filtros funcionam localmente. Revisão, aprovação, notificações e publicação não são simuladas como ações concluídas.
 - Perfil, arquivos selecionados e filtros não são persistidos.
-- Contratante, administrador, conciliações, fila de revisão e pareceres ficam para as próximas etapas.
+- Contratante, administrador, conciliações e pareceres ficam para as próximas etapas. A fila e a conferência documental estão disponíveis como demonstração.
 - Os três módulos futuros continuam apenas como visão de expansão na landing.
 
 Rotas de backend planejadas estão em `api/docrisk_core/routes/__init__.py`. Autenticação e rotas operacionais ainda precisam ser implementadas antes de integrar dados reais. O formulário de contato continua sem canal comercial fictício e sem envio.
@@ -54,10 +56,22 @@ Build e TypeScript aprovados. Conferência de desktop no navegador: escolha de a
 
 ## Lotes — etapa atual
 
-`lib/batches.ts` contém sete lotes sintéticos com os quatro estados oficiais: RECEBIDO, PROCESSANDO, CONCLUIDO e FALHA_PROCESSAMENTO. Os exemplos incluem PDF, imagem e AEJ. AEJ não tem páginas nem OCR; os estados são retratos fixos, sem atualização em tempo real.
+`lib/batches.ts` contém oito lotes sintéticos com os quatro estados oficiais: RECEBIDO, PROCESSANDO, CONCLUIDO e FALHA_PROCESSAMENTO. Os exemplos incluem PDF, imagem e AEJ. AEJ não tem páginas nem OCR; os estados são retratos fixos, sem atualização em tempo real.
 
 Documentos dos lotes reutilizam `lib/demo.ts`. As pendências exibidas no detalhe são somente aquelas cujo documento de referência pertence ao lote; solicitações sem documento associado continuam no acompanhamento geral. Os links de conferência abrem a biblioteca filtrada por `?lote=...`, com detalhe em `?documento=...`; orientações abrem por `?pendencia=...`. Contrato e competência continuam limitando os resultados.
 
 Na perspectiva da fornecedora, apenas o Contrato Alfa está disponível. Um lote de outro contexto exige selecionar o contexto correspondente antes de exibir os detalhes. Esses comportamentos organizam a demonstração e não substituem autorização no backend. O reprocessamento é apenas explicado; não há botão que finja executar a operação.
 
 Validação desta etapa: build estático e TypeScript; verificação de integridade de vínculos lote/documento/pendência e limites de páginas; conferência desktop da busca, detalhes, navegação documento/pendência, falha técnica e cenário AEJ. Nenhum arquivo real foi enviado. Visualização móvel segue não verificada.
+
+## Revisão humana — etapa atual
+
+A fila `/painel/revisao` aparece somente na perspectiva ANALISTA_BH. Ela usa o mesmo contrato, competência e estados da biblioteca documental. Os exemplos `DOC-002`, `DOC-006` e `DOC-008` possuem referências de página em `lib/review.ts`; este último inclui o agrupamento de páginas 1–3 do novo `LOTE-008` e um candidato contíguo (`DOC-009`, página 4) para demonstrar união. Os indicadores existentes são derivados da mesma base e incorporam esses exemplos.
+
+A tela de conferência oferece navegação entre páginas sintéticas, zoom textual, ajuste de classificação/vínculo/competência e preparação de quatro ações: aprovar, solicitar correção, dividir e unir ao próximo. Divisão exige múltiplas páginas; união exige candidato contíguo com lote, contrato, trabalhador, competência e tipo compatíveis. Os campos não modificam as fontes de dados.
+
+Uma justificativa e a confirmação de conferência são obrigatórias para preparar a prévia. Editar os campos elimina a prévia anterior. Restaurar campos repõe os valores originais. A prévia não executa a ação, não cria pendência e não altera a fila. Nenhum parecer é publicado. O fluxo final depende da implementação e autorização da API, inclusive auditoria. Divisão e união reais continuam pendentes no backend, conforme `docs/F2_INTEGRACAO.md`.
+
+As páginas exibidas são reconstruções HTML explicitamente sintéticas, não arquivos originais, OCR ou resultados do Gemini. Horas e reais aparecem separados. Na integração, usar a imagem privada por rota autenticada e respeitar os motivos internos exclusivos da Bernhoeft. A ocultação na interface não é uma barreira de segurança.
+
+Verificação: build estático e TypeScript; integridade das páginas e dos vínculos com documentos/lotes; conferência desktop da fila, paginação, zoom, prévias de divisão/união e permanência do documento na fila. A visualização móvel ainda não foi verificada.

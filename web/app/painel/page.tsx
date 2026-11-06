@@ -153,10 +153,10 @@ export default function Dashboard() {
               : "Confira a identificação do trabalhador e a competência antes de analisar os dados."}
           </p>
           <Link
-            href={supplier ? "/painel/pendencias" : "/painel/documentos"}
+            href={supplier ? "/painel/pendencias" : "/painel/revisao"}
             className="text-link"
           >
-            {supplier ? "Ver pendências" : "Explorar documentos"}{" "}
+            {supplier ? "Ver pendências" : "Abrir fila de revisão"}{" "}
             <ArrowRight size={16} />
           </Link>
         </section>

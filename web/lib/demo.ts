@@ -93,6 +93,28 @@ export const documents: {
     page: 3,
     note: "A página de exemplo está ilegível. Solicitar uma versão legível.",
   },
+  {
+    id: "DOC-008",
+    contract: "CTR-001",
+    worker: "Pessoa exemplo 006",
+    type: "Holerite",
+    competence: "10/2026",
+    batch: "LOTE-008",
+    status: "REVISAO_HUMANA",
+    page: 1,
+    note: "Fronteira documental incerta entre as páginas 2 e 3. Conferir o agrupamento.",
+  },
+  {
+    id: "DOC-009",
+    contract: "CTR-001",
+    worker: "Pessoa exemplo 006",
+    type: "Holerite",
+    competence: "10/2026",
+    batch: "LOTE-008",
+    status: "APTO",
+    page: 4,
+    note: "Página de exemplo contígua ao agrupamento anterior, disponível para conferência de continuidade.",
+  },
 ];
 export const issues: {
   id: string;

@@ -226,6 +226,14 @@ function DocumentsContent() {
             </div>
           </div>
           {!supplier && selected.status === "REVISAO_HUMANA" && (
+            <Link
+              className="button review-open-link"
+              href={`/painel/revisao/${selected.id}`}
+            >
+              Conferir na revisão <ArrowUpRight size={16} />
+            </Link>
+          )}
+          {!supplier && selected.status === "REVISAO_HUMANA" && (
             <p className="integration-note">
               A aprovação e a revisão documental serão conectadas à API em uma
               próxima etapa.
