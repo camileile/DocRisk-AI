@@ -1,5 +1,5 @@
 import pytest
-from docrisk_core.aej import parse_aej, AEJError
+from docrisk_core.aej import parse_aej, parse_aej_detalhado, AEJError
 from docrisk_core.importer import import_bytes
 
 def example_aej() -> bytes:
