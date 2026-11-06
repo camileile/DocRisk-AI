@@ -17,7 +17,7 @@ from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT, PAPEIS_FORNECEDOR
                          StatusLote, TipoDocumento)
 from ..pipeline.render import ArquivoInvalido
 from ..pipeline import integracao_f3 as f3, revisao, worker
-from ..rules import metricas, parecer, pendencias
+from ..rules import metricas, metricas_analista, parecer, pendencias
 
 router = APIRouter()
 
@@ -608,6 +608,24 @@ def reprocess_batch(batch_id: int, user: Usuario = Depends(usuario_atual),
         raise HTTPException(503, "Reprocessamento ainda não está disponível (F2)") from exc
     auditar(conn, user, "LOTE_REPROCESSADO", str(batch_id))
     return {"batch_id": batch_id, "status": "RECEBIDO"}
+
+
+@router.get("/api/analyst/overview")
+def analyst_overview(
+    contratante_id: str | None = None,
+    fornecedora_id: str | None = None,
+    contract_id: str | None = None,
+    competencia: str | None = Query(default=None, pattern=r"^(0[1-9]|1[0-2])/\d{4}$"),
+    user: Usuario = Depends(usuario_atual),
+    conn: sqlite3.Connection = Depends(get_conn),
+) -> dict[str, Any]:
+    """Painel analítico do Analista: filtros e métricas restritos à organização."""
+    exigir_papel(user, [Papel.ANALISTA_BH])
+    return metricas_analista.montar_dashboard(
+        conn, contratos_do_usuario(conn, user),
+        contratante_id=contratante_id, fornecedora_id=fornecedora_id,
+        contrato_id=contract_id, competencia=competencia,
+    )
 
 
 @router.get("/api/bernhoeft/metrics")

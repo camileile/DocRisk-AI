@@ -141,6 +141,43 @@ export type Report = {
   created_at?: string;
   publicado_em: string | null;
 };
+export type AnalystOverviewData = {
+  filtros: {
+    contratantes: { id: string; nome: string }[];
+    fornecedoras: { id: string; nome: string }[];
+    contratos: { id: string; nome: string }[];
+    competencias: string[];
+    competencia_selecionada: string | null;
+  };
+  resumo: {
+    cadastrados: number;
+    avaliados: number;
+    divergencias: number;
+    taxa_divergencias: number | null;
+    cobertura: number | null;
+    horas_divergentes: number;
+    divergencias_sem_horas: number;
+    pendencias_criticas: number;
+    pendencias_abertas: number;
+  };
+  evolucao: {
+    competencia: string;
+    avaliados: number;
+    divergencias: number;
+    taxa_divergencias: number | null;
+    cobertura: number | null;
+  }[];
+  comparacao: {
+    id: string;
+    nome: string;
+    avaliados: number;
+    divergencias: number;
+    taxa_divergencias: number | null;
+    cobertura: number | null;
+  }[];
+  observacao: string;
+};
+
 export type Metrics = {
   documentos: {
     logicos: number;
