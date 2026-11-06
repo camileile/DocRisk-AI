@@ -255,6 +255,41 @@ def test_resubmit_does_not_overwrite_f3_resolution(banco, monkeypatch):
     assert json.loads(issue["historico_json"]) == [{"status": "RESOLVIDA"}]
 
 
+def test_resubmit_does_not_reset_issue_changed_before_enqueue(banco, monkeypatch):
+    with db.tx() as conn:
+        issue_id = conn.execute(
+            "INSERT INTO issues (contract_id, categoria, motivo, acao, status, created_at, updated_at, "
+            "historico_json) VALUES ('CT-001', 'ILEGIVEL', 'ilegível', 'reenviar', 'NOTIFICADA', ?, ?, ?)",
+            (db.agora(), db.agora(), '[{"status":"NOTIFICADA"}]'),
+        ).lastrowid
+
+    enfileirados = []
+
+    def criar_lote(*args, **kwargs):
+        batch_id = _insert_batch()
+        with db.tx() as conn:
+            conn.execute(
+                "UPDATE issues SET status='RESOLVIDA', updated_at=?, historico_json=? WHERE id=?",
+                (db.agora(), '[{"status":"NOTIFICADA"},{"status":"RESOLVIDA"}]', issue_id),
+            )
+        return batch_id
+
+    monkeypatch.setattr(worker, "criar_lote", criar_lote)
+    monkeypatch.setattr(worker, "enfileirar", enfileirados.append)
+    with TestClient(app) as client:
+        response = client.post(f"/api/issues/{issue_id}/resubmit", headers=_headers("u-oper-beta"),
+                               files={"file": ("reenviado.pdf", b"fake")})
+
+    assert response.status_code == 409
+    assert enfileirados == []
+    with db.tx() as conn:
+        issue = conn.execute("SELECT status, historico_json FROM issues WHERE id=?", (issue_id,)).fetchone()
+        batch_count = conn.execute("SELECT COUNT(*) FROM batches WHERE filename='reprocess.pdf'").fetchone()[0]
+    assert issue["status"] == "RESOLVIDA"
+    assert json.loads(issue["historico_json"])[-1]["status"] == "RESOLVIDA"
+    assert batch_count == 0
+
+
 def test_reports_are_restricted_and_json_is_decoded(banco):
     with db.tx() as conn:
         report_id = conn.execute(
