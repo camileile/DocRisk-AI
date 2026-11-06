@@ -101,3 +101,14 @@ merge correta é **PR #26 → este PR**. Não foi usado `skip`/`continue-on-erro
 
 Teste universal, CI e evidências prontos; zero transporte comprovado no PR #26. Depende do merge
 do PR #26 para que a `main` passe. CI remoto desta branch não executado (não publicada).
+
+## Reconciliação Codex — 2026-11-06
+Base origin/main 1cbd57f; backup backup/d4-02-20261106 (185b4ae).
+PR #26 já incorporado (88960eb); nenhuma implementação antiga da demo reaplicada.
+Rebase sem conflitos. Windows / Node 22.23.2 / Python 3.13.14.
+Build, TypeScript e node --check aprovados. demo-isolation.cjs: 26/26 cenários
+sem transporte operacional (relatório .git/dev4-audit/d4-02-isolation.json).
+Backend: 340 aprovados, 1 ignorado. test:transport aprovado.
+A primeira execução P0 encontrou react-test-renderer ausente; repetida com as
+dependências do npm ci instalado no worktree de reconciliação.
+Status: CONCLUÍDA LOCALMENTE para isolamento. CI remoto não executado.
