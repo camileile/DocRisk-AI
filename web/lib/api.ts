@@ -1,7 +1,11 @@
 /* Cliente da API DocRisk (FastAPI em api/). O token fica só em sessionStorage e
  * vai no cabeçalho Authorization; imagens de página são baixadas como blob. */
 
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+export const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.NEXT_PUBLIC_DOCRISK_API_URL ||
+  "http://127.0.0.1:8000"
+).replace(/\/$/, "");
 
 export type Papel = "ADMIN_BH" | "ANALISTA_BH" | "GESTOR_FORN" | "OPERADOR_FORN" | "GESTOR_CONTR";
 export type OrgTipo = "BERNHOEFT" | "FORNECEDORA" | "CONTRATANTE";

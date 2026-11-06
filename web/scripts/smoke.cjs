@@ -41,9 +41,12 @@ async function run() {
     assert.equal(await page.getByRole("link", { name: "Fila de revisão", exact: true }).count(), 0);
     assert.equal(await page.getByRole("link", { name: "Pareceres", exact: true }).count(), 0);
     await page.getByRole("link", { name: "Enviar lote", exact: true }).first().click();
-    await page.locator('input[type="file"]').setInputFiles(path.join(lote, "lote_demo.pdf"));
-    await page.getByRole("button", { name: /Enviar lote/ }).click();
-    await page.getByRole("link", { name: /Acompanhar processamento/ }).click();
+    await page.getByLabel("Selecionar arquivo para envio real").setInputFiles(path.join(lote, "lote_demo.pdf"));
+    await page.getByRole("checkbox", { name: /Confirmo que o arquivo é/ }).check();
+    await page.getByRole("button", { name: "Enviar arquivo ao backend" }).click();
+    await page.getByText(/Processamento documental concluído/).waitFor({ timeout: 60000 });
+    await page.getByRole("link", { name: "Consultar histórico de lotes" }).click();
+    await page.getByRole("link", { name: /Abrir/ }).first().click();
     await page.getByText("14 documento(s) separados").waitFor({ timeout: 60000 });
 
     console.log("[3/7] Pendência ilegível do T002 e reenvio corrigido");

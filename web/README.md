@@ -7,13 +7,13 @@ npm ci
 npm run dev          # http://127.0.0.1:3000
 ```
 
-A URL da API vem de `NEXT_PUBLIC_API_URL` (padrão `http://127.0.0.1:8000`). A API precisa liberar a origem do front em `CORS_ORIGINS` (padrão: `http://localhost:3000,http://127.0.0.1:3000`).
+A URL da API vem de `NEXT_PUBLIC_API_URL` (ou `NEXT_PUBLIC_DOCRISK_API_URL`, ver `.env.local.example`) (padrão `http://127.0.0.1:8000`). A API precisa liberar a origem do front em `CORS_ORIGINS` (padrão: `http://localhost:3000,http://127.0.0.1:3000`).
 
-Validação: `npm run typecheck`, `npm run build` (exportação estática em `out/`, com `trailingSlash`) e o smoke ponta a ponta `node scripts/smoke.cjs` (ver README da raiz).
+Validação: `npm run typecheck`, `npm run build` (exportação estática em `out/`, com `trailingSlash`) e os smokes `node scripts/smoke.cjs` (fluxo completo com o lote sintético) e `node scripts/live-api-smoke.cjs` (login por token e upload de PDF/PNG), ambos contra a API real (ver README da raiz e `docs/INTEGRACAO_F1_FRONTEND.md`).
 
 ## Sessão e permissões
 
-`/acesso` lista os perfis de demonstração de `GET /api/demo/users` (só existe com `DOCRISK_DEMO_MODE=1`). Ao entrar, o token fica em `sessionStorage` e o perfil é lido de `GET /api/me`. Cada área (`/painel`, `/contratante`, `/administracao`) só monta para os papéis correspondentes e redireciona os demais. **A autorização real é da API**: a interface apenas esconde o que a API já recusa (401/403/404).
+`/acesso` lista os perfis de demonstração de `GET /api/demo/users` (só existe com `DOCRISK_DEMO_MODE=1`) e também aceita um token de teste colado (integração F1). Ao entrar, o token fica em `sessionStorage` e o perfil é lido de `GET /api/me`. Cada área (`/painel`, `/contratante`, `/administracao`) só monta para os papéis correspondentes e redireciona os demais. **A autorização real é da API**: a interface apenas esconde o que a API já recusa (401/403/404).
 
 ## Páginas
 
@@ -21,7 +21,7 @@ Validação: `npm run typecheck`, `npm run build` (exportação estática em `ou
 | --- | --- | --- |
 | `/acesso` | todos | `/api/demo/users`, `/api/me`, `/api/contracts` |
 | `/painel` | analista, fornecedora | `/api/bernhoeft/metrics` ou `/api/batches` + `/api/supplier/issues` |
-| `/painel/envio` | fornecedora | `POST /api/supplier/batches` |
+| `/painel/envio` | fornecedora | `POST /api/supplier/batches` com confirmação de arquivo fictício e acompanhamento (componente `api-upload` da integração F1) |
 | `/painel/lotes`, `/painel/lotes/detalhe?id=` | analista, fornecedora | `/api/batches`, `/api/batches/{id}`, `/documents`, `POST /reprocess`; atualiza sozinho durante o processamento |
 | `/painel/documentos`, `/painel/documentos/detalhe?id=` | analista, fornecedora | `/api/documents`, `/api/documents/{id}`, `/api/search`, `/api/pages/{id}/image` (blob com token) |
 | `/painel/revisao`, `/painel/revisao/detalhe?id=` | analista | `/api/review-queue`, `PATCH /api/documents/{id}/review` (aprovar, dividir, unir, solicitar correção) |

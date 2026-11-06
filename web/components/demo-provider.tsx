@@ -1,7 +1,7 @@
 "use client";
 /* Sessão autenticada na API. O perfil vem de GET /api/me (nunca do front) e os
  * contratos de GET /api/contracts; a interface só esconde o que a API já bloqueia. */
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { api, ApiError, getToken, setToken, type Contract, type Me, type Papel } from "@/lib/api";
 
 type Session = {
@@ -16,7 +16,12 @@ type Session = {
   setCompetence: (value: string) => void;
   login: (token: string) => Promise<Me>;
   logout: () => void;
+  /** Compatibilidade com os componentes da integração F1 (api-upload, api-client). */
+  apiSession: ApiSession | null;
+  connectApi: (token: string) => Promise<void>;
 };
+
+export type ApiSession = { token: string; user: Me; contracts: Contract[] };
 
 const SessionContext = createContext<Session | null>(null);
 
@@ -73,6 +78,14 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     setContract("");
   }, []);
 
+  const apiSession = useMemo<ApiSession | null>(() => {
+    const token = me ? getToken() : null;
+    return me && token ? { token, user: me, contracts } : null;
+  }, [me, contracts]);
+  const connectApi = useCallback(async (token: string) => {
+    await login(token.trim());
+  }, [login]);
+
   return (
     <SessionContext.Provider
       value={{
@@ -87,6 +100,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         setCompetence,
         login,
         logout,
+        apiSession,
+        connectApi,
       }}
     >
       {children}

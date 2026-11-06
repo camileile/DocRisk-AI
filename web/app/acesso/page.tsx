@@ -8,6 +8,8 @@ import {
   Building2,
   Check,
   FileCheck2,
+  KeyRound,
+  PlugZap,
   Layers3,
   LockKeyhole,
   ShieldCheck,
@@ -44,6 +46,8 @@ export default function Access() {
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string>("u-analista");
   const [entering, setEntering] = useState(false);
+  const [token, setTokenInput] = useState("");
+  const [tokenError, setTokenError] = useState("");
   const { login } = useSession();
   const router = useRouter();
 
@@ -75,6 +79,20 @@ export default function Access() {
       router.push(destinationFor(me.papel));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao entrar");
+      setEntering(false);
+    }
+  }
+
+  async function enterWithToken() {
+    if (entering || !token.trim()) return;
+    setEntering(true);
+    setTokenError("");
+    try {
+      const me = await login(token.trim());
+      setTokenInput("");
+      router.push(destinationFor(me.papel));
+    } catch (err) {
+      setTokenError(err instanceof Error ? err.message : "Não foi possível conectar à API.");
       setEntering(false);
     }
   }
@@ -150,6 +168,47 @@ export default function Access() {
             Perfis e documentos são fictícios. Em produção, o acesso seria por SSO/OIDC; aqui o token de demonstração só é
             exposto com DOCRISK_DEMO_MODE=1 em ambiente local.
           </p>
+          <section className="api-access" aria-labelledby="api-access-title">
+            <span className="eyebrow">
+              <PlugZap size={15} /> ENTRAR COM TOKEN
+            </span>
+            <h3 id="api-access-title">Conectar à API de testes</h3>
+            <p>Sem o modo demonstração, cole o token de um usuário de teste do backend local. O perfil e os contratos vêm da API.</p>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                void enterWithToken();
+              }}
+            >
+              <label htmlFor="api-test-token">Token Bearer de teste</label>
+              <div className="api-access-input">
+                <KeyRound size={18} aria-hidden="true" />
+                <input
+                  id="api-test-token"
+                  type="password"
+                  value={token}
+                  onChange={(event) => {
+                    setTokenInput(event.target.value);
+                    setTokenError("");
+                  }}
+                  placeholder="Cole o token do backend local"
+                  autoComplete="off"
+                  spellCheck={false}
+                  required
+                  disabled={entering}
+                />
+              </div>
+              <button type="submit" className="button api-access-submit" disabled={entering || !token.trim()}>
+                <PlugZap size={17} /> {entering ? "Conectando…" : "Conectar API de testes"}
+              </button>
+              {tokenError && (
+                <p className="api-access-error" role="alert">
+                  {tokenError}
+                </p>
+              )}
+            </form>
+            <small>Não utilize tokens de produção. O token fica só nesta aba (sessionStorage) e é apagado ao sair.</small>
+          </section>
         </div>
       </div>
     </main>
