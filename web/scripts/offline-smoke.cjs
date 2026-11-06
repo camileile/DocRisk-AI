@@ -83,7 +83,7 @@ async function run() {
         await page.getByRole("heading", { name: "Fila de Exceções" }).waitFor();
         const nav = await page.locator('nav[aria-label="Navegação do painel"] a').allTextContents();
         assert.deepEqual(nav.map((label) => label.trim()), [
-          "Visão geral", "Fila de Exceções", "Pareceres",
+          "Visão geral", "Documentos", "Fila de Exceções", "Conciliações", "Pareceres",
         ]);
         await page.getByRole("link", { name: /Conferir/ }).first().waitFor();
         await page.getByText("Diferença fictícia de 4 h", { exact: false }).waitFor();

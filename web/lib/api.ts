@@ -294,15 +294,19 @@ export class ApiError extends Error {
 
 const TOKEN_KEY = "docrisk.token";
 
+let activeToken: string | null | undefined;
+
 export function getToken(): string | null {
+  if (activeToken !== undefined) return activeToken;
   try {
-    return sessionStorage.getItem(TOKEN_KEY);
+    return activeToken = sessionStorage.getItem(TOKEN_KEY);
   } catch {
     return null;
   }
 }
 
 export function setToken(token: string | null) {
+  activeToken = token;
   try {
     if (token) sessionStorage.setItem(TOKEN_KEY, token);
     else sessionStorage.removeItem(TOKEN_KEY);
@@ -331,13 +335,15 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   }
   const headers = new Headers(init.headers);
   const token = getToken();
-  if (token) headers.set("Authorization", `Bearer ${token}`);
+  if (!token) throw new ApiError(401, "Entre pela demonstração ou conecte uma sessão de testes.");
+  headers.set("Authorization", `Bearer ${token}`);
   if (init.body && !(init.body instanceof FormData) && !headers.has("Content-Type"))
     headers.set("Content-Type", "application/json");
   let response: Response;
   try {
     response = await fetch(`${API_URL}${path}`, { ...init, headers });
-  } catch {
+  } catch (err) {
+    if (init.signal?.aborted) throw err;
     throw new ApiError(0, `Não foi possível conectar à API em ${API_URL}. Verifique se ela está em execução.`);
   }
   if (!response.ok) throw new ApiError(response.status, await errorMessage(response));
@@ -345,6 +351,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 export async function downloadBatchSource(batchId: number): Promise<void> {
+  if (getDemoRole()) throw new ApiError(403, "Arquivos originais não estão disponíveis na demonstração.");
   const token = getToken();
   if (!token) throw new ApiError(401, "Conecte-se à API para baixar o arquivo original.");
   let response: Response;
@@ -373,6 +380,7 @@ export async function apiBlob(path: string): Promise<Blob> {
     return demoPageImage(Number(match[1]));
   }
   const token = getToken();
+  if (!token) throw new ApiError(401, "Conecte uma sessão para consultar arquivos.");
   const response = await fetch(`${API_URL}${path}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });

@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Download, RotateCcw } from "lucide-react";
@@ -29,6 +29,8 @@ function BatchDetail() {
   const id = useSearchParams().get("id");
   const { me } = useSession();
   const [notice, setNotice] = useState<{ tone: "success" | "error"; text: string } | null>(null);
+  const reprocessing = useRef(false);
+  const [reprocessBusy, setReprocessBusy] = useState(false);
   const [sourceBusy, setSourceBusy] = useState(false);
   const running = (b: Batch) => b.status === "RECEBIDO" || b.status === "PROCESSANDO";
   const batch = useApi<Batch>(id ? `/api/batches/${id}` : null, { pollMs: 2500, shouldPoll: running });
@@ -42,12 +44,18 @@ function BatchDetail() {
   const canReprocess = b.status === "FALHA_PROCESSAMENTO" && (me?.org_tipo === "BERNHOEFT" || me?.papel === "GESTOR_FORN" || me?.id === b.uploaded_by);
 
   async function reprocess() {
+    if (reprocessing.current) return;
+    reprocessing.current = true;
+    setReprocessBusy(true);
     try {
       await api(`/api/batches/${b.id}/reprocess`, { method: "POST" });
       setNotice({ tone: "success", text: "Lote reenfileirado. Páginas já lidas são reaproveitadas do cache." });
-      void batch.reload();
+      await batch.reload();
     } catch (err) {
       setNotice({ tone: "error", text: err instanceof Error ? err.message : "Falha ao reprocessar" });
+    } finally {
+      reprocessing.current = false;
+      setReprocessBusy(false);
     }
   }
 
@@ -88,7 +96,7 @@ function BatchDetail() {
             <strong>Falha técnica no processamento.</strong> {b.erro} A falha não é atribuída à fornecedora.
           </p>
           {canReprocess && (
-            <button className="button secondary" onClick={reprocess}>
+            <button className="button secondary" disabled={reprocessBusy} onClick={reprocess}>
               <RotateCcw size={16} /> Reprocessar lote
             </button>
           )}

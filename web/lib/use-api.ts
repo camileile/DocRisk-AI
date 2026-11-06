@@ -1,44 +1,52 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { api } from "./api";
+import { api, getToken } from "./api";
+import { getDemoRole } from "./offline-demo";
 
-/* Carrega um recurso da API com estados de carregamento e erro.
- * `path = null` não carrega nada; `pollMs` recarrega enquanto `shouldPoll(data)`. */
+/* Cada resposta pertence ao recurso e à sessão que iniciaram a requisição. */
 export function useApi<T>(
   path: string | null,
   options: { pollMs?: number; shouldPoll?: (data: T) => boolean } = {},
 ) {
-  const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(Boolean(path));
+  const key = JSON.stringify([path, getDemoRole(), getToken()]);
+  const currentKey = useRef(key);
+  currentKey.current = key;
+  const [state, setState] = useState<{ key: string; data: T | null; error: string | null; loading: boolean }>({ key, data: null, error: null, loading: Boolean(path) });
+  const [attempt, setAttempt] = useState(0);
+  const request = useRef<{ sequence: number; controller?: AbortController }>({ sequence: 0 });
   const optionsRef = useRef(options);
   optionsRef.current = options;
 
   const reload = useCallback(async () => {
-    if (!path) return;
+    if (!path || currentKey.current !== key) return;
+    request.current.controller?.abort();
+    const controller = new AbortController();
+    const sequence = ++request.current.sequence;
+    request.current.controller = controller;
+    const current = () => !controller.signal.aborted && currentKey.current === key && request.current.sequence === sequence;
     try {
-      const result = await api<T>(path);
-      setData(result);
-      setError(null);
+      const result = await api<T>(path, { signal: controller.signal });
+      if (current()) setState({ key, data: result, error: null, loading: false });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Falha ao carregar");
+      if (current()) setState((previous) => ({ key, data: previous.key === key ? previous.data : null, error: err instanceof Error ? err.message : "Falha ao carregar", loading: false }));
     } finally {
-      setLoading(false);
+      if (current()) setAttempt((value) => value + 1);
     }
-  }, [path]);
+  }, [path, key]);
 
   useEffect(() => {
-    setLoading(Boolean(path));
-    setData(null);
+    setState({ key, data: null, error: null, loading: Boolean(path) });
     void reload();
-  }, [reload, path]);
+    return () => { request.current.controller?.abort(); request.current.sequence++; };
+  }, [reload, path, key]);
 
   useEffect(() => {
     const { pollMs, shouldPoll } = optionsRef.current;
-    if (!pollMs || !data || !shouldPoll?.(data)) return;
+    if (state.key !== key || !pollMs || !state.data || !shouldPoll?.(state.data)) return;
     const timer = window.setTimeout(() => void reload(), pollMs);
     return () => window.clearTimeout(timer);
-  }, [data, reload]);
+  }, [state, attempt, key, reload]);
 
-  return { data, error, loading, reload };
+  const visible = state.key === key ? state : { data: null, error: null, loading: Boolean(path) };
+  return { data: visible.data, error: visible.error, loading: visible.loading, reload };
 }

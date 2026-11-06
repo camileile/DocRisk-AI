@@ -28,10 +28,11 @@ const navigation = [
   { href: "/painel", label: "Visão geral", icon: LayoutDashboard, roles: [...BH, ...FORN] },
   { href: "/painel/envio", label: "Enviar lote", icon: Upload, roles: FORN },
   { href: "/painel/lotes", label: "Lotes enviados", icon: Package, roles: FORN },
-  { href: "/painel/documentos", label: "Documentos", icon: Files, roles: FORN },
+  { href: "/painel/documentos", label: "Documentos", icon: Files, roles: [...BH, ...FORN] },
   { href: "/painel/revisao", label: "Fila de Exceções", icon: ClipboardCheck, roles: BH },
   { href: "/painel/pendencias", label: "Pendências", icon: CircleAlert, roles: FORN },
   { href: "/painel/operadores", label: "Operadores", icon: Users, roles: ["GESTOR_FORN"] as Papel[] },
+  { href: "/painel/conciliacoes", label: "Conciliações", icon: FileCheck2, roles: BH },
   { href: "/painel/pareceres", label: "Pareceres", icon: FileCheck2, roles: BH },
 ];
 
@@ -76,7 +77,7 @@ function Workspace({ children }: { children: ReactNode }) {
   const items = navigation.filter((item) => item.roles.includes(me.papel));
   // Rotas de detalhe continuam válidas, embora não apareçam como menus do Analista.
   const isAnalystContext = me.papel === "ANALISTA_BH" &&
-    ["/painel/documentos", "/painel/lotes", "/painel/conciliacoes", "/painel/pendencias"]
+    ["/painel/lotes", "/painel/pendencias"]
       .some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
   const current = isAnalystContext
     ? items.find((item) => item.href === "/painel/revisao")

@@ -24,9 +24,9 @@ async function run() {
   page.on("pageerror", (e) => errors.push(e.message));
 
   async function enter(token) {
-    await page.goto(site + "/acesso/", { waitUntil: "domcontentloaded" });
-    // A lista de perfis só aparece depois da hidratação; antes disso o React zera o campo.
-    await page.getByRole("radio").first().waitFor({ timeout: 20000 });
+    await page.goto(site + "/operacao/", { waitUntil: "domcontentloaded" });
+    // Aguarda o formulário exclusivo do ambiente conectado.
+    await page.getByLabel("Token Bearer de teste").waitFor({ timeout: 20000 });
     await page.getByLabel("Token Bearer de teste").fill(token);
     await page.getByRole("button", { name: "Conectar API de testes" }).click();
     await page.waitForURL((url) => url.pathname.startsWith("/painel"), { timeout: 30000 });

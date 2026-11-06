@@ -3,6 +3,7 @@ import "./globals.css";
 import "./workspace.css";
 import "./api-integration.css";
 import { DemoProvider } from "@/components/demo-provider";
+import { SessionToolbar } from "@/components/session-toolbar";
 export const metadata: Metadata = {
   title: "DocRisk AI | Inteligência documental, decisões mais claras",
   description:
@@ -15,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <DemoProvider>{children}</DemoProvider>
+        <DemoProvider><SessionToolbar />{children}</DemoProvider>
       </body>
     </html>
   );
