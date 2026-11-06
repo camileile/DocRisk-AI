@@ -51,6 +51,20 @@ export async function downloadBatchSource(batchId: number, init: ApiRequestInit 
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+export async function downloadReportPdf(id: number, version: number, previewHash?: string): Promise<void> {
+  if (getDemoRole()) throw new ApiError(403, "Exportar PDF exige um ambiente operacional.");
+  if (!Number.isSafeInteger(id) || id <= 0 || !Number.isSafeInteger(version) || version <= 0)
+    throw new ApiError(0, "Parecer inválido.", "validation");
+  const query = previewHash ? "?conteudo_sha256=" + encodeURIComponent(previewHash) : "";
+  const blob = await apiBlob(`/api/reports/${id}/pdf${query}`);
+  if (blob.type.split(";")[0] !== "application/pdf") throw new ApiError(0, "O servidor não retornou um PDF válido.", "invalid_response");
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url; anchor.download = `parecer-${id}-v${version}${previewHash ? "-previa" : ""}.pdf`;
+  anchor.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 /* ------------------------------------------------------------------ rótulos */
 export const roleLabels: Record<Papel, string> = {
   ADMIN_PLATAFORMA: "Administrador geral da plataforma",

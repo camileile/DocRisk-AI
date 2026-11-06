@@ -118,7 +118,7 @@ async function run() {
     await go(page, "/painel/pareceres/");
     await page.getByRole("button", { name: /Criar rascunho/ }).click();
     await page.getByText("PRÉVIA DO RASCUNHO").waitFor();
-    page.once("dialog", (dialog) => dialog.accept());
+    await page.getByRole("checkbox", { name: /Conferi autoria/ }).check();
     await page.getByRole("button", { name: "Publicar" }).click();
     await page.getByText(/Parecer publicado/).waitFor();
 

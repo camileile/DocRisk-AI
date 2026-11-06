@@ -17,6 +17,7 @@ class ReportCreate(BaseModel):
     contract_id: str = Field(min_length=1, max_length=80, pattern=r"^CT-[A-Z0-9-]+$")
     competencia: str = Field(pattern=_COMPETENCIA_PATTERN)
     observacoes: str = Field(default="", max_length=2000)
+    recomendacoes: str = Field(default="", max_length=4000)
 
     @field_validator("contract_id", "competencia", mode="before")
     @classmethod
@@ -44,6 +45,27 @@ class ReportPublish(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     conteudo_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class ReportEditorial(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    recomendacoes: str = Field(max_length=4000)
+    conteudo_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class ReportPerson(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    id: str
+    nome: str
+
+
+class ReportIdentity(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    id: int = Field(gt=0)
+    versao: int = Field(gt=0)
+    autor: ReportPerson
+    responsavel: ReportPerson
+    emissor: str
 
 
 class ReportEvidence(BaseModel):
@@ -87,6 +109,8 @@ class ReportContent(BaseModel):
     limitacoes: list[str]
     resumo: dict[str, int]
     itens: list[ReportItem]
+    parecer: ReportIdentity | None = None
+    recomendacoes: list[str] = Field(default_factory=list)
 
 
 class ReportResponse(BaseModel):
@@ -100,6 +124,7 @@ class ReportResponse(BaseModel):
     conteudo_json: ReportContent | dict[str, Any]
     conteudo_sha256: str | None = None
     observacoes: str | None = None
+    recomendacoes: str | None = None
     autor_id: str | None = None
     created_at: str | None = None
     publicado_em: str | None = None

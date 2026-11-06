@@ -71,6 +71,8 @@ const REPORT_CONTENT: ReportContent = {
   contrato: { id: "demo-001", nome: DEMO_CONTRACTS[0].nome },
   contratante: "Contratante Fictícia Alfa", fornecedora: "Fornecedora Fictícia Beta",
   competencia: "10/2026", gerado_em: date, regra: "demo-1",
+  parecer: { id: 601, versao: 1, autor: { id: "demo-analista", nome: "Analista Bernhoeft (fictício)" }, responsavel: { id: "demo-analista", nome: "Analista Bernhoeft (fictício)" }, emissor: "Bernhoeft (demonstração)" },
+  recomendacoes: ["Conferir a divergência ilustrativa com a fornecedora.", "Completar os documentos pendentes e concluir a revisão humana antes de avaliar os demais casos."],
   escopo: "EXEMPLO FICTÍCIO — comparação ilustrativa de horas extras em ponto e holerite.",
   limitacoes: ["Documento inteiramente fictício; não constitui parecer profissional nem atesta conformidade.", "Comprovantes e documentos de suporte não integram esta amostra."],
   resumo: { trabalhadores: 4, avaliados: 2, com_divergencia: 1, dados_insuficientes: 0, sem_divergencia: 1, bloqueados: 1, em_revisao: 1, aguardando_documentos: 0 },
@@ -89,7 +91,7 @@ const REPORTS: Report[] = [
 
 const CLIENT_REPORTS: Report[] = [...REPORTS, {
   ...REPORTS[0], id: 602, competencia: "09/2026", publicado_em: "2026-10-01T15:00:00Z",
-  conteudo_json: { ...REPORT_CONTENT, competencia: "09/2026", gerado_em: "2026-09-30T13:00:00Z",
+  conteudo_json: { ...REPORT_CONTENT, parecer: { ...REPORT_CONTENT.parecer!, id: 602 }, recomendacoes: ["Solicitar a documentação da competência antes de realizar qualquer comparação."], competencia: "09/2026", gerado_em: "2026-09-30T13:00:00Z",
     resumo: { trabalhadores: 4, avaliados: 0, com_divergencia: 0, dados_insuficientes: 0, sem_divergencia: 0, bloqueados: 0, em_revisao: 0, aguardando_documentos: 4 },
     itens: REPORT_CONTENT.itens.map((i) => ({ ...i, situacao: "AGUARDANDO_DOCUMENTOS", resultado: "NAO_AVALIADO", detalhe: "Documentação não recebida nesta competência fictícia.", horas_ponto: null, horas_folha: null, diferenca_h: null, comprovante_presente: false, evidencias: [] })),
   },

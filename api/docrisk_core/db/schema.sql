@@ -314,3 +314,16 @@ CREATE TRIGGER IF NOT EXISTS identity_kind_exclusive BEFORE INSERT ON identity_l
 WHEN EXISTS (SELECT 1 FROM identity_links WHERE issuer=NEW.issuer AND subject=NEW.subject
              AND (platform_account_id IS NULL) != (NEW.platform_account_id IS NULL))
 BEGIN SELECT RAISE(ABORT,'Identidade institucional independente'); END;
+-- Texto público do rascunho e prévias conferíveis, separados das observações internas.
+CREATE TABLE IF NOT EXISTS report_editorial (
+  report_id INTEGER PRIMARY KEY REFERENCES reports(id),
+  recomendacoes TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS report_previews (
+  report_id INTEGER NOT NULL REFERENCES reports(id),
+  user_id TEXT NOT NULL REFERENCES users(id),
+  conteudo_sha256 TEXT NOT NULL,
+  conteudo_json TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (report_id,user_id,conteudo_sha256)
+);

@@ -159,6 +159,8 @@ export type ReportContent = {
   limitacoes: string[];
   resumo: Record<string, number>;
   itens: ReportItem[];
+  parecer?: { id: number; versao: number; autor: { id: string; nome: string }; responsavel: { id: string; nome: string }; emissor: string };
+  recomendacoes?: string[];
 };
 export type Report = {
   id: number;
@@ -169,6 +171,7 @@ export type Report = {
   conteudo_json: ReportContent | Record<string, never>;
   conteudo_sha256?: string;
   observacoes?: string | null;
+  recomendacoes?: string | null;
   autor_id?: string;
   created_at?: string;
   publicado_em: string | null;
@@ -178,6 +181,7 @@ export type ReportCreateInput = {
   contract_id: string;
   competencia: string;
   observacoes?: string;
+  recomendacoes?: string;
 };
 export type AnalystOverviewData = {
   filtros: {
