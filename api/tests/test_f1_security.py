@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 from fastapi.testclient import TestClient
 
 from docrisk_core import config, db
@@ -126,3 +127,66 @@ def test_supplier_operator_cannot_publish_report():
             ).lastrowid
         response = client.post(f"/api/reports/{report_id}/publish", headers=headers("u-oper-beta"))
     assert response.status_code == 403
+
+@pytest.mark.parametrize(
+    ("endpoint", "permitidos"),
+    [
+        ("/api/review-queue", {"u-analista"}),
+        ("/api/issues", {"u-admin", "u-analista"}),
+        ("/api/analyses", {"u-admin", "u-analista"}),
+        ("/api/reports", {"u-admin", "u-analista"}),
+        ("/api/audit", {"u-admin"}),
+        ("/api/client/reports", {"u-gestor-alfa"}),
+        ("/api/supplier/issues", {"u-gestor-beta", "u-oper-beta", "u-oper-gama"}),
+                (
+            "/api/batches",
+            {
+                "u-admin",
+                "u-analista",
+                "u-gestor-beta",
+                "u-oper-beta",
+                "u-oper-gama",
+            },
+        ),
+        (
+            "/api/contracts",
+            {
+                "u-admin",
+                "u-analista",
+                "u-gestor-beta",
+                "u-oper-beta",
+                "u-oper-gama",
+                "u-gestor-alfa",
+            },
+        ),
+        ("/api/bernhoeft/metrics", {"u-admin", "u-analista"}),
+        (
+            "/api/search?q=teste",
+            {
+                "u-admin",
+                "u-analista",
+                "u-gestor-beta",
+                "u-oper-beta",
+                "u-oper-gama",
+            },
+        ),
+    ],
+)
+def test_read_endpoints_enforce_role_matrix(endpoint, permitidos):
+    usuarios = {
+        "u-admin",
+        "u-analista",
+        "u-gestor-beta",
+        "u-oper-beta",
+        "u-oper-gama",
+        "u-gestor-alfa",
+    }
+
+    with TestClient(app) as client:
+        for user_id in usuarios:
+            response = client.get(endpoint, headers=headers(user_id))
+            esperado = 200 if user_id in permitidos else 403
+            assert response.status_code == esperado, (
+                f"{user_id} em {endpoint}: "
+                f"esperado {esperado}, recebido {response.status_code}"
+            )
