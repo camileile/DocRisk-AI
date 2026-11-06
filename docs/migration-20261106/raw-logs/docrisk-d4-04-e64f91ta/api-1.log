@@ -1,0 +1,16 @@
+INFO:     Started server process [26356]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:63066 (Press CTRL+C to quit)
+INFO:     127.0.0.1:63100 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63120 - "OPTIONS /api/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63125 - "OPTIONS /api/me HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:63130 - "GET /api/demo/users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63143 - "POST /api/supplier/batches HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:63148 - "GET /api/batches/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63155 - "GET /api/batches/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63166 - "GET /api/batches/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63173 - "GET /api/batches/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63180 - "GET /api/batches/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63187 - "GET /api/batches/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63194 - "POST /api/supplier/batches HTTP/1.1" 202 Accepted

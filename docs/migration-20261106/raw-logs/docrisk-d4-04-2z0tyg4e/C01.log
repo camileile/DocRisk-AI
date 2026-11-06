@@ -1,0 +1,44 @@
+INFO:     Started server process [33452]
+INFO:     Waiting for application startup.
+inicialização recusada: 1 problema(s) de configuração
+ERROR:    Traceback (most recent call last):
+  File "C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\.venv-dev4\Lib\site-packages\starlette\routing.py", line 661, in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\.venv-dev4\Lib\site-packages\fastapi\routing.py", line 248, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\.venv-dev4\Lib\site-packages\fastapi\routing.py", line 248, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\.venv-dev4\Lib\site-packages\fastapi\routing.py", line 248, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\.venv-dev4\Lib\site-packages\fastapi\routing.py", line 248, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-runtime\api\docrisk_core\api.py", line 42, in lifespan
+    runtime.preparar_inicio()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-runtime\api\docrisk_core\runtime.py", line 213, in preparar_inicio
+    raise ConfiguracaoInvalida(problemas)
+docrisk_core.runtime.ConfiguracaoInvalida: Configuração inválida do DocRisk AI (1 problema(s)):
+  - AI_PROVIDER='xyz' inválido; use gemini, tesseract, textlayer.
+Corrija api/.env ou as variáveis de ambiente (modelo: .env.example).
+
+ERROR:    Application startup failed. Exiting.
