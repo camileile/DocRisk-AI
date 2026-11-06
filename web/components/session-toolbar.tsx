@@ -9,7 +9,7 @@ import { DEMO_ROLES } from "@/lib/offline-demo";
 export function SessionToolbar() {
   const { me, isDemo, loading, enterDemo, logout } = useSession();
   const router = useRouter();
-  if (loading || !me) return null;
+  if (loading || !me || isDemo) return null;
   function change(role: Papel) {
     enterDemo(role);
     router.push(homeFor(role));
