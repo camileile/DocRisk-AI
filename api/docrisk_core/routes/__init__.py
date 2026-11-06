@@ -13,6 +13,7 @@ from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, 
 from fastapi.responses import FileResponse, Response
 
 from .. import config, db
+from ..api_models import ReportCreate, ReportResponse
 from ..auth import (Usuario, auditar, contratos_do_usuario, exigir_contrato,
                     exigir_papel, usuario_atual)
 from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT,
@@ -804,14 +805,13 @@ def search(q: str = Query(min_length=1, max_length=250),
     return result
 
 
-@router.post("/api/reports", status_code=201)
-def create_report(payload: dict[str, Any], user: Usuario = Depends(usuario_atual),
+@router.post("/api/reports", status_code=201, response_model=ReportResponse,
+             response_model_exclude_unset=True)
+def create_report(payload: ReportCreate, user: Usuario = Depends(usuario_atual),
                   conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     exigir_papel(user, [Papel.ANALISTA_BH])
-    contract_id = str(payload.get("contract_id", ""))
-    competencia = str(payload.get("competencia", ""))
-    if not contract_id or not competencia:
-        raise HTTPException(422, "contract_id e competencia são obrigatórios")
+    contract_id = payload.contract_id
+    competencia = payload.competencia
     _contract_or_404(conn, user, contract_id)
     latest = conn.execute("SELECT COALESCE(MAX(versao), 0) FROM reports WHERE contract_id=? AND competencia=?",
                           (contract_id, competencia)).fetchone()[0]
@@ -820,12 +820,13 @@ def create_report(payload: dict[str, Any], user: Usuario = Depends(usuario_atual
         "INSERT INTO reports (contract_id, competencia, versao, status, observacoes, autor_id, created_at) "
         "VALUES (?, ?, ?, ?, ?, ?, ?)",
         (contract_id, competencia, latest + 1, StatusParecer.RASCUNHO.value,
-         str(payload.get("observacoes", ""))[:2000], user.id, now))
+         payload.observacoes, user.id, now))
     auditar(conn, user, "PARECER_RASCUNHO_CRIADO", str(cursor.lastrowid))
-    return dict(conn.execute("SELECT * FROM reports WHERE id=?", (cursor.lastrowid,)).fetchone())
+    return _report_result(conn.execute(
+        "SELECT * FROM reports WHERE id=?", (cursor.lastrowid,)).fetchone())
 
 
-@router.get("/api/reports")
+@router.get("/api/reports", response_model=list[ReportResponse], response_model_exclude_unset=True)
 def list_reports(user: Usuario = Depends(usuario_atual),
                  conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
     exigir_papel(user, [Papel.ANALISTA_BH])
@@ -842,7 +843,8 @@ def list_reports(user: Usuario = Depends(usuario_atual),
     return [_report_result(row) for row in rows]
 
 
-@router.get("/api/reports/{report_id}/preview")
+@router.get("/api/reports/{report_id}/preview", response_model=ReportResponse,
+            response_model_exclude_unset=True)
 def preview_report(report_id: int, user: Usuario = Depends(usuario_atual),
                    conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     """Prévia do parecer com as análises ATUAIS (nada é gravado). Só Bernhoeft."""
@@ -858,7 +860,8 @@ def preview_report(report_id: int, user: Usuario = Depends(usuario_atual),
     return result
 
 
-@router.post("/api/reports/{report_id}/publish")
+@router.post("/api/reports/{report_id}/publish", response_model=ReportResponse,
+             response_model_exclude_unset=True)
 def publish_report(report_id: int, user: Usuario = Depends(usuario_atual),
                    conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     exigir_papel(user, [Papel.ANALISTA_BH])
@@ -881,10 +884,12 @@ def publish_report(report_id: int, user: Usuario = Depends(usuario_atual),
                                   report["competencia"], report_id,
                                   StatusParecer.APROVADO_PUBLICADO.value))
     auditar(conn, user, "PARECER_PUBLICADO", str(report_id))
-    return dict(conn.execute("SELECT * FROM reports WHERE id=?", (report_id,)).fetchone())
+    return _report_result(conn.execute(
+        "SELECT * FROM reports WHERE id=?", (report_id,)).fetchone())
 
 
-@router.get("/api/client/reports")
+@router.get("/api/client/reports", response_model=list[ReportResponse],
+            response_model_exclude_unset=True)
 def client_reports(fornecedora_id: str | None = None, contract_id: str | None = None,
                    competencia: str | None = Query(default=None, pattern=r"^(0[1-9]|1[0-2])/\d{4}$"),
                    user: Usuario = Depends(usuario_atual),
