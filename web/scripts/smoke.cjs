@@ -30,8 +30,8 @@ async function login(page, roleLabel, expectedPath) {
   const user = users.find((item) => (item.role || item.papel) === roles[roleLabel]);
   assert.ok(user?.token, "Perfil de testes nao encontrado: " + roleLabel);
   await page.evaluate(() => sessionStorage.clear()).catch(() => {});
-  await go(page, "/acesso/");
-  await page.getByRole("radio").first().waitFor();
+  await go(page, "/operacao/");
+  await page.getByLabel("Token Bearer de teste").waitFor();
   await page.getByLabel("Token Bearer de teste").fill(user.token);
   await page.getByRole("button", { name: /Conectar API de testes/ }).click();
   await page.waitForURL((url) => url.pathname.startsWith(expectedPath), { timeout: 20000 });

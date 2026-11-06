@@ -9,7 +9,7 @@ import { useDemo } from "@/components/demo-provider";
 import { PageIntro } from "@/components/workspace-parts";
 import { BatchBadge } from "@/components/batch-badge";
 import {
-  fetchApiBatch, uploadApiBatch, validateApiUploadFile,
+  ApiRequestError, fetchApiBatch, uploadApiBatch, validateApiUploadFile,
   type ApiBatch, type ApiUploadReceipt,
 } from "@/lib/api-client";
 
@@ -55,8 +55,10 @@ function ProcessingStatus({ receipt, token, submittedContract, filename }: {
       } catch (reason) {
         if (!active) return;
         setError(reason instanceof Error ? reason.message : "Não foi possível atualizar o status.");
-        setFinishedChecking(true);
-        return;
+        if (reason instanceof ApiRequestError && reason.status !== null && reason.status < 500) {
+          setFinishedChecking(true);
+          return;
+        }
       }
       checkCount += 1;
       if (checkCount >= MAX_STATUS_CHECKS) {

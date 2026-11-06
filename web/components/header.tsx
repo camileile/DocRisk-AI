@@ -35,6 +35,7 @@ export function Header() {
           <Link href="/#como-funciona">Como funciona</Link>
           <Link href="/#modulos">Módulos</Link>
           <Link href="/contato">Contato</Link>
+          <Link href="/operacao">API de testes</Link>
           <Link href="/acesso" className="button small">
             Acessar demonstração <ArrowUpRight size={16} />
           </Link>

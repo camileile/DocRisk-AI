@@ -1,4 +1,5 @@
-import { API_URL } from "./api";
+import { getDemoRole } from "./offline-demo";
+import { API_URL, getToken } from "./api";
 
 // Integração inicial com a API F1. O token é fornecido pelo usuário em ambiente
 // local de testes e permanece apenas na memória do React (nunca em storage).
@@ -85,7 +86,14 @@ function apiOrigin(): string {
   return url.origin;
 }
 
+function requireConnected(token: string) {
+  if (getDemoRole() || !token.trim() || getToken() !== token.trim())
+    throw new ApiRequestError("Conecte uma sessão de testes para usar a API.", 401);
+}
+
 async function apiGet<T>(path: string, token: string, signal?: AbortSignal): Promise<T> {
+  requireConnected(token);
+  signal?.throwIfAborted();
   if (!token.trim()) throw new ApiRequestError("Informe o token de teste.");
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
@@ -202,6 +210,7 @@ export async function uploadApiBatch(
   contractId: string,
   file: File,
 ): Promise<ApiUploadReceipt> {
+  requireConnected(token);
   const validation = validateApiUploadFile(file);
   if (validation) throw new ApiRequestError(validation);
   if (!token.trim() || !contractId.trim()) {

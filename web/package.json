@@ -6,18 +6,20 @@
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:p0": "node scripts/p0-regression.cjs"
   },
   "dependencies": {
+    "lucide-react": "^0.468.0",
     "next": "16.4.5",
     "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "lucide-react": "^0.468.0"
+    "react-dom": "19.2.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0"
+    "@types/react-dom": "^19.0.0",
+    "react-test-renderer": "19.2.0",
+    "typescript": "^5.9.0"
   }
 }

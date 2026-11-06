@@ -32,7 +32,7 @@ export default function DocumentsPage() {
       <PageIntro
         eyebrow="DOCUMENTOS CLASSIFICADOS"
         title="Separados, classificados e pesquisáveis."
-        description="Consulte os documentos da fornecedora neste contrato, inclusive os enviados por outros operadores. A seleção de contrato limita a lista e a busca."
+        description={supplier ? "Consulte os documentos da fornecedora neste contrato, inclusive os enviados por outros operadores. A seleção de contrato limita a lista e a busca." : "Consulte os documentos e suas evidências no contrato selecionado. Abra a Fila de Exceções para realizar a revisão humana."}
       />
       <SearchBox key={contract} contract={contract} />
       <div className="list-toolbar">

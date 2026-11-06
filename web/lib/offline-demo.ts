@@ -13,16 +13,20 @@ export const DEMO_ROLES: Papel[] = [
 
 const KEY = "docrisk.offline-demo-role";
 
+let activeRole: Papel | null | undefined;
+
 export function getDemoRole(): Papel | null {
+  if (activeRole !== undefined) return activeRole;
   try {
     const value = sessionStorage.getItem(KEY);
-    return DEMO_ROLES.find((role) => role === value) ?? null;
+    return activeRole = DEMO_ROLES.find((role) => role === value) ?? null;
   } catch {
     return null;
   }
 }
 
 export function setDemoRole(role: Papel | null): void {
+  activeRole = role;
   try {
     if (role) sessionStorage.setItem(KEY, role);
     else sessionStorage.removeItem(KEY);

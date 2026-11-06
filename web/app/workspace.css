@@ -3159,3 +3159,40 @@ button.table-action { cursor: pointer; font-family: inherit; }
   .analyst-evolution-row > small { grid-column: 2 / -1; margin-top: -8px; }
   .analyst-period { font-size: 11px; }
 }
+
+/* Contexto permanente da apresentação, inclusive fora dos shells e no celular. */
+.session-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 112px;
+  padding: 12px 20px;
+  background: #eef2ff;
+  color: #25205a;
+  border-bottom: 2px solid #6366f1;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.session-toolbar-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+.session-toolbar label { display: flex; align-items: center; gap: 8px; }
+.session-toolbar select, .session-toolbar button { font: inherit; color: #25205a; background: white; border: 1px solid #7772a1; border-radius: 6px; padding: 8px; }
+.session-toolbar select { max-width: min(320px, 70vw); }
+.session-toolbar small { font-size: 13px; line-height: 1.45; }
+body:has(.session-toolbar) .workspace-sidebar { top: 112px; height: calc(100dvh - 112px); }
+body:has(.session-toolbar) .header { top: 112px; }
+@media (max-width: 850px) {
+  .workspace-person > div { display: block; }
+  .workspace-person strong { display: none; }
+  .workspace-person small { max-width: 140px; font-size: 12px; }
+  .session-toolbar { height: 192px; padding: 10px 14px; }
+  .session-toolbar-controls { gap: 6px 10px; }
+  .session-toolbar-controls > strong { width: 100%; }
+  body:has(.session-toolbar) .workspace-sidebar { top: 192px; height: calc(100dvh - 192px); }
+  body:has(.session-toolbar) .header { top: 192px; }
+}
+/* Leitura das evidências durante a demonstração, sem reforma do layout. */
+.workspace .data-table td, .workspace .data-table th { font-size: 14px; line-height: 1.55; }
+.workspace .data-table small, .workspace .table-action, .workspace .muted { font-size: 13px; }
+.workspace .page-intro > p { font-size: 15px; line-height: 1.65; color: #5b526d; }

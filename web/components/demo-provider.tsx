@@ -1,7 +1,7 @@
 "use client";
 /* Sessão autenticada na API. O perfil vem de GET /api/me (nunca do front) e os
  * contratos de GET /api/contracts; a interface só esconde o que a API já bloqueia. */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { Fragment, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { api, ApiError, getToken, setToken, type Contract, type Me, type Papel } from "@/lib/api";
 import { DEMO_CONTRACTS, demoUser, getDemoRole, setDemoRole } from "@/lib/offline-demo";
 
@@ -29,6 +29,8 @@ export type ApiSession = { token: string; user: Me; contracts: Contract[] };
 const SessionContext = createContext<Session | null>(null);
 
 export function DemoProvider({ children }: { children: ReactNode }) {
+  const generation = useRef(0);
+  const [sessionVersion, setSessionVersion] = useState(0);
   const [me, setMe] = useState<Me | null>(null);
   const [isDemo, setIsDemo] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -38,6 +40,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const [competence, setCompetence] = useState("10/2026");
 
   const load = useCallback(async (): Promise<Me | null> => {
+    const attempt = ++generation.current;
     const offline = getDemoRole();
     if (offline) {
       const user = demoUser(offline);
@@ -52,24 +55,30 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     setIsDemo(false);
     if (!getToken()) {
       setMe(null);
+      setContracts([]);
+      setContract("");
       setLoading(false);
       return null;
     }
     setLoading(true);
     try {
       const [user, list] = await Promise.all([api<Me>("/api/me"), api<Contract[]>("/api/contracts")]);
+      if (attempt !== generation.current) return null;
       setMe(user);
       setContracts(list);
       setContract((current) => (list.some((c) => c.id === current) ? current : (list[0]?.id ?? "")));
       setError(null);
       return user;
     } catch (err) {
+      if (attempt !== generation.current) return null;
+      setContracts([]);
+      setContract("");
       if (err instanceof ApiError && err.status === 401) setToken(null);
       setMe(null);
       setError(err instanceof Error ? err.message : "Falha ao carregar a sessão");
       return null;
     } finally {
-      setLoading(false);
+      if (attempt === generation.current) setLoading(false);
     }
   }, []);
 
@@ -79,6 +88,9 @@ export function DemoProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (token: string) => {
+      setMe(null);
+      setContracts([]);
+      setContract("");
       setDemoRole(null);
       setIsDemo(false);
       setToken(token);
@@ -90,6 +102,9 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   );
 
   const enterDemo = useCallback((role: Papel): Me => {
+    generation.current++;
+    setSessionVersion((version) => version + 1);
+    setCompetence("10/2026");
     setToken(null);
     setDemoRole(role);
     const user = demoUser(role);
@@ -103,6 +118,10 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
+    generation.current++;
+    setSessionVersion((version) => version + 1);
+    setLoading(false);
+    setError(null);
     setToken(null);
     setDemoRole(null);
     setIsDemo(false);
@@ -139,7 +158,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         connectApi,
       }}
     >
-      {children}
+      <Fragment key={sessionVersion}>{children}</Fragment>
     </SessionContext.Provider>
   );
 }
