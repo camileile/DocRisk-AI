@@ -11,13 +11,33 @@ import {
   Check,
   Layers3,
   LockKeyhole,
+  KeyRound,
+  PlugZap,
 } from "lucide-react";
 import { useDemo } from "@/components/demo-provider";
 import type { DemoRole } from "@/lib/demo";
+import { apiIsConfigured } from "@/lib/api-client";
 export default function Access() {
   const [selected, setSelected] = useState<DemoRole>("ANALISTA_BH");
-  const { setRole } = useDemo();
+  const { setRole, connectApi } = useDemo();
+  const [token, setToken] = useState("");
+  const [connecting, setConnecting] = useState(false);
+  const [connectionError, setConnectionError] = useState("");
   const router = useRouter();
+  async function enterApi() {
+    if (connecting || !token.trim()) return;
+    setConnecting(true);
+    setConnectionError("");
+    try {
+      await connectApi(token);
+      setToken("");
+      router.push("/painel");
+    } catch (error) {
+      setConnectionError(error instanceof Error ? error.message : "Não foi possível conectar à API.");
+    } finally {
+      setConnecting(false);
+    }
+  }
   return (
     <main className="access-page">
       <div className="access-story">
@@ -133,6 +153,28 @@ export default function Access() {
             documento real é enviado. A área administrativa exibe apenas eventos
             sintéticos, sem acesso a logs reais.
           </p>
+          {apiIsConfigured() && (
+            <section className="api-access" aria-labelledby="api-access-title">
+              <span className="eyebrow"><PlugZap size={15} /> INTEGRAÇÃO LOCAL · F1</span>
+              <h3 id="api-access-title">Conectar à API de testes</h3>
+              <p>Use um token de usuário de teste gerado pelo backend local. O perfil e os contratos serão obtidos da API, não da seleção acima.</p>
+              <form onSubmit={(event) => { event.preventDefault(); void enterApi(); }}>
+                <label htmlFor="api-test-token">Token Bearer de teste</label>
+                <div className="api-access-input">
+                  <KeyRound size={18} aria-hidden="true" />
+                  <input id="api-test-token" type="password" value={token}
+                    onChange={(event) => { setToken(event.target.value); setConnectionError(""); }}
+                    placeholder="Cole o token do backend local" autoComplete="off"
+                    spellCheck={false} required disabled={connecting} />
+                </div>
+                <button type="submit" className="button api-access-submit" disabled={connecting || !token.trim()}>
+                  <PlugZap size={17} /> {connecting ? "Conectando…" : "Conectar API de testes"}
+                </button>
+                {connectionError && <p className="api-access-error" role="alert">{connectionError}</p>}
+              </form>
+              <small>Credencial somente em memória, apagada ao trocar de perspectiva ou recarregar. Não utilize tokens de produção. Integração limitada a analista e fornecedora.</small>
+            </section>
+          )}
         </div>
       </div>
     </main>
