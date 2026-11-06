@@ -46,6 +46,9 @@ jobs:
       - name: Validar rotas geradas
         run: |
           test -f out/index.html
+          test -f out/solucao/index.html
+          test -f out/como-funciona/index.html
+          test -f out/modulos/index.html
           test -f out/acesso/index.html
           test -f out/contato/index.html
           test -f out/painel/index.html
