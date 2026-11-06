@@ -154,7 +154,7 @@ async function run() {
     await page.getByRole("link", { name: "Organizações Auditoras", exact: true }).click();
     await page.getByLabel("Nome da auditora", { exact: true }).fill("Auditora Navegador");
     await page.getByLabel("Administrador inicial", { exact: true }).fill("Admin Navegador");
-    await page.getByRole("button", { name: "Cadastrar auditora", exact: true }).click();
+    await page.getByRole("button", { name: "Cadastrar organização auditora", exact: true }).click();
     await page.getByRole("heading", { name: "Auditora Navegador", exact: true }).waitFor();
     await page.getByRole("link", { name: "Dados da Plataforma", exact: true }).click();
     await page.getByLabel("Contato de suporte", { exact: true }).fill("Suporte de integração");
