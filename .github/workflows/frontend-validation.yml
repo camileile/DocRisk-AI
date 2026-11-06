@@ -22,7 +22,7 @@ jobs:
   validate:
     name: TypeScript, build e navegação
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 35
     defaults:
       run:
         working-directory: web
@@ -79,6 +79,21 @@ jobs:
         run: |
           node scripts/offline-smoke.cjs
           node scripts/contractor-smoke.cjs
+      # D4-02: falha se a demo tentar QUALQUER transporte operacional (API, /api/ ou
+      # origem externa nao inventariada). Roda antes de a API existir no runner.
+      - name: Isolamento universal da demonstracao (D4-02)
+        timeout-minutes: 12
+        env:
+          DOCRISK_API_ORIGIN: http://127.0.0.1:8000
+          DOCRISK_ISOLATION_REPORT: ${{ runner.temp }}/demo-isolation.json
+        run: node scripts/demo-isolation.cjs
+      - name: Relatorio de isolamento
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-isolation-report
+          path: ${{ runner.temp }}/demo-isolation.json
+          if-no-files-found: ignore
       - name: Python 3.12
         uses: actions/setup-python@v5
         with:
