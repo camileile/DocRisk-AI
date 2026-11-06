@@ -122,3 +122,16 @@ ensaio E4–E7. Pendência.
 
 Roteiro, planos offline/conectado, contingência e ensaio automatizado estão prontos; o ensaio
 conectado local falhou em 3 etapas com diagnóstico parcial. SHA não congelado (justificado acima).
+
+## Reconciliação Codex — 2026-11-06
+Base 1cbd57f, backup backup/d4-03-20261106 (96bb15c), rebase sem conflitos.
+Ensaio reexecutado em Windows/Node 22.23.2/Python 3.13.14, TextLayer offline.
+Ajustado orquestrador para criar o lote integracao-f1-sintetico.pdf via API antes
+ do live-api-smoke (mesmo preparo do CI). A primeira falha era lote ausente.
+Após o ajuste: 6/7 etapas aprovadas; E7 falha ao trocar do analista para operador:
+botão Conectar API de testes permanece desabilitado (live-api-smoke.cjs:31).
+Build, modo offline, conectado por perfil, portal contratante e contingência
+passaram; reinício até health cerca de 0,9s. Sem vídeo ou release congelada.
+Suíte backend: 340 aprovados, 1 ignorado; TypeScript, P0 e transporte aprovados.
+Status: FALHOU no ensaio completo. Necessita investigação da troca de sessão
+com Dev3, revalidação com Clerk recém-integrado e novo ensaio antes de release.
