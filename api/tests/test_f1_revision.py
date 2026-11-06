@@ -582,3 +582,17 @@ def test_aprovar_duplicidade_deixa_uma_unica_versao_vigente(banco):
     vigentes = q("SELECT id, versao, substitui_id FROM documents WHERE worker_id='T001' AND tipo='HOLERITE' "
                  "AND competencia='10/2026' AND status<>'SUBSTITUIDO'")
     assert [(v["id"], v["versao"], v["substitui_id"]) for v in vigentes] == [(duplicado["id"], 2, antigo["id"])]
+
+
+def test_publicar_depois_da_previa_ignora_horario_de_geracao(banco, monkeypatch):
+    # O analista lê a prévia e publica minutos depois: só o horário de geração mudou.
+    horarios = iter(["2026-11-06T10:00:00", "2026-11-06T10:03:00", "2026-11-06T10:03:01", "2026-11-06T10:03:02"])
+    with TestClient(app) as client:
+        rid = client.post("/api/reports", headers=_headers(),
+                          json={"contract_id": "CT-001", "competencia": "10/2026"}).json()["id"]
+        monkeypatch.setattr(db, "agora", lambda: next(horarios, "2026-11-06T10:05:00"))
+        previa = client.get(f"/api/reports/{rid}/preview", headers=_headers()).json()
+        publicado = client.post(f"/api/reports/{rid}/publish", headers=_headers(),
+                                json={"conteudo_sha256": previa["conteudo_sha256"]})
+    assert publicado.status_code == 200, publicado.text
+    assert publicado.json()["conteudo_json"]["gerado_em"] != previa["conteudo_json"]["gerado_em"]
