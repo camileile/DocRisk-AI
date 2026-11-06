@@ -37,8 +37,6 @@ def test_admin_clerk_provisions_companies_contracts_and_invites_supplier(real_en
 
         listed = client.get("/api/admin/registry", headers=admin)
         assert listed.status_code == 200
-        assert any(c["id"] == contract_id and c["bernhoeft_id"] != "ORG-OUTRA"
-                   for c in []) is False  # o registro publicado não vaza identidade externa
         assert any(c["id"] == contract_id for c in listed.json()["contratos"])
         assert all("token" not in c for c in listed.json()["usuarios"])
 
