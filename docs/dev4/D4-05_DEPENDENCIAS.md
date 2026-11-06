@@ -92,3 +92,5 @@ pytest api/tests -q: 370 aprovados, 1 ignorado (98,75s).
 TypeScript, compileall e diff --check aprovados. Não existe LICENSE na base.
 Avaliação/licenciamento PyMuPDF e licença do projeto continuam pendentes de decisão.
 Status: PARCIAL (validação local aprovada; licenças e CI Linux pendentes).
+
+Base final f085df4: 387 aprovados, 1 ignorado (185,96s), Pillow13.0.0. pip-audit do lock novamente sem vulnerabilidades; pip check aprovado. Scan separado do ambiente da main (Pillow12.3/pip26.1.2): 41 registros em 2 pacotes; detalhes em main-audit.txt. São 39 registros de Pillow e 2 IDs de pip, não 41 CVEs necessariamente distintas. Ferramenta pip do ambiente não integra o lock da aplicação. D4-05 remove os achados de Pillow no conjunto travado.
