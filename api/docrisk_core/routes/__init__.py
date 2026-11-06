@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 12062)
-Total output lines: 960
-
 from __future__ import annotations
 
 import json
@@ -485,7 +482,15 @@ def _issue_rows(conn: sqlite3.Connection, ids: list[str]) -> list[dict[str, Any]
     rows = _rows(conn.execute(f"SELECT * FROM issues WHERE contract_id IN ({marks}) ORDER BY id DESC",
                               ids).fetchall())
     for row in rows:
-        row["historico"] = _json_l…62 tokens truncated…ntratos_do_usuario(conn, user)
+        row["historico"] = _json_list(row.pop("historico_json"))
+    return rows
+
+
+@router.get("/api/issues")
+def issues(user: Usuario = Depends(usuario_atual),
+           conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
+    _require_analyst(user)
+    ids = contratos_do_usuario(conn, user)
     if not ids:
         return []
     return _issue_rows(conn, ids)

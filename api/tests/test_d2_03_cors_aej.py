@@ -20,6 +20,21 @@ def test_cors_allowlist_is_explicit_and_rejects_wildcards(monkeypatch):
         _configured_cors_origins()
 
 
+def test_cors_padrao_aceita_as_duas_origens_do_front_local(monkeypatch):
+    monkeypatch.delenv("CORS_ORIGINS", raising=False)
+    assert _configured_cors_origins() == ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+
+@pytest.mark.parametrize("origem", ["http://localhost:3000", "http://127.0.0.1:3000"])
+def test_front_local_conversa_com_a_api_nas_duas_origens(banco, origem):
+    with TestClient(app) as client:
+        r = client.options("/api/me", headers={
+            "Origin": origem, "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "authorization",
+        })
+    assert r.status_code == 200 and r.headers["access-control-allow-origin"] == origem
+
+
 def test_preflight_permite_put_de_associacao_aej_apenas_na_origem_configurada(banco):
     headers = {
         "Origin": "http://localhost:3000",
