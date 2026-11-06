@@ -783,8 +783,8 @@ def client_overview(fornecedora_id: str | None = None, contract_id: str | None =
 def reprocess_batch(batch_id: int, user: Usuario = Depends(usuario_atual),
                     conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, int | str]:
     batch = _batch_or_404(conn, user, batch_id)
-    if user.papel not in PAPEIS_BERNHOEFT and user.id != batch["uploaded_by"]:
-        raise HTTPException(403, "Somente Bernhoeft ou quem enviou o lote pode reprocessá-lo")
+    if user.papel not in PAPEIS_BERNHOEFT and user.papel != Papel.GESTOR_FORN and user.id != batch["uploaded_by"]:
+        raise HTTPException(403, "Somente Bernhoeft, o gestor da fornecedora ou quem enviou o lote pode reprocessá-lo")
     if batch["status"] != StatusLote.FALHA_PROCESSAMENTO.value:
         raise HTTPException(409, "Somente lotes com falha de processamento podem ser reprocessados")
     try:

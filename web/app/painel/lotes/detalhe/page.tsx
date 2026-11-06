@@ -39,7 +39,7 @@ function BatchDetail() {
   if (batch.loading) return <LoadingState />;
   if (batch.error || !batch.data) return <ErrorState message={batch.error ?? "Lote não encontrado"} onRetry={batch.reload} />;
   const b = batch.data;
-  const canReprocess = b.status === "FALHA_PROCESSAMENTO" && (me?.org_tipo === "BERNHOEFT" || me?.id === b.uploaded_by);
+  const canReprocess = b.status === "FALHA_PROCESSAMENTO" && (me?.org_tipo === "BERNHOEFT" || me?.papel === "GESTOR_FORN" || me?.id === b.uploaded_by);
 
   async function reprocess() {
     try {

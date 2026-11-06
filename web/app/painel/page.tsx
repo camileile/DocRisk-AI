@@ -41,13 +41,14 @@ export default function Overview() {
 }
 
 function SupplierOverview() {
+  const { contract } = useSession();
   const batches = useApi<Batch[]>("/api/batches");
   const issues = useApi<Issue[]>("/api/supplier/issues");
   if (batches.loading || issues.loading) return <LoadingState />;
   const error = batches.error ?? issues.error;
   if (error) return <ErrorState message={error} onRetry={() => { void batches.reload(); void issues.reload(); }} />;
-  const lotes = batches.data ?? [];
-  const pend = issues.data ?? [];
+  const lotes = (batches.data ?? []).filter((b) => !contract || b.contract_id === contract);
+  const pend = (issues.data ?? []).filter((i) => !contract || i.contract_id === contract);
   const abertas = pend.filter((i) => i.status !== "RESOLVIDA");
   return (
     <>
