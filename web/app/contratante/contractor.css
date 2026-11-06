@@ -1,0 +1,20 @@
+/* Contenção funcional de filtros e tabelas no portal, inclusive no celular. */
+.contractor-workspace .list-toolbar .filter-label {
+  min-width: 0;
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+}
+.contractor-workspace .filter-label select {
+  min-width: 0;
+  max-width: 100%;
+}
+.contractor-workspace .report-document .data-table.compact th {
+  white-space: normal;
+}
+.contractor-workspace .report-document-header {
+  flex-wrap: wrap;
+}
+.contractor-workspace .report-document-header p {
+  overflow-wrap: anywhere;
+}
