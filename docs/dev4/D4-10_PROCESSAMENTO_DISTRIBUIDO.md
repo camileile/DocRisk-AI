@@ -56,3 +56,5 @@ irmã e não está integrada nesta branch. Nenhuma implementação distribuída 
 Sem testes de carga 10x; alterações de schema/estados exigem alinhamento Dev1/Dev2.
 Status: NÃO INICIADA para implementação; apenas diagnóstico reconciliado.
 Suíte na base a1f6109: 370 aprovados, 1 ignorado (98,49s). D1-10 foi integrado depois no PR #47; telemetria agora existe, porém não implementa distribuição.
+
+Base final f085df4: 387 aprovados, 1 ignorado (154,39s), Pillow12.3; compileall/diff --check aprovados. Telemetria D1-10 incorporada na base; lease/heartbeat/escala10x seguem não implementados. Status NÃO INICIADA para implementação distribuída.
