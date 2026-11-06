@@ -114,25 +114,32 @@ def test_structured_field_review_preserves_history_and_reconciles(banco, monkeyp
     batch_id = _api_lote()
     doc = _doc_with_pages(batch_id, [3, 4])
     original = json.loads(doc["campos_json"])
+    with db.tx() as conn:
+        conn.execute("UPDATE documents SET status='REVISAO_HUMANA' WHERE id=?", (doc["id"],))
+        pages = [int(row[0]) for row in conn.execute(
+            "SELECT page_id FROM doc_pages WHERE document_id=? ORDER BY posicao", (doc["id"],))]
     calls = []
     monkeypatch.setattr(conciliacao, "conciliar",
                         lambda conn, contract_id, worker_id, competencia:
                         calls.append((contract_id, worker_id, competencia)))
+    url = f"/api/documents/{doc['id']}/review"
     with TestClient(app) as client:
-        first = client.patch(
-            f"/api/documents/{doc['id']}/review", headers=_headers(),
-            json={"acao": "corrigir_campos", "campos": {"horas_extras_h": 10,
-                                                              "horas_extras_valor": 150.5},
-                  "motivo": "Conferido no comprovante", "fonte": "Holerite, página 2"},
-        )
-        second = client.patch(
-            f"/api/documents/{doc['id']}/review", headers=_headers(),
-            json={"acao": "corrigir_campos", "campos": {"horas_extras_h": 11},
-                  "motivo": "Segunda conferência", "fonte": "Espelho de ponto, página 4"},
-        )
+        first = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos",
+            "campos": {"horas_extras_h": 10, "horas_extras_valor": 150.5},
+            "motivo": "Conferido no comprovante",
+            "fontes": {"horas_extras_h": pages[0], "horas_extras_valor": pages[1]},
+            "esperado_em": doc["updated_at"],
+        })
+        assert first.status_code == 200, first.text
+        first_version = client.get(f"/api/documents/{doc['id']}", headers=_headers()).json()
+        second = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"horas_extras_h": 11},
+            "motivo": "Segunda conferência", "fontes": {"horas_extras_h": pages[1]},
+            "esperado_em": first_version["updated_at"],
+        })
         detail = client.get(f"/api/documents/{doc['id']}", headers=_headers())
-
-    assert first.status_code == second.status_code == detail.status_code == 200
+    assert second.status_code == detail.status_code == 200
     assert calls == [("CT-001", "T001", "10/2026")] * 2
     reviews = detail.json()["revisoes_campos"]
     assert [r["revision_number"] for r in reviews] == [1, 2, 3]
@@ -144,7 +151,7 @@ def test_structured_field_review_preserves_history_and_reconciles(banco, monkeyp
     assert reviews[1]["valor_corrigido"] == 150.5
     assert reviews[2]["valor_original"] == 10 and reviews[2]["valor_corrigido"] == 11
     assert reviews[0]["reason"] == "Conferido no comprovante"
-    assert reviews[0]["source"] == "Holerite, página 2"
+    assert reviews[0]["source"] == f"Página #{pages[0]}"
     assert detail.json()["campos"]["horas_extras_h"] == 11
     assert detail.json()["campos"]["horas_extras_valor"] == 150.5
 
@@ -153,30 +160,33 @@ def test_structured_field_review_validates_and_hides_history_from_supplier(banco
     batch_id = _api_lote()
     doc = _doc_with_pages(batch_id, [3, 4])
     before = json.loads(doc["campos_json"])
+    with db.tx() as conn:
+        conn.execute("UPDATE documents SET status='REVISAO_HUMANA' WHERE id=?", (doc["id"],))
+        page = int(conn.execute("SELECT page_id FROM doc_pages WHERE document_id=? ORDER BY posicao",
+                                (doc["id"],)).fetchone()[0])
+    url = f"/api/documents/{doc['id']}/review"
     with TestClient(app) as client:
-        missing_reason = client.patch(
-            f"/api/documents/{doc['id']}/review", headers=_headers(),
-            json={"acao": "corrigir_campos", "campos": {"horas_extras_h": 9},
-                  "fonte": "página 2"},
-        )
-        unknown_field = client.patch(
-            f"/api/documents/{doc['id']}/review", headers=_headers(),
-            json={"acao": "corrigir_campos", "campos": {"cpf": "123"},
-                  "motivo": "Conferência", "fonte": "página 2"},
-        )
-        negative_value = client.patch(
-            f"/api/documents/{doc['id']}/review", headers=_headers(),
-            json={"acao": "corrigir_campos", "campos": {"horas_extras_h": -2},
-                  "motivo": "Conferência", "fonte": "página 2"},
-        )
-        corrected = client.patch(
-            f"/api/documents/{doc['id']}/review", headers=_headers(),
-            json={"acao": "corrigir_campos", "campos": {"horas_extras_h": 9},
-                  "motivo": "Conferência", "fonte": "página 2"},
-        )
+        missing_reason = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"horas_extras_h": 9},
+            "fontes": {"horas_extras_h": page}, "esperado_em": doc["updated_at"]})
+        legacy = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"horas_extras_h": 9},
+            "motivo": "Conferência", "fonte": "página 2"})
+        unknown_field = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"cpf": "123"},
+            "motivo": "Conferência", "fontes": {"cpf": page},
+            "esperado_em": doc["updated_at"]})
+        negative_value = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"horas_extras_h": -2},
+            "motivo": "Conferência", "fontes": {"horas_extras_h": page},
+            "esperado_em": doc["updated_at"]})
+        corrected = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"horas_extras_h": 9},
+            "motivo": "Conferência", "fontes": {"horas_extras_h": page},
+            "esperado_em": doc["updated_at"]})
         supplier_detail = client.get(f"/api/documents/{doc['id']}", headers=_headers("u-oper-beta"))
 
-    assert missing_reason.status_code == unknown_field.status_code == negative_value.status_code == 422
+    assert all(item.status_code == 422 for item in (missing_reason, legacy, unknown_field, negative_value))
     assert corrected.status_code == supplier_detail.status_code == 200
     assert "revisoes_campos" not in supplier_detail.json()
     assert q("SELECT COUNT(*) AS n FROM document_field_reviews WHERE document_id=?", doc["id"])[0]["n"] == 1
