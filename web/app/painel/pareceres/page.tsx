@@ -4,7 +4,7 @@ import { FilePlus2, Send } from "lucide-react";
 import { useSession } from "@/components/demo-provider";
 import { ReportView } from "@/components/report-view";
 import { EmptyState, ErrorState, LoadingState, Notice, PageIntro } from "@/components/workspace-parts";
-import { api, formatDate, reportStatusLabels, type Report, type ReportContent } from "@/lib/api";
+import { api, formatDate, reportStatusLabels, type Report, type ReportContent, type ReportCreateInput } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 
 export default function ReportsPage() {
@@ -21,9 +21,10 @@ export default function ReportsPage() {
     setBusy(true);
     setFeedback(null);
     try {
+      const payload: ReportCreateInput = { contract_id: contract, competencia, observacoes };
       const r = await api<Report>("/api/reports", {
         method: "POST",
-        body: JSON.stringify({ contract_id: contract, competencia, observacoes }),
+        body: JSON.stringify(payload),
       });
       setSelected(r.id);
       setFeedback({ tone: "success", text: `Rascunho v${r.versao} criado. Confira a prévia antes de publicar.` });
