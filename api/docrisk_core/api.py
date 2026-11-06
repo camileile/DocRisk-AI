@@ -20,11 +20,16 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     db.init_db()
+    worker_started = False
     try:
-        worker.iniciar_worker()
+        worker_started = worker.iniciar_worker()
     except NotImplementedError:
         logger.info("Worker F2 ainda não implementado; API iniciada sem processamento assíncrono")
-    yield
+    try:
+        yield
+    finally:
+        if worker_started:
+            worker.parar_worker()
 
 
 app = FastAPI(title="DocRisk AI", version="0.2.0", lifespan=lifespan)
