@@ -64,7 +64,7 @@ DOCRISK_DATA_DIR=/volume-persistente/docrisk
 
 `CLERK_ISSUER` deve ser o emissor exato informado pelo Clerk; não usar `api.clerk.com` como emissor. `CLERK_AUTHORIZED_PARTIES` aceita uma lista explícita de origens separadas por vírgula, sem caminhos. Configurar `CLERK_AUDIENCE` somente quando a audience também estiver definida no token emitido.
 
-O armazenamento precisa ser durável. A entrega mantém a implementação SQLite atual; não provisiona banco/host produtivo nem altera todo o cadastro administrativo, cujas mutações gerais continuam limitadas ao modo demonstrativo. Login produtivo não equivale a plataforma inteira pronta para produção.
+O armazenamento precisa ser durável. A entrega mantém a implementação SQLite atual; não provisiona banco/host produtivo. Após a H03, o ADMIN_BH autenticado por Clerk pode cadastrar empresas e contratos vinculados à sua auditora; **contas reais são ativadas exclusivamente por convite** e trabalhadores sintéticos são provisionados por comando controlado, conforme `docs/H03_PROVISIONAMENTO_OPERACIONAL.md`. O login produtivo não equivale a infraestrutura de produção validada.
 
 ## Bootstrap institucional
 
@@ -76,7 +76,7 @@ python api/scripts/link_clerk_identity.py --subject user_EXEMPLO --account-id pl
 
 A API deve estar instalada/importável, com `DOCRISK_AUTH_MODE=clerk` e emissor configurados. O script cria a conta institucional se necessário, sem credencial demonstrativa utilizável no modo Clerk. Para vincular uma conta empresarial já cadastrada, usar seu ID em `--account-id` e omitir `--platform`. Não vincular identidades por domínio de e-mail ou por papel recebido do navegador.
 
-Empresas/contratos produtivos precisam estar previamente provisionados/importados no cadastro autorizado; isso não é feito por um cadastro público. Operações de convite acrescentam o acesso do usuário à organização existente, sem duplicar a identidade da fornecedora.
+Empresas e contratos operacionais são cadastrados pelo **ADMIN_BH autenticado** em `/administracao/empresas`, sem habilitar a demo. Trabalhadores sintéticos são importados pelo script controlado `api/scripts/provision_synthetic_workers.py` após configurar o banco persistente e ativar o Admin da auditora. Não existe cadastro público nem atribuição de papel pelo navegador. Convites acrescentam o acesso à organização existente, sem duplicar a identidade da fornecedora; consultar o roteiro completo em `docs/H03_PROVISIONAMENTO_OPERACIONAL.md`.
 
 ## Evidências e limites
 
