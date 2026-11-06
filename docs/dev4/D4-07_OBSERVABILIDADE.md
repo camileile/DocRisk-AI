@@ -46,3 +46,15 @@ viva, ou drenar a fila em `iniciar_worker()`. Reproduzido ao escrever o teste de
 
 Jobs rastreáveis, logs estruturados, métricas reais, worker indisponível detectável e readiness
 correta. Pendente: métricas de IA (D1-10), CI remoto.
+
+## Reconciliação Codex — 2026-11-06
+Base a1f6109; backup backup/d4-07-20261106 (b3d186d).
+Conflitos api.py: preservados validate_configuration, seed condicionado ao modo
+de autenticação/demo, métodos PUT e cabeçalhos X-DocRisk-Link/Invalid; adicionados
+logs, middleware e X-Request-ID sem substituir a autenticação atual.
+pytest api/tests -q: 378 aprovados, 1 ignorado em 80,15s; testes de readiness,
+worker indisponível, métricas e correlação incluídos. compileall/diff --check OK.
+Windows/Python 3.13.14, TextLayer offline. Métricas de IA sem dados continuam null.
+Sentinela: parar_worker ainda insere None após marcar parada; risco de sentinela
+remanescente no reinício permanece para Dev1. Não alterado nesta branch.
+Status: PARCIAL (limitações de IA e ciclo do worker permanecem).
