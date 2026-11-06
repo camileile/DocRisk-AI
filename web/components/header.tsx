@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { clerkEnabled } from "@/lib/auth-mode";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 export function Header() {
@@ -35,7 +36,7 @@ export function Header() {
           <Link href="/#como-funciona">Como funciona</Link>
           <Link href="/#modulos">Módulos</Link>
           <Link href="/contato">Contato</Link>
-          <Link href="/operacao">API de testes</Link>
+          <Link href={clerkEnabled ? "/entrar" : "/operacao"}>{clerkEnabled ? "Entrar na conta" : "API de testes"}</Link>
           <Link href="/acesso" className="button small">
             Acessar demonstração <ArrowUpRight size={16} />
           </Link>

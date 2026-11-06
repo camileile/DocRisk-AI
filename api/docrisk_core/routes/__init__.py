@@ -129,7 +129,7 @@ def _require_batch_reader(user: Usuario) -> None:
 
 @router.get("/api/demo/users")
 def demo_users(conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, str]]:
-    if not config.DEMO_MODE:
+    if not config.DEMO_MODE or config.AUTH_MODE == "clerk":
         raise HTTPException(404, "Rota não encontrada")
     rows = conn.execute(
         "SELECT u.id, u.nome, u.org_id, o.tipo AS org_tipo, u.role, u.token "

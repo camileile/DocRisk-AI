@@ -1,4 +1,4 @@
-import { captureSession } from "./api-session";
+import { captureSession, invalidateSession } from "./api-session";
 
 export const API_URL = (
   process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_DOCRISK_API_URL || "http://127.0.0.1:8000"
@@ -83,6 +83,8 @@ export async function request<T>(
   const url = endpoint(path);
   const headers = new Headers(init.headers);
   headers.set("Authorization", `Bearer ${session.token}`);
+  if (session.clerkProvider && session.link) headers.set("X-DocRisk-Link", session.link);
+  else headers.delete("X-DocRisk-Link");
   headers.set("Accept", "application/json");
   if (init.body && !(init.body instanceof FormData) && !headers.has("Content-Type"))
     headers.set("Content-Type", "application/json");
@@ -107,6 +109,12 @@ export async function request<T>(
   session.signal.addEventListener("abort", abort, { once: true });
   const timer = setTimeout(() => { timedOut = true; controller.abort(); }, timeoutMs);
   try {
+    if (session.clerkProvider) {
+      const token = await session.clerkProvider();
+      check();
+      if (!token) { invalidateSession(); throw new ApiError(401, "Sessão encerrada. Entre novamente."); }
+      headers.set("Authorization", `Bearer ${token}`);
+    }
     const response = await fetch(url, {
       ...init, headers, cache: "no-store", redirect: "error", signal: controller.signal,
     });
@@ -114,7 +122,12 @@ export async function request<T>(
     if (!response.ok) {
       const detail = await apiDetail(response);
       check();
-      throw httpError(response.status, detail);
+      const failure = httpError(response.status, detail);
+      if ((response.status === 401 || response.headers.get("X-DocRisk-Link-Invalid") === "1") && session.clerkProvider) {
+        invalidateSession();
+        throw failure;
+      }
+      throw failure;
     }
     let result: T;
     try { result = await consume(response); } catch (error) {
@@ -127,6 +140,7 @@ export async function request<T>(
     check();
     return result;
   } catch (error) {
+    if (error instanceof ApiError && (error.status === 401 || (error.status === 403 && session.signal.aborted))) throw error;
     check();
     if (error instanceof ApiError) throw error;
     throw new ApiError(0, mutation

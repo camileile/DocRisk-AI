@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./workspace.css";
 import "./api-integration.css";
-import { DemoProvider } from "@/components/demo-provider";
+import { AuthRoot } from "@/components/auth-root";
 import { SessionToolbar } from "@/components/session-toolbar";
 export const metadata: Metadata = {
   title: "DocRisk AI | Inteligência documental, decisões mais claras",
@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <DemoProvider><SessionToolbar />{children}</DemoProvider>
+        <AuthRoot><SessionToolbar />{children}</AuthRoot>
       </body>
     </html>
   );
