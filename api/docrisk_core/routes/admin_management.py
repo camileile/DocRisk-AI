@@ -11,7 +11,7 @@ from datetime import date, timedelta
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from .. import config, db
 from ..auth import Usuario, auditar, contratos_do_usuario, exigir_papel, usuario_atual
@@ -121,7 +121,9 @@ class UserInput(NamedInput):
 
 
 class StatusInput(BaseModel):
-    ativo: bool
+    # Mesmo contrato das rotas de plataforma e fornecedora: só booleano JSON.
+    model_config = ConfigDict(extra="forbid")
+    ativo: bool = Field(strict=True)
 
 
 def _create_contract(conn: sqlite3.Connection, user: Usuario, payload: ContractInput) -> str:
