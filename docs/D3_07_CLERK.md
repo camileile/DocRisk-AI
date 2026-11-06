@@ -89,3 +89,11 @@ Empresas/contratos produtivos precisam estar previamente provisionados/importado
 - Navegador na exportação: orientação de login → demo Analista → Documentos → saída, sem chamadas operacionais ou Clerk e sem erros de JavaScript.
 
 **Validação ainda necessária na instância configurada:** receber convite em e-mail controlado → ativar/verificar identificação → aceitar vínculo → acessar operação permitida → recuperar senha → encerrar/revogar sessão. Esta etapa não foi executada porque o ambiente não recebeu chaves/domínio Clerk reais. Nenhum e-mail real foi enviado. Não foi repetida a suíte completa por perfil nem realizado deploy.
+
+## Complemento — convite do administrador inicial ao cadastrar auditora
+
+A rota POST /api/platform/auditors aceita no modo Clerk os campos nome, administrador e email. Apenas a identidade institucional ADMIN_PLATAFORMA pode criar organizações auditoras. A operação cria a organização e emite convite ADMIN_BH pelo mecanismo de /api/auth/invitations, retornando convite_status=PENDING, sem administrador_id nem token_teste. Em caso de falha no envio, a compensação remove apenas o convite identificado pela tentativa inicial. A organização só é removida, sob transação de escrita, se não houver outros convites, usuários ou contratos; operações concorrentes bem-sucedidas são preservadas e auditadas.
+
+O usuário interno somente é criado após o destinatário aceitar o convite em /api/auth/invitations/{id}/accept, com e-mail verificado, provedor ativo e revalidação do emissor. A listagem institucional mostra convites iniciais e administradores já ativados. O cadastro por token continua restrito ao ambiente demonstrativo.
+
+O envio exige que a conta Admin Geral já tenha sido provisionada e autenticada pelo Clerk. Não substitui a validação manual de convite e login em instância real.

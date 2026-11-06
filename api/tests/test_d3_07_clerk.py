@@ -214,3 +214,75 @@ def test_clerk_identity_authenticates_without_demo_mode(identity, monkeypatch, u
         expected = 'ADMIN_PLATAFORMA' if uid == 'platform' else 'ADMIN_BH'
         assert response.json()['papel'] == expected
         assert client.get('/api/demo/users').status_code == 404
+
+
+def test_platform_creation_invites_initial_admin_without_demo_token(identity, monkeypatch):
+    monkeypatch.setattr(config, 'DEMO_MODE', False)
+    headers = identity['headers']('platform')
+    with TestClient(app) as client:
+        missing = client.post('/api/platform/auditors', headers=headers, json={
+            'nome': 'Auditora Nova', 'administrador': 'Admin Inicial'})
+        assert missing.status_code == 422
+        denied = client.post('/api/platform/auditors', headers=identity['headers']('u-admin'), json={
+            'nome': 'Auditora Nova', 'administrador': 'Admin Inicial', 'email': 'person@example.test'})
+        assert denied.status_code == 403
+
+        created = client.post('/api/platform/auditors', headers=headers, json={
+            'nome': 'Auditora Nova', 'administrador': 'Admin Inicial', 'email': ' Person@Example.Test '})
+        assert created.status_code == 201, created.text
+        result = created.json()
+        assert result['convite_status'] == 'PENDING'
+        assert 'token_teste' not in result and 'administrador_id' not in result
+        org = result['id']
+        with db.tx() as conn:
+            assert conn.execute("SELECT tipo FROM organizations WHERE id=?", (org,)).fetchone()[0] == 'BERNHOEFT'
+            assert conn.execute("SELECT COUNT(*) FROM users WHERE org_id=?", (org,)).fetchone()[0] == 0
+            invitation = conn.execute("SELECT * FROM identity_invitations WHERE id=?", (result['convite_id'],)).fetchone()
+            assert invitation['email'] == 'person@example.test'
+            assert invitation['org_id'] == org and invitation['role'] == 'ADMIN_BH'
+            assert invitation['invited_by'] == 'u-plataforma'
+            assert invitation['invited_link_id'] == 'link-platform'
+
+        registry = client.get('/api/platform/registry', headers=headers).json()
+        assert any(row['org_id'] == org and row['status'] == 'PENDING' for row in registry['convites_iniciais'])
+        assert not any(row['org_id'] == org for row in registry['administradores'])
+        assert client.get('/api/me', headers={'Authorization': 'Bearer ' + identity['token']('new')}).status_code == 403
+
+        invite = result['convite_id']
+        new_headers = {'Authorization': 'Bearer ' + identity['token']('new')}
+        assert any(row['id'] == invite for row in client.get('/api/auth/invitations/pending', headers=new_headers).json())
+        accepted = client.post('/api/auth/invitations/' + invite + '/accept', headers=new_headers)
+        assert accepted.status_code == 200, accepted.text
+        link = accepted.json()['link_id']
+        me = client.get('/api/me', headers={**new_headers, 'X-DocRisk-Link': link})
+        assert me.status_code == 200
+        assert me.json()['nome'] == 'Admin Inicial' and me.json()['org_id'] == org
+        assert me.json()['papel'] == 'ADMIN_BH' and me.json()['org_tipo'] == 'BERNHOEFT'
+        admin = client.get('/api/admin/registry', headers={**new_headers, 'X-DocRisk-Link': link})
+        assert admin.status_code == 200 and admin.json()['empresas'] == []
+        registry = client.get('/api/platform/registry', headers=headers).json()
+        assert any(row['org_id'] == org and row['nome'] == 'Admin Inicial' for row in registry['administradores'])
+        assert any(row['org_id'] == org and row['status'] == 'ACCEPTED' for row in registry['convites_iniciais'])
+        duplicate = client.post('/api/platform/auditors', headers=headers, json={
+            'nome': ' auditora nova ', 'administrador': 'Outro', 'email': 'other@example.test'})
+        assert duplicate.status_code == 409
+
+
+def test_platform_invitation_failure_rolls_back_new_auditor(identity, monkeypatch):
+    monkeypatch.setattr(config, 'DEMO_MODE', False)
+    real_provider = clerk_identity.clerk_api
+
+    def fail_invite(method, path, payload=None):
+        if method == 'POST' and path == '/invitations':
+            raise HTTPException(503, 'Falha simulada de convite')
+        return real_provider(method, path, payload)
+
+    monkeypatch.setattr(clerk_identity, 'clerk_api', fail_invite)
+    with TestClient(app) as client:
+        response = client.post('/api/platform/auditors', headers=identity['headers']('platform'), json={
+            'nome': 'Auditora Sem Convite', 'administrador': 'Admin Sem Convite',
+            'email': 'person@example.test'})
+        assert response.status_code == 503
+    with db.tx() as conn:
+        assert conn.execute("SELECT COUNT(*) FROM organizations WHERE nome='Auditora Sem Convite'").fetchone()[0] == 0
+        assert conn.execute("SELECT COUNT(*) FROM identity_invitations WHERE nome='Admin Sem Convite'").fetchone()[0] == 0
