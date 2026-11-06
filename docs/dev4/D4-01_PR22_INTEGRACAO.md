@@ -68,3 +68,17 @@ Local: Windows 11, Python 3.13.14 (CI usa 3.12). O skip é o teste de OCR Tesser
 Critérios atendidos: seis papéis testados, reativação comprovada (3 caminhos), defeito
 identificado com correção mínima. Pendentes: CI remoto no SHA desta branch (exige publicação) e
 caso de sessão expirada (depende de Dev2).
+
+## Reconciliação Codex — 2026-11-06
+
+Base: origin/main 1cbd57f. Backup: backup/d4-01-20261106 (22f294c).
+Rebase independente sem conflitos. A correção 758bea0 ainda é necessária:
+StatusInput da administração na main aceitava coerção de booleanos.
+A suíte inicial teve 360 aprovados, 1 ignorado e 1 falha de expectativa antiga.
+Contrato OIDC atual recusa tokens demo com 401 fora da demonstração; teste
+adaptado de 403 para 401 sem alterar autenticação/autorização.
+Ambiente: Windows, Python 3.13.14, leitor textlayer, dados sintéticos temporários.
+Comando: api/.venv/Scripts/python.exe -m pytest api/tests -q.
+Verificações: git diff --check origin/main e compileall aprovados.
+Não houve publicação nem chamadas pagas.
+`nResultado final: 361 aprovados, 1 ignorado (76,99 s). CONCLUÍDA LOCALMENTE.
