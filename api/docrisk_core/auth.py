@@ -1,16 +1,12 @@
-"""Autenticação e autorização. Dono: FRENTE 1 (API, banco e segurança).
-
-Regra de ouro (spec 2.2 e 8.1): toda rota confere organização + vínculo com o
-contrato + papel, no back-end. Esconder botão no front não é proteção.
-"""
 from __future__ import annotations
 
 import sqlite3
 from dataclasses import dataclass
 from typing import Iterable
 
-from fastapi import Header
+from fastapi import Header, HTTPException
 
+from . import db
 from .contracts import Papel
 
 
@@ -19,38 +15,63 @@ class Usuario:
     id: str
     nome: str
     org_id: str
-    org_tipo: str  # BERNHOEFT | CONTRATANTE | FORNECEDORA
+    org_tipo: str
     papel: Papel
 
 
 def usuario_atual(authorization: str = Header(default="")) -> Usuario:
-    """Dependência FastAPI: lê 'Bearer <token>' e carrega o usuário ativo.
-
-    Aceite: sem token ou token inválido -> HTTP 401.
-    """
-    raise NotImplementedError("Frente 1: usuario_atual")
+    esquema, _, token = authorization.partition(" ")
+    if esquema.lower() != "bearer" or not token.strip():
+        raise HTTPException(status_code=401, detail="Token bearer obrigatório",
+                            headers={"WWW-Authenticate": "Bearer"})
+    with db.tx() as conn:
+        row = conn.execute(
+            "SELECT u.id, u.nome, u.org_id, o.tipo AS org_tipo, u.role "
+            "FROM users u JOIN organizations o ON o.id=u.org_id "
+            "WHERE u.token=? AND u.ativo=1",
+            (token.strip(),),
+        ).fetchone()
+    if row is None:
+        raise HTTPException(status_code=401, detail="Token inválido ou usuário inativo",
+                            headers={"WWW-Authenticate": "Bearer"})
+    try:
+        papel = Papel(row["role"])
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail="Papel de usuário inválido") from exc
+    return Usuario(row["id"], row["nome"], row["org_id"], row["org_tipo"], papel)
 
 
 def contratos_do_usuario(conn: sqlite3.Connection, usuario: Usuario) -> list[str]:
-    """IDs de contrato que a ORGANIZAÇÃO do usuário pode ver.
-
-    BERNHOEFT -> contracts.bernhoeft_id; FORNECEDORA -> fornecedora_id;
-    CONTRATANTE -> contratante_id.
-    """
-    raise NotImplementedError("Frente 1: contratos_do_usuario")
+    coluna_por_tipo = {
+        "BERNHOEFT": "bernhoeft_id",
+        "FORNECEDORA": "fornecedora_id",
+        "CONTRATANTE": "contratante_id",
+    }
+    coluna = coluna_por_tipo.get(usuario.org_tipo)
+    if coluna is None:
+        return []
+    rows = conn.execute(f"SELECT id FROM contracts WHERE {coluna}=? ORDER BY id",
+                        (usuario.org_id,)).fetchall()
+    return [row[0] for row in rows]
 
 
 def exigir_contrato(conn: sqlite3.Connection, usuario: Usuario, contract_id: str) -> None:
-    """Recurso de contrato alheio -> HTTP 404 (não revela que existe) + auditoria NEGADO."""
-    raise NotImplementedError("Frente 1: exigir_contrato")
+    if contract_id not in contratos_do_usuario(conn, usuario):
+        auditar(conn, usuario, "CONTRATO_NEGADO", contract_id, "NEGADO")
+        conn.commit()
+        raise HTTPException(status_code=404, detail="Contrato não encontrado")
 
 
 def exigir_papel(usuario: Usuario, papeis: Iterable[Papel]) -> None:
-    """Papel fora da lista -> HTTP 403."""
-    raise NotImplementedError("Frente 1: exigir_papel")
+    if usuario.papel not in set(papeis):
+        raise HTTPException(status_code=403, detail="Ação não permitida para este perfil")
 
 
 def auditar(conn: sqlite3.Connection, usuario: Usuario | None, acao: str, alvo: str,
             resultado: str = "OK") -> None:
-    """Grava em `audit` QUEM fez O QUÊ e QUANDO — nunca conteúdo de documento."""
-    raise NotImplementedError("Frente 1: auditar")
+    conn.execute(
+        "INSERT INTO audit (user_id, org_id, acao, alvo, resultado, instante) "
+        "VALUES (?, ?, ?, ?, ?, ?)",
+        (usuario.id if usuario else None, usuario.org_id if usuario else None,
+         acao[:120], alvo[:240], resultado[:20], db.agora()),
+    )
