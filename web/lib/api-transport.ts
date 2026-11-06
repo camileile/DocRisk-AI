@@ -1,4 +1,7 @@
 import { captureSession, invalidateSession } from "./api-session";
+import { publicDemoOnly } from "./auth-mode";
+
+export const PUBLIC_DEMO_MESSAGE = "Esta versão pública oferece somente a demonstração offline; nenhuma API é acessada.";
 
 export const API_URL = (
   process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_DOCRISK_API_URL || "http://127.0.0.1:8000"
@@ -71,6 +74,8 @@ function httpError(status: number, detail: string | null = null): ApiError {
 export async function request<T>(
   path: string, options: ApiRequestInit, consume: (response: Response) => Promise<T>,
 ): Promise<T> {
+  // Na build pública nenhuma requisição sai do navegador, nem para 127.0.0.1.
+  if (publicDemoOnly) throw new ApiError(0, PUBLIC_DEMO_MESSAGE, "session");
   const session = captureSession();
   if (session.role || !session.token ||
       (options.expectedToken !== undefined && options.expectedToken.trim() !== session.token)) {
