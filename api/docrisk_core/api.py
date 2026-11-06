@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import os
 from contextlib import asynccontextmanager
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +18,20 @@ from .routes import router
 from .routes.supplier_management import router as supplier_management_router
 
 logger = logging.getLogger(__name__)
+
+
+def _configured_cors_origins() -> list[str]:
+    # Padrão local: o `npm run dev` sobe em 127.0.0.1:3000 (ver README); localhost:3000 também.
+    raw = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
+    origins = [origin.strip() for origin in raw.split(",") if origin.strip()]
+    if not origins or "*" in origins:
+        raise RuntimeError("CORS_ORIGINS deve conter uma allowlist explícita, sem wildcard.")
+    for origin in origins:
+        parsed = urlsplit(origin)
+        if (parsed.scheme not in {"http", "https"} or not parsed.netloc or parsed.path or
+                parsed.query or parsed.fragment or parsed.username or parsed.password):
+            raise RuntimeError(f"Origem inválida em CORS_ORIGINS: {origin}")
+    return origins
 
 
 @asynccontextmanager
@@ -37,10 +52,9 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="DocRisk AI", version="0.2.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in os.getenv(
-        "CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",") if o.strip()],
+    allow_origins=_configured_cors_origins(),
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "PATCH"],
     allow_headers=["Authorization", "Content-Type"],
 )
 app.include_router(router)

@@ -114,6 +114,14 @@ def _require_analyst(user: Usuario) -> None:
     exigir_papel(user, [Papel.ANALISTA_BH])
 
 
+def _require_aej_association(user: Usuario) -> None:
+    exigir_papel(user, [Papel.ANALISTA_BH])
+
+
+def _require_aej_review(user: Usuario) -> None:
+    exigir_papel(user, [Papel.ANALISTA_BH])
+
+
 def _require_batch_reader(user: Usuario) -> None:
     exigir_papel(user, [*PAPEIS_FORNECEDORA, Papel.ANALISTA_BH])
 
@@ -180,7 +188,7 @@ def _substituir_espelho_anterior(conn: sqlite3.Connection, contract_id: str, wor
 @router.get("/api/contracts/{contract_id}/aej-mappings")
 def list_aej_mappings(contract_id: str, user: Usuario = Depends(usuario_atual),
                       conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, str]]:
-    _require_analyst(user)
+    _require_aej_association(user)
     _contract_or_404(conn, user, contract_id)
     return _rows(conn.execute(
         "SELECT m.worker_link_id, m.worker_id, w.nome AS worker_name "
@@ -192,7 +200,7 @@ def list_aej_mappings(contract_id: str, user: Usuario = Depends(usuario_atual),
 def put_aej_mapping(contract_id: str, worker_link_id: str, worker_id: str = Body(embed=True),
                     user: Usuario = Depends(usuario_atual),
                     conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, str]:
-    _require_analyst(user)
+    _require_aej_association(user)
     _contract_or_404(conn, user, contract_id)
     if not worker_link_id.isdigit() or not worker_id.strip():
         raise HTTPException(422, "Informe vínculo AEJ numérico e trabalhador do contrato.")
@@ -617,7 +625,7 @@ def document_anonimizado(document_id: int, user: Usuario = Depends(usuario_atual
 def review_aej_document(document_id: int, payload: dict[str, Any] = Body(...),
                         user: Usuario = Depends(usuario_atual),
                         conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
-    _require_analyst(user)
+    _require_aej_review(user)
     doc = _document_or_404(conn, user, document_id)
     if conn.execute("SELECT 1 FROM aej_documents WHERE document_id=?", (document_id,)).fetchone() is None:
         raise HTTPException(409, "Documento não é uma derivação AEJ.")
