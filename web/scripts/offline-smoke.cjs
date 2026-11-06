@@ -24,10 +24,12 @@ async function run() {
   });
   try {
     await page.goto(base + "/", { waitUntil: "domcontentloaded" });
+    assert.equal(await page.locator('a[href="/demo"]').count(), 0, "A landing não deve divulgar a demo fictícia.");
     await page.getByRole("navigation", { name: "Navegação principal" }).getByRole("link", { name: "Acesso", exact: true }).click();
     await page.waitForURL((url) => url.pathname === "/operacao/");
     assert.equal(await page.getByRole("radio").count(), 0, "Acesso institucional não deve abrir os perfis fictícios.");
     await page.goto(base + "/acesso/", { waitUntil: "domcontentloaded" });
+    await page.waitForURL((url) => url.pathname === "/operacao/", { timeout: 15000 });
     assert.equal(await page.getByRole("radio").count(), 0, "Rota antiga de acesso não deve abrir a demo.");
     await page.goto(base + "/demo/", { waitUntil: "domcontentloaded" });
     assert.equal(await page.getByRole("radio").count(), 6);
