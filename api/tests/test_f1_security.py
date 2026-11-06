@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from docrisk_core import config, db
 from docrisk_core.api import app
 from docrisk_core.routes import worker
+from test_f2_worker import banco  # noqa: F401
 
 
 def token_for(user_id: str) -> str:
@@ -190,3 +191,104 @@ def test_read_endpoints_enforce_role_matrix(endpoint, permitidos):
                 f"{user_id} em {endpoint}: "
                 f"esperado {esperado}, recebido {response.status_code}"
             )
+
+def _upload_batch(client, filename, content):
+    return client.post(
+        "/api/supplier/batches",
+        headers=headers("u-oper-beta"),
+        data={"contract_id": "CT-001"},
+        files={"file": (filename, content, "application/octet-stream")},
+    )
+
+
+def _assert_upload_rejected_without_batch(client, filename, content):
+    with db.tx() as conn:
+        before = conn.execute("SELECT COUNT(*) FROM batches").fetchone()[0]
+
+    response = _upload_batch(client, filename, content)
+
+    with db.tx() as conn:
+        after = conn.execute("SELECT COUNT(*) FROM batches").fetchone()[0]
+
+    assert response.status_code == 422, response.text
+    assert after == before
+    return response
+
+
+@pytest.mark.parametrize(
+    ("filename", "content"),
+    [
+        ("arquivo.pdf", b"MZ" + b"\x00" * 100),  # executável renomeado
+        ("jornada.aej", b"01|1|2026-11-06|"),    # AEJ fora do fluxo próprio
+        ("corrompido.pdf", b"%PDF-1.4\n" + b"\x00lixo" * 50),
+        ("vazio.pdf", b""),
+    ],
+)
+def test_upload_rejeita_arquivos_invalidos_sem_criar_lote(
+    banco, filename, content
+):
+    with TestClient(app) as client:
+        _assert_upload_rejected_without_batch(client, filename, content)
+
+
+def test_upload_rejeita_arquivo_acima_de_50mb_sem_criar_lote(banco, monkeypatch):
+    import pymupdf as fitz
+
+    # Um PDF válido: sem o limite de tamanho, a validação de formato o aceitaria.
+    with fitz.open() as document:
+        page = document.new_page()
+        page.insert_text((50, 50), "Documento sintetico")
+        document.update_stream(
+            page.get_contents()[0],
+            b"%" + b"x" * (50 * 1024 * 1024) + b"\n",
+            compress=False,
+        )
+        content = document.tobytes()
+    assert len(content) > 50 * 1024 * 1024
+    with fitz.open(stream=content, filetype="pdf") as document:
+        assert document.page_count == 1
+
+    queued = []
+    monkeypatch.setattr(worker, "enfileirar", queued.append)
+
+    with TestClient(app) as client:
+        response = _assert_upload_rejected_without_batch(client, "grande.pdf", content)
+    assert response.json()["detail"] == "Arquivo vazio ou acima do limite de upload"
+    assert queued == []
+
+def test_upload_aceita_tiff_multipagina(banco, monkeypatch):
+    from io import BytesIO
+    from pathlib import Path
+    from PIL import Image
+
+    quadros = [
+        Image.new("RGB", (200, 100), cor)
+        for cor in ("red", "green", "blue")
+    ]
+    buffer = BytesIO()
+    quadros[0].save(
+        buffer,
+        format="TIFF",
+        save_all=True,
+        append_images=quadros[1:],
+    )
+    content = buffer.getvalue()
+
+    queued = []
+    monkeypatch.setattr(worker, "enfileirar", queued.append)
+
+    with TestClient(app) as client:
+        response = _upload_batch(client, "lote.tif", content)
+
+    assert response.status_code == 202, response.text
+    batch_id = response.json()["batch_id"]
+    assert queued == [batch_id]
+    with db.tx() as conn:
+        batch = conn.execute("SELECT * FROM batches WHERE id=?", (batch_id,)).fetchone()
+    assert batch is not None
+    assert batch["tipo_arquivo"] == "TIFF"
+    assert batch["total_pages"] == 3
+    assert batch["contract_id"] == "CT-001"
+    assert batch["uploaded_by"] == "u-oper-beta"
+    assert batch["status"] == "RECEBIDO"
+    assert Path(batch["arquivo"]).read_bytes() == content
