@@ -1,7 +1,8 @@
 """Administração de uma organização auditora no MVP.
 
-Todas as leituras e alterações são limitadas ao auditor do token. Cadastros
-mutáveis só funcionam no ambiente de testes, que ainda usa tokens Bearer de demo.
+Todas as leituras e alterações são limitadas ao administrador da auditora.
+Empresas e contratos também podem ser cadastrados no modo Clerk autenticado.
+Criação de usuários por token permanece exclusiva do ambiente de testes.
 """
 from __future__ import annotations
 
@@ -40,9 +41,19 @@ def _authorize(user: Usuario) -> None:
 
 
 def _write_allowed(user: Usuario) -> None:
+    """Proteção dos cadastros legados que emitem credenciais de teste."""
     _authorize(user)
-    if not config.DEMO_MODE:
-        raise HTTPException(403, "Cadastros de teste indisponíveis fora do ambiente demo; configurar autenticação de produção.")
+    if config.AUTH_MODE != "token" or not config.DEMO_MODE:
+        raise HTTPException(403, "Acessos reais devem ser concedidos ou revogados por convite e vínculo Clerk.")
+
+
+def _structure_write_allowed(user: Usuario) -> None:
+    """Somente administrador autenticado da auditora; nunca modo misto."""
+    _authorize(user)
+    operational = config.AUTH_MODE == "clerk" and not config.DEMO_MODE
+    testing = config.AUTH_MODE == "token" and config.DEMO_MODE
+    if not (operational or testing):
+        raise HTTPException(403, "Configure autenticação Clerk sem modo demo para cadastrar empresas e contratos.")
 
 
 def _organizations(conn: sqlite3.Connection, user: Usuario) -> list[dict[str, Any]]:
@@ -184,7 +195,7 @@ def overview(contratante_id: str | None = None, user: Usuario = Depends(usuario_
 @router.post("/companies", status_code=201)
 def create_company(payload: CompanyInput, user: Usuario = Depends(usuario_atual),
                    conn: sqlite3.Connection = Depends(_conn)) -> dict[str, Any]:
-    _write_allowed(user)
+    _structure_write_allowed(user)
     nome = payload.nome.strip()
     if not nome:
         raise HTTPException(422, "Nome da empresa obrigatório.")
@@ -231,7 +242,7 @@ def create_company(payload: CompanyInput, user: Usuario = Depends(usuario_atual)
 @router.post("/contracts", status_code=201)
 def create_contract(payload: ContractInput, user: Usuario = Depends(usuario_atual),
                     conn: sqlite3.Connection = Depends(_conn)) -> dict[str, str]:
-    _write_allowed(user)
+    _structure_write_allowed(user)
     contract_id = _create_contract(conn, user, payload)
     conn.commit()
     return {"id": contract_id}
