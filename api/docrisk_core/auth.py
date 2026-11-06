@@ -1,4 +1,3 @@
-"""Autenticação e autorização por organização, contrato e papel."""
 from __future__ import annotations
 
 import sqlite3
@@ -21,7 +20,6 @@ class Usuario:
 
 
 def usuario_atual(authorization: str = Header(default="")) -> Usuario:
-    """Resolve o bearer token para um usuário ativo do banco."""
     esquema, _, token = authorization.partition(" ")
     if esquema.lower() != "bearer" or not token.strip():
         raise HTTPException(status_code=401, detail="Token bearer obrigatório",

@@ -1,4 +1,3 @@
-"""Aplicação FastAPI local para o protótipo DocRisk AI."""
 from __future__ import annotations
 
 import logging

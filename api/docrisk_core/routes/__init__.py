@@ -1,4 +1,3 @@
-"""Rotas da API F1: autenticação, isolamento por contrato e fluxos de revisão."""
 from __future__ import annotations
 
 import json
