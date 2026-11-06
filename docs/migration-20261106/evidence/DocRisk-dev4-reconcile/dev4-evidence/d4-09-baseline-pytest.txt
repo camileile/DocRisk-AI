@@ -1,0 +1,52 @@
+........................................................................ [ 17%]
+........................................................................ [ 34%]
+.................................F.......s.............................. [ 51%]
+........................................................................ [ 68%]
+........................................................................ [ 85%]
+.............................................................            [100%]
+================================== FAILURES ===================================
+________ test_CC01_processamento_concorrente_do_mesmo_lote_nao_duplica ________
+
+banco = WindowsPath('C:/Users/Pichau/AppData/Local/Temp/pytest-of-Pichau/pytest-179/test_CC01_processamento_concor0')
+
+    def test_CC01_processamento_concorrente_do_mesmo_lote_nao_duplica(banco):  # noqa: F811
+        bid = worker.criar_lote(BETA, "CT-001", "lote.pdf", pdf(*LOTE))
+        barreira = threading.Barrier(4)
+        erros: list[BaseException] = []
+    
+        def rodar():
+            barreira.wait()
+            try:
+                worker.processar_lote(bid, provedor=TextLayerProvider())
+            except BaseException as exc:  # registra e deixa o teste decidir
+                erros.append(exc)
+    
+        threads = [threading.Thread(target=rodar) for _ in range(4)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(60)
+        docs = _q("SELECT COUNT(*) FROM documents WHERE batch_id=?", bid)[0][0]
+        paginas = _q("SELECT COUNT(*), COUNT(DISTINCT ordem) FROM pages WHERE batch_id=?", bid)[0]
+        pend = _q("SELECT COUNT(*), COUNT(DISTINCT COALESCE(document_id,'')||'|'||categoria||'|'||"
+                  "COALESCE(worker_id,'')||'|'||COALESCE(competencia,'')) FROM issues WHERE contract_id='CT-001'")[0]
+        analises = _q("SELECT COUNT(*) FROM analyses WHERE contract_id='CT-001' AND atual=1")[0][0]
+        status = _q("SELECT status FROM batches WHERE id=?", bid)[0][0]
+>       assert not erros, [repr(e)[:120] for e in erros]
+E       AssertionError: ["IntegrityError('UNIQUE constraint failed: doc_pages.page_id')", "IntegrityError('UNIQUE constraint failed: doc_pages.page_id')"]
+E       assert not [IntegrityError('UNIQUE constraint failed: doc_pages.page_id'), IntegrityError('UNIQUE constraint failed: doc_pages.page_id')]
+
+api\tests\test_d4_09_adversarial.py:177: AssertionError
+============================== warnings summary ===============================
+..\DocRisk-dev4-reconcile\.venv-main\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\.venv-main\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_d4_09_adversarial.py::test_UP_arquivos_hostis_sao_recusados_sem_efeito[UP07 tiff com cabe\xe7alho e lixo]
+  C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\.venv-main\Lib\site-packages\PIL\TiffImagePlugin.py:950: UserWarning: Corrupt EXIF data.  Expecting to read 2 bytes but only got 0. 
+    warnings.warn(str(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED api\tests\test_d4_09_adversarial.py::test_CC01_processamento_concorrente_do_mesmo_lote_nao_duplica
+1 failed, 419 passed, 1 skipped, 2 warnings in 201.76s (0:03:21)

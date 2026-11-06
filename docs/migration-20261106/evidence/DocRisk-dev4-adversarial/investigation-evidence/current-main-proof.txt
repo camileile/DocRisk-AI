@@ -1,0 +1,83 @@
+F.                                                                       [100%]
+================================== FAILURES ===================================
+_______ test_consolidacoes_concorrentes_preservam_identidades_e_estado ________
+
+banco = WindowsPath('C:/Users/Pichau/AppData/Local/Temp/pytest-of-Pichau/pytest-204/test_consolidacoes_concorrente0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F7A0610050>
+
+    def test_consolidacoes_concorrentes_preservam_identidades_e_estado(banco, monkeypatch):
+        bid = worker.criar_lote(BETA, "CT-001", "concorrencia.pdf", pdf(*LOTE))
+        with db.tx() as conn:
+            lote = conn.execute("SELECT * FROM batches WHERE id=?", (bid,)).fetchone()
+        worker._registrar_paginas(lote)
+        with db.tx() as conn:
+            pages = conn.execute("SELECT * FROM pages WHERE batch_id=? ORDER BY ordem", (bid,)).fetchall()
+        for page in pages:
+            assert worker._analisar_pagina(page, "CT-001", TextLayerProvider())
+        original_ids = [p["id"] for p in pages]
+        guard = "SELECT 1 FROM documents WHERE batch_id = ? LIMIT 1"
+        stale_readers = threading.Barrier(4)
+        start = threading.Barrier(4)
+        original_connect = db.connect
+        reads = []
+    
+        class ObservedConnection:
+            def __init__(self):
+                self.conn = original_connect()
+            def __getattr__(self, name):
+                return getattr(self.conn, name)
+            def execute(self, sql, parameters=()):
+                cursor = self.conn.execute(sql, parameters)
+                if sql == guard:
+                    reads.append(self.conn.in_transaction)
+                    # Sem transa��o, for�a quatro leituras vazias antes de qualquer INSERT.
+                    # Com reserva de escrita, os demais aguardam no SQLite, antes da leitura.
+                    if not self.conn.in_transaction:
+                        stale_readers.wait(timeout=10)
+                return cursor
+    
+        monkeypatch.setattr(db, "connect", ObservedConnection)
+        def process():
+            start.wait(timeout=10)
+            worker.processar_lote(bid, provedor=TextLayerProvider())
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            futures = [executor.submit(process) for _ in range(4)]
+            errors = []
+            for future in futures:
+                try:
+                    future.result(timeout=30)
+                except Exception as exc:
+                    errors.append(repr(exc))
+        with db.tx() as conn:
+            observed = dict(conn.execute("SELECT status, erro, finished_at FROM batches WHERE id=?", (bid,)).fetchone())
+            observed["page_count"] = conn.execute("SELECT COUNT(*) FROM pages WHERE batch_id=?", (bid,)).fetchone()[0]
+            observed["document_count"] = conn.execute("SELECT COUNT(*) FROM documents WHERE batch_id=?", (bid,)).fetchone()[0]
+>       assert not errors, {"errors": errors, "guard_in_transaction": reads, "batch": observed}
+E       AssertionError: {'errors': ["IntegrityError('UNIQUE constraint failed: doc_pages.page_id')", "IntegrityError('UNIQUE constraint failed...o consolidar os documentos do lote; ver log do servidor.', 'finished_at': '2026-11-06T06:36:35', 'page_count': 8, ...}}
+E       assert not ["IntegrityError('UNIQUE constraint failed: doc_pages.page_id')", "IntegrityError('UNIQUE constraint failed: doc_pages.page_id')", "IntegrityError('UNIQUE constraint failed: doc_pages.page_id')"]
+
+ObservedConnection = <class 'test_d4_09_consolidation_race.test_consolidacoes_concorrentes_preservam_identidades_e_estado.<locals>.ObservedConnection'>
+banco      = WindowsPath('C:/Users/Pichau/AppData/Local/Temp/pytest-of-Pichau/pytest-204/test_consolidacoes_concorrente0')
+bid        = 1
+conn       = <test_d4_09_consolidation_race.test_consolidacoes_concorrentes_preservam_identidades_e_estado.<locals>.ObservedConnection object at 0x000002F7A060E8F0>
+errors     = ["IntegrityError('UNIQUE constraint failed: doc_pages.page_id')", "IntegrityError('UNIQUE constraint failed: doc_pages.page_id')", "IntegrityError('UNIQUE constraint failed: doc_pages.page_id')"]
+executor   = <concurrent.futures.thread.ThreadPoolExecutor object at 0x000002F7A0576510>
+future     = <Future at 0x2f7a0610fc0 state=finished returned NoneType>
+futures    = [<Future at 0x2f7a0576660 state=finished raised IntegrityError>, <Future at 0x2f7a050f250 state=finished raised Integr...ure at 0x2f7a050f890 state=finished raised IntegrityError>, <Future at 0x2f7a0610fc0 state=finished returned NoneType>]
+guard      = 'SELECT 1 FROM documents WHERE batch_id = ? LIMIT 1'
+lote       = <sqlite3.Row object at 0x000002F7A04E0BE0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F7A0610050>
+observed   = {'status': 'FALHA_PROCESSAMENTO', 'erro': 'Falha ao consolidar os documentos do lote; ver log do servidor.', 'finished_at': '2026-11-06T06:36:35', 'page_count': 8, ...}
+original_connect = <function connect at 0x000002F79F0FD620>
+original_ids = [1, 2, 3, 4, 5, 6, ...]
+page       = <sqlite3.Row object at 0x000002F7A05FCEE0>
+pages      = [<sqlite3.Row object at 0x000002F7A0300DF0>, <sqlite3.Row object at 0x000002F7A04E0910>, <sqlite3.Row object at 0x0000...ct at 0x000002F7A05FD1B0>, <sqlite3.Row object at 0x000002F7A05FD390>, <sqlite3.Row object at 0x000002F7A05FDA20>, ...]
+process    = <function test_consolidacoes_concorrentes_preservam_identidades_e_estado.<locals>.process at 0x000002F7A060DD00>
+reads      = [False, False, False, False]
+stale_readers = <threading.Barrier at 0x2f79f053e00: waiters=0/4>
+start      = <threading.Barrier at 0x2f7a02174d0: waiters=0/4>
+
+api\tests\test_d4_09_consolidation_race.py:58: AssertionError
+=========================== short test summary info ===========================
+FAILED api\tests\test_d4_09_consolidation_race.py::test_consolidacoes_concorrentes_preservam_identidades_e_estado
+1 failed, 1 passed in 2.55s

@@ -1,0 +1,371 @@
+
+=================================== ERRORS ====================================
+_______________ ERROR collecting tests/test_admin_management.py _______________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_admin_management.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_admin_management.py:5: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_________________ ERROR collecting tests/test_admin_review.py _________________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_admin_review.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_admin_review.py:4: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_______________ ERROR collecting tests/test_analyst_overview.py _______________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_analyst_overview.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_analyst_overview.py:7: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_____________________ ERROR collecting tests/test_api.py ______________________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_api.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_api.py:3: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+___________________ ERROR collecting tests/test_base_100.py ___________________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_base_100.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_base_100.py:10: in <module>
+    from test_f3_regras import _gerador
+api\tests\test_f3_regras.py:15: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+________________ ERROR collecting tests/test_client_portal.py _________________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_client_portal.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_client_portal.py:7: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_____________ ERROR collecting tests/test_d2_01_demo_security.py ______________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_d2_01_demo_security.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_d2_01_demo_security.py:4: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+________________ ERROR collecting tests/test_d2_03_cors_aej.py ________________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_d2_03_cors_aej.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_d2_03_cors_aej.py:5: in <module>
+    from docrisk_core.api import _configured_cors_origins, app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+____________ ERROR collecting tests/test_d2_04_admin_mutations.py _____________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_d2_04_admin_mutations.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_d2_04_admin_mutations.py:4: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_____________ ERROR collecting tests/test_d2_05_api_contracts.py ______________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_d2_05_api_contracts.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_d2_05_api_contracts.py:3: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_____________ ERROR collecting tests/test_d2_09_oidc_contract.py ______________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_d2_09_oidc_contract.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_d2_09_oidc_contract.py:9: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_____________ ERROR collecting tests/test_d3_06_review_viewer.py ______________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_d3_06_review_viewer.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_d3_06_review_viewer.py:8: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_________________ ERROR collecting tests/test_d3_07_clerk.py __________________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_d3_07_clerk.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_d3_07_clerk.py:5: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+______________ ERROR collecting tests/test_d4_09_adversarial.py _______________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_d4_09_adversarial.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_d4_09_adversarial.py:19: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+____________________ ERROR collecting tests/test_f1_aej.py ____________________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_f1_aej.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_f1_aej.py:7: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_________________ ERROR collecting tests/test_f1_revision.py __________________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_f1_revision.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_f1_revision.py:8: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_________________ ERROR collecting tests/test_f1_security.py __________________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_f1_security.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_f1_security.py:7: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+__________________ ERROR collecting tests/test_f3_regras.py ___________________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_f3_regras.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_f3_regras.py:15: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_____________ ERROR collecting tests/test_platform_management.py ______________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_platform_management.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_platform_management.py:3: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_________________ ERROR collecting tests/test_privacidade.py __________________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_privacidade.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_privacidade.py:9: in <module>
+    from test_f3_regras import _gerador
+api\tests\test_f3_regras.py:15: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+______________ ERROR collecting tests/test_privacidade_rotas.py _______________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_privacidade_rotas.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_privacidade_rotas.py:10: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_____________ ERROR collecting tests/test_profiles_integration.py _____________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_profiles_integration.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_profiles_integration.py:4: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_____________ ERROR collecting tests/test_supplier_management.py ______________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_supplier_management.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_supplier_management.py:3: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+______________ ERROR collecting tests/test_supplier_operator.py _______________
+ImportError while importing test module 'C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\tests\test_supplier_operator.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+api\tests\test_supplier_operator.py:4: in <module>
+    from docrisk_core.api import app
+api\docrisk_core\api.py:12: in <module>
+    from .clerk_identity import validate_configuration
+api\docrisk_core\clerk_identity.py:7: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+============================== warnings summary ===============================
+api\.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Pichau\Documents\GitHub\DocRisk-AI\api\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR api\tests\test_admin_management.py
+ERROR api\tests\test_admin_review.py
+ERROR api\tests\test_analyst_overview.py
+ERROR api\tests\test_api.py
+ERROR api\tests\test_base_100.py
+ERROR api\tests\test_client_portal.py
+ERROR api\tests\test_d2_01_demo_security.py
+ERROR api\tests\test_d2_03_cors_aej.py
+ERROR api\tests\test_d2_04_admin_mutations.py
+ERROR api\tests\test_d2_05_api_contracts.py
+ERROR api\tests\test_d2_09_oidc_contract.py
+ERROR api\tests\test_d3_06_review_viewer.py
+ERROR api\tests\test_d3_07_clerk.py
+ERROR api\tests\test_d4_09_adversarial.py
+ERROR api\tests\test_f1_aej.py
+ERROR api\tests\test_f1_revision.py
+ERROR api\tests\test_f1_security.py
+ERROR api\tests\test_f3_regras.py
+ERROR api\tests\test_platform_management.py
+ERROR api\tests\test_privacidade.py
+ERROR api\tests\test_privacidade_rotas.py
+ERROR api\tests\test_profiles_integration.py
+ERROR api\tests\test_supplier_management.py
+ERROR api\tests\test_supplier_operator.py
+!!!!!!!!!!!!!!!!!! Interrupted: 24 errors during collection !!!!!!!!!!!!!!!!!!!
+1 warning, 24 errors in 3.24s
