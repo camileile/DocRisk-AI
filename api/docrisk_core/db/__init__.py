@@ -12,7 +12,7 @@ import secrets
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .. import config
@@ -122,3 +122,14 @@ def seed_demo(conn: sqlite3.Connection) -> None:
         CONTRATOS,
     )
     conn.executemany("INSERT OR IGNORE INTO workers VALUES (?, ?, ?)", TRABALHADORES)
+    # Só personas fixas da demo; não concede novos contratos automaticamente
+    # nem reativa concessões revogadas após reiniciar a aplicação.
+    for uid, contract_id, manager in (
+        ("u-analista", "CT-001", "u-admin"), ("u-analista", "CT-002", "u-admin"),
+        ("u-oper-beta", "CT-001", "u-gestor-beta"), ("u-oper-gama", "CT-002", "u-admin"),
+    ):
+        conn.execute(
+            "INSERT INTO user_contract_grants (user_id,contract_id,granted_by,granted_at) "
+            "SELECT ?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM user_contract_grants "
+            "WHERE user_id=? AND contract_id=?)",
+            (uid, contract_id, manager, datetime.now(timezone.utc).isoformat(), uid, contract_id))

@@ -163,4 +163,6 @@ jobs:
           exit 1
       - name: Testar navegador contra FastAPI e SQLite reais
         run: node scripts/live-api-smoke.cjs
+      - name: Atribuição e revogação individual de contratos
+        run: node scripts/contract-access-smoke.cjs
 

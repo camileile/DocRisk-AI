@@ -11,6 +11,14 @@ let clerkProvider: (() => Promise<string | null>) | null = null;
 let clerkSessionId = "";
 let activeLink = "";
 const invalidationListeners = new Set<() => void>();
+const contractListeners = new Set<() => void>();
+export function onContractsChanged(listener: () => void) {
+  contractListeners.add(listener);
+  return () => { contractListeners.delete(listener); };
+}
+export function notifyContractsChanged() { contractListeners.forEach(listener => listener()); }
+// Cancela respostas do escopo anterior sem encerrar a identidade ou outro vínculo.
+export function refreshContractScope() { replaceSession(); }
 export function onSessionInvalidated(listener: () => void) {
   invalidationListeners.add(listener);
   return () => { invalidationListeners.delete(listener); };

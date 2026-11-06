@@ -1,6 +1,6 @@
 # Operador da Fornecedora — fechamento do fluxo
 
-Reaproveitados envio de PDF/imagem/AEJ, acompanhamento de lotes, consulta documental, busca, histórico de versões e correções. O acesso é organizacional pelos contratos autorizados, sem limitar a consulta ao remetente do lote.
+Reaproveitados envio de PDF/imagem/AEJ, acompanhamento de lotes, consulta documental, busca, histórico de versões e correções. O operador acessa somente contratos atribuídos individualmente pelo gestor da sua fornecedora, sem limitar a consulta ao remetente do lote. Concessão, validade e revogação estão descritas em `ACESSO_INDIVIDUAL_CONTRATOS.md`.
 
 Ajustes desta etapa:
 
