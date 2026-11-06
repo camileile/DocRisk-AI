@@ -123,6 +123,43 @@ def test_approve_and_request_correction_reconcile_affected_pair(banco, monkeypat
                      ("CT-001", "T002", "11/2026")]
 
 
+def test_approve_substitutes_existing_document_for_corrected_pair(banco):
+    batch_id = _api_lote()
+    point = _doc_with_pages(batch_id, [3, 4])
+    with db.tx() as conn:
+        conn.execute("UPDATE documents SET status='REVISAO_HUMANA' WHERE id=?", (point["id"],))
+        prior_id = conn.execute(
+            "INSERT INTO documents (batch_id, contract_id, tipo, worker_id, competencia, status, "
+            "confianca, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (batch_id, "CT-001", "HOLERITE", "T002", "11/2026", "APTO", 0.9,
+             db.agora(), db.agora()),
+        ).lastrowid
+    with TestClient(app) as client:
+        response = client.patch(
+            f"/api/documents/{point['id']}/review", headers=_headers(),
+            json={"acao": "aprovar", "tipo": "HOLERITE", "trabalhador_id": "T002",
+                  "competencia": "11/2026"},
+        )
+    assert response.status_code == 200
+    with db.tx() as conn:
+        prior = conn.execute("SELECT status FROM documents WHERE id=?", (prior_id,)).fetchone()
+    assert prior["status"] == "SUBSTITUIDO"
+
+
+def test_request_correction_rejects_pending_document(banco):
+    batch_id = _api_lote()
+    doc = _doc_with_pages(batch_id, [7])
+    # A F3 já abre a pendência de ilegível na consolidação; o pedido recusado não pode criar outra.
+    antes = q("SELECT COUNT(*) AS n FROM issues WHERE document_id=?", doc["id"])[0]["n"]
+    with TestClient(app) as client:
+        response = client.patch(
+            f"/api/documents/{doc['id']}/review", headers=_headers(),
+            json={"acao": "solicitar_correcao", "motivo": "Outra", "acao_solicitada": "Reenviar"},
+        )
+    assert response.status_code == 409
+    assert q("SELECT COUNT(*) AS n FROM issues WHERE document_id=?", doc["id"])[0]["n"] == antes
+
+
 def test_review_routes_use_f2_split_and_merge(banco):
     batch_id = _api_lote()
     point = _doc_with_pages(batch_id, [3, 4])
@@ -193,6 +230,31 @@ def test_resubmit_updates_issue_status_and_history(banco, monkeypatch):
     assert json.loads(issue["historico_json"])[-1]["lote"] == 555
 
 
+def test_resubmit_does_not_overwrite_f3_resolution(banco, monkeypatch):
+    with db.tx() as conn:
+        issue_id = conn.execute(
+            "INSERT INTO issues (contract_id, categoria, motivo, acao, status, created_at, updated_at, "
+            "historico_json) VALUES ('CT-001', 'ILEGIVEL', 'ilegível', 'reenviar', 'NOTIFICADA', ?, ?, '[]')",
+            (db.agora(), db.agora()),
+        ).lastrowid
+
+    def resolve_during_enqueue(batch_id):
+        with db.tx() as conn:
+            conn.execute("UPDATE issues SET status='RESOLVIDA', historico_json='[{\"status\":\"RESOLVIDA\"}]' "
+                         "WHERE id=?", (issue_id,))
+
+    monkeypatch.setattr(worker, "criar_lote", lambda *args, **kwargs: 555)
+    monkeypatch.setattr(worker, "enfileirar", resolve_during_enqueue)
+    with TestClient(app) as client:
+        response = client.post(f"/api/issues/{issue_id}/resubmit", headers=_headers("u-oper-beta"),
+                               files={"file": ("reenviado.pdf", b"fake")})
+    assert response.status_code == 202
+    with db.tx() as conn:
+        issue = conn.execute("SELECT * FROM issues WHERE id=?", (issue_id,)).fetchone()
+    assert issue["status"] == "RESOLVIDA"
+    assert json.loads(issue["historico_json"]) == [{"status": "RESOLVIDA"}]
+
+
 def test_reports_are_restricted_and_json_is_decoded(banco):
     with db.tx() as conn:
         report_id = conn.execute(
@@ -206,6 +268,17 @@ def test_reports_are_restricted_and_json_is_decoded(banco):
             ("CT-001", "10/2026", 2, "APROVADO_PUBLICADO", '{"published": true}',
              "u-analista", db.agora()),
         ).lastrowid
+        review_id = conn.execute(
+            "INSERT INTO reports (contract_id, competencia, versao, status, conteudo_json, autor_id, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            ("CT-001", "10/2026", 3, "EM_REVISAO", '{"review": true}', "u-analista", db.agora()),
+        ).lastrowid
+        replaced_id = conn.execute(
+            "INSERT INTO reports (contract_id, competencia, versao, status, conteudo_json, autor_id, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            ("CT-001", "10/2026", 4, "SUBSTITUIDO_POR_VERSAO", '{"old": true}',
+             "u-analista", db.agora()),
+        ).lastrowid
     with TestClient(app) as client:
         forbidden = client.get("/api/reports", headers=_headers("u-oper-beta"))
         visible = client.get("/api/reports", headers=_headers())
@@ -214,6 +287,8 @@ def test_reports_are_restricted_and_json_is_decoded(banco):
     assert next(item for item in visible.json() if item["id"] == report_id)["conteudo_json"] == {"total": 2}
     assert next(item for item in client_reports.json()
                 if item["id"] == published_id)["conteudo_json"] == {"published": True}
+    visible_ids = {item["id"] for item in visible.json()}
+    assert {review_id, replaced_id}.issubset(visible_ids)
 
 
 def test_search_snippet_uses_neutral_markers(banco):
@@ -224,9 +299,9 @@ def test_search_snippet_uses_neutral_markers(banco):
             "VALUES (?, 99, 'x.png', 'x')", (batch_id,)
         ).lastrowid
         conn.execute("INSERT INTO page_fts (texto, page_id, contract_id) VALUES (?, ?, ?)",
-                     ("<b>malicious</b> search text", page_id, "CT-001"))
+                     ("A&B malicious search text", page_id, "CT-001"))
     with TestClient(app) as client:
         response = client.get("/api/search?q=malicious", headers=_headers("u-oper-beta"))
     assert response.status_code == 200
-    assert "<b>" not in response.text
-    assert "[[malicious]]" in response.text
+    assert "A&B [[malicious]]" in response.text
+    assert "&amp;" not in response.text

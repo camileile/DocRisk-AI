@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import html
 import json
 import re
 import sqlite3
@@ -277,6 +276,7 @@ def review_document(document_id: int, payload: dict[str, Any],
                 (trabalhador_id, doc["contract_id"])).fetchone() is None:
             raise HTTPException(422, "Trabalhador não pertence ao contrato")
         par_antes = _document_pair(doc)
+        dados_corrigidos = (trabalhador_id != doc["worker_id"] or competencia != doc["competencia"])
         conn.execute(
             "UPDATE documents SET tipo=?, worker_id=?, competencia=?, status=?, motivos_pendencia='[]', "
             "revisado_por=?, updated_at=? WHERE id=?",
@@ -284,9 +284,18 @@ def review_document(document_id: int, payload: dict[str, Any],
              user.id, now, document_id))
         par_depois = _document_pair({"tipo": tipo_final.value, "worker_id": trabalhador_id,
                                      "competencia": competencia})
+        if dados_corrigidos and tipo_final in TIPOS_FOCO:
+            conn.execute(
+                "UPDATE documents SET status=?, revisado_por=?, updated_at=? "
+                "WHERE contract_id=? AND tipo=? AND worker_id=? AND competencia=? AND status=? AND id<>?",
+                (StatusDocumento.SUBSTITUIDO.value, user.id, now, doc["contract_id"], tipo_final.value,
+                 trabalhador_id, competencia, StatusDocumento.APTO.value, document_id),
+            )
         pendencias.resolver_do_documento(conn, document_id, "resolvida na revisão")
         _reconcile_pairs(conn, doc["contract_id"], par_antes, par_depois)
     elif action == "solicitar_correcao":
+        if doc["status"] not in {StatusDocumento.REVISAO_HUMANA.value, StatusDocumento.APTO.value}:
+            raise HTTPException(409, "Somente documentos em revisão ou aptos podem receber pedido de correção")
         motivo = str(payload.get("motivo", "")).strip()
         acao = str(payload.get("acao_solicitada", "")).strip()
         if not motivo or not acao:
@@ -487,7 +496,7 @@ def search(q: str = Query(min_length=1, max_length=250),
             (termos, *ids)).fetchall()
     except sqlite3.OperationalError as exc:
         raise HTTPException(400, "Consulta de busca inválida") from exc
-    return [{**dict(row), "trecho": html.escape(row["trecho"] or "")} for row in rows]
+    return _rows(rows)
 
 
 @router.post("/api/reports", status_code=201)
@@ -520,9 +529,10 @@ def list_reports(user: Usuario = Depends(usuario_atual),
         return []
     marks = ",".join("?" for _ in ids)
     rows = conn.execute(
-        f"SELECT * FROM reports WHERE contract_id IN ({marks}) AND status IN (?, ?) "
+        f"SELECT * FROM reports WHERE contract_id IN ({marks}) AND status IN (?, ?, ?, ?) "
         "ORDER BY created_at DESC, id DESC",
-        (*ids, StatusParecer.RASCUNHO.value, StatusParecer.APROVADO_PUBLICADO.value),
+        (*ids, StatusParecer.RASCUNHO.value, StatusParecer.EM_REVISAO.value,
+         StatusParecer.APROVADO_PUBLICADO.value, StatusParecer.SUBSTITUIDO_POR_VERSAO.value),
     ).fetchall()
     return [_report_result(row) for row in rows]
 
