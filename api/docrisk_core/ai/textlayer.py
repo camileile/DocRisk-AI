@@ -14,7 +14,7 @@ from __future__ import annotations
 import re
 import unicodedata
 
-from ..contracts import AnalisePagina, CamposPagina, TIPOS_FOCO, TipoDocumento, numero_br
+from ..contracts import AnalisePagina, CamposPagina, TIPOS_FOCO, TipoDocumento, normalizar_duracao, numero_br
 
 JANELA_TITULO = 300
 VERSAO_REGRAS = "regras-v1"
@@ -66,10 +66,16 @@ NOME = re.compile(
     r"\b(?:trabalhador|funcionario|colaborador|empregado|favorecido|nome)\s*:\s*"
     r"([^\n|:]+?)(?=\s{2,}|\s+matricula\b|\s*\||\n|$)", _F)
 HE_TOTAL_PONTO = re.compile(
-    r"\btotal\s+(?:de\s+)?(?:horas\s+extras?|h\.?\s*e\.?)\s*[:\-]?\s*(\d{1,3}:\d{2}|" + _NUM + r"\s*h)\b", _F)
+    r"\btotal\s+(?:de\s+)?(?:horas\s+extras?|h\.?\s*e\.?)\s*[:\-]?\s*"
+    r"((?:\d{1,3}\s*h\s*\d{1,2}(?:\s*m(?:in(?:utos?)?)?)?|\d{1,3}\s*h|"
+    r"\d{1,3}:\d{2}|" + _NUM + r"\s*h))\b", _F)
 HE_REF_FOLHA = re.compile(
-    r"\bhoras?\s+extras?[^\n]*?\bref(?:erencia)?\.?\s*[:\-]?\s*" + _NUM + r"\s*h\b", _F)
-HE_HORAS_FOLHA = re.compile(r"\bhoras?\s+extras?[^\n%]*?\b" + _NUM + r"\s*h\b", _F)
+    r"\bhoras?\s+extras?[^\n]*?\bref(?:erencia)?\.?\s*[:\-]?\s*"
+    r"((?:\d{1,3}\s*h\s*\d{1,2}(?:\s*m(?:in(?:utos?)?)?)?|\d{1,3}\s*h|"
+    r"\d{1,3}:\d{2}|" + _NUM + r"\s*h))\b", _F)
+HE_HORAS_FOLHA = re.compile(
+    r"\bhoras?\s+extras?[^\n%]*?\b((?:\d{1,3}\s*h\s*\d{1,2}(?:\s*m(?:in(?:utos?)?)?)?|"
+    r"\d{1,3}\s*h|\d{1,3}:\d{2}|" + _NUM + r"\s*h))\b", _F)
 HE_VALOR = re.compile(r"\bhoras?\s+extras?[^\n]*?R\$\s*(\d{1,3}(?:\.\d{3})*,\d{2}|\d+,\d{2})", _F)
 LIQUIDO = re.compile(r"\bliquido(?:\s+a\s+receber)?\s*[:\-]?\s*" + _DINHEIRO, _F)
 VALOR_PAGO = re.compile(
@@ -80,11 +86,7 @@ DATA_PAGAMENTO = re.compile(r"\bdata\s+(?:do\s+|de\s+)?pagamento\s*[:\-]?\s*(\d{
 def _horas(valor: str | None) -> float | None:
     if not valor:
         return None
-    valor = valor.strip().lower().removesuffix("h").strip()
-    if ":" in valor:
-        h, m = valor.split(":", 1)
-        return int(h) + int(m) / 60
-    return numero_br(valor)
+    return normalizar_duracao(valor)
 
 
 def _titulo(norm: str) -> tuple[TipoDocumento, tuple[int, int] | None]:
@@ -130,14 +132,21 @@ def analisar_texto(texto: str, origem: str = "TEXTO_PDF") -> AnalisePagina:
                 legivel, qualidade = False, 0.2
 
     campos = CamposPagina()
+    avisos_validacao: list[str] = []
     if tipo is TipoDocumento.ESPELHO_PONTO or (tipo is TipoDocumento.DESCONHECIDO and pagina_x and pagina_x > 1):
         m = _ultimo(HE_TOTAL_PONTO, norm)
         if m:
-            campos.horas_extras_h = _horas(m.group(1))
+            try:
+                campos.horas_extras_h = _horas(m.group(1))
+            except ValueError as exc:
+                avisos_validacao.append(f"Campo horas_extras_h: {exc}; conferência humana necessária.")
     if tipo is TipoDocumento.HOLERITE:
         m = HE_REF_FOLHA.search(norm) or HE_HORAS_FOLHA.search(norm)
         if m:
-            campos.horas_extras_h = _horas(m.group(1))
+            try:
+                campos.horas_extras_h = _horas(m.group(1))
+            except ValueError as exc:
+                avisos_validacao.append(f"Campo horas_extras_h: {exc}; conferência humana necessária.")
         v = HE_VALOR.search(norm)
         if v:
             campos.horas_extras_valor = numero_br(v.group(1))
@@ -170,6 +179,7 @@ def analisar_texto(texto: str, origem: str = "TEXTO_PDF") -> AnalisePagina:
         "qualidade": qualidade,
         "confianca_tipo": confianca,
         "campos": campos.model_dump(),
+        "avisos_validacao": avisos_validacao,
         "origem": origem,
     })
 

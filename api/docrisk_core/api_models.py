@@ -40,6 +40,12 @@ class FieldReviewRequest(BaseModel):
         return value.strip() if isinstance(value, str) else value
 
 
+class ReportPublish(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    conteudo_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
 class ReportEvidence(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -92,6 +98,7 @@ class ReportResponse(BaseModel):
     versao: int = Field(gt=0)
     status: StatusParecer
     conteudo_json: ReportContent | dict[str, Any]
+    conteudo_sha256: str | None = None
     observacoes: str | None = None
     autor_id: str | None = None
     created_at: str | None = None
