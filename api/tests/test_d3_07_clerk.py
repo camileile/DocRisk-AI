@@ -329,3 +329,27 @@ def test_authenticated_admin_provisions_companies_and_contracts_but_never_demo_t
         assert conn.execute('SELECT bernhoeft_id FROM contracts WHERE id=?', (contract_id,)).fetchone()[0] == 'ORG-BH'
         assert conn.execute("SELECT COUNT(*) FROM users WHERE nome='Conta demonstrativa'").fetchone()[0] == 0
 
+
+def test_controlled_synthetic_worker_provisioning_is_scoped_and_reversible(identity, monkeypatch, tmp_path):
+    from pathlib import Path
+    from runpy import run_path
+
+    monkeypatch.setattr(config, 'DEMO_MODE', False)
+    script = run_path(str(Path(__file__).resolve().parents[1] / 'scripts' / 'provision_mvp_workers.py'))
+    csv = tmp_path / 'workers.csv'
+    csv.write_text('id,nome\\nT8001,Trabalhador Sintético\\n', encoding='utf-8')
+    # O arquivo CSV é explicitamente fornecido; nenhum seed automático é usado.
+    records = script['load_csv'](csv)
+    with db.tx() as conn:
+        conn.execute("INSERT INTO contracts (id,nome,contratante_id,fornecedora_id,bernhoeft_id) "
+                     "VALUES ('CT-SYNTH','Sintético','ORG-ALFA','ORG-BETA','ORG-BH')")
+    assert script['provision']('CT-SYNTH', records, False) == (1, 0)
+    with db.tx() as conn:
+        assert conn.execute("SELECT COUNT(*) FROM workers WHERE id='T8001'").fetchone()[0] == 0
+    assert script['provision']('CT-SYNTH', records, True) == (1, 0)
+    assert script['provision']('CT-SYNTH', records, True) == (0, 1)
+    with pytest.raises(ValueError, match='outro contrato'):
+        script['provision']('CT-001', records, True)
+    with db.tx() as conn:
+        assert conn.execute("SELECT contract_id FROM workers WHERE id='T8001'").fetchone()[0] == 'CT-SYNTH'
+        assert conn.execute("SELECT COUNT(*) FROM audit WHERE acao='TRABALHADORES_SINTETICOS_PROVISIONADOS'").fetchone()[0] == 1
