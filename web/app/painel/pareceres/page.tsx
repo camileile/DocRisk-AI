@@ -124,16 +124,18 @@ function ReportPanel({ id, onPublished }: { id: number; onPublished: () => void 
   if (error || !data) return <ErrorState message={error ?? "Parecer não encontrado"} onRetry={reload} />;
   const content = data.conteudo_json as ReportContent;
   const draft = data.status === "RASCUNHO";
+  // Hash da prévia que o analista está vendo (a closure abaixo não herda o estreitamento de `data`).
+  const previewHash = data.conteudo_sha256;
 
   async function publish() {
     if (!window.confirm("Publicar este parecer? O conteúdo fica imutável e visível à contratante.")) return;
     setBusy(true);
     setPublishError(null);
     try {
-      if (!data.conteudo_sha256) throw new Error("Atualize a prévia antes de publicar.");
+      if (!previewHash) throw new Error("Atualize a prévia antes de publicar.");
       await api(`/api/reports/${id}/publish`, {
         method: "POST",
-        body: JSON.stringify({ conteudo_sha256: data.conteudo_sha256 }),
+        body: JSON.stringify({ conteudo_sha256: previewHash }),
       });
       onPublished();
       await reload();
