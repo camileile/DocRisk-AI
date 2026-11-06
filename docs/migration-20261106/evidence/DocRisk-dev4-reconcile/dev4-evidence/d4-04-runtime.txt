@@ -1,0 +1,15 @@
+diret�rio de trabalho: C:\Users\Pichau\AppData\Local\Temp\docrisk-d4-04-kawlr9el
+
+OK   C01 configura��o inv�lida recusada saida=3, segundos=1.74, mensagem_encontrada=True
+OK   C02 DATA_DIR inutiliz�vel recusado saida=3, segundos=0.86, mensagem_encontrada=True
+OK   C03 banco corrompido recusado saida=3, segundos=0.86, mensagem_encontrada=True
+OK   C03b banco corrompido preservado 
+OK   C04 inicializa��o limpa segundos_ate_health=1.17
+OK   C05 segunda inst�ncia recusada saida=3
+OK   C06 CORS permitido e negado permitido=200, negado=400
+OK   C07 job sint�tico ponta a ponta lote=1, status=CONCLUIDO, segundos=1.62, documentos=14, upload_ate_concluido=1.97
+OK   C08 queda abrupta + retomada sem duplicidade estado_ao_matar=PROCESSANDO, paginas_ok_ao_matar=0, status_final=CONCLUIDO, documentos=14, paginas=16, paginas_distintas=16, segundos_reinicio_ate_concluido=2.05
+OK   C09 encerramento controlado saida=3, shutdown_limpo=True
+OK   C10 reinicializa��o preserva dados segundos_ate_health=0.81, lotes_concluidos=2
+
+11/11 verifica��es OK
