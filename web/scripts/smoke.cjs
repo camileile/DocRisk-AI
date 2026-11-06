@@ -58,6 +58,7 @@ async function run() {
     await clickNavigation(page, "Prévia de envio", "/painel/envio/");
     assert.equal(await page.getByRole("link", { name: "Fila de revisão", exact: true }).count(), 0);
     assert.equal(await page.getByRole("link", { name: "Conciliações", exact: true }).count(), 0);
+    assert.equal(await page.getByRole("link", { name: "Pareceres", exact: true }).count(), 0);
 
     console.log("[4/6] Portal da contratante e conteúdo publicado");
     await selectProfile(page, "Gestor da contratante", "/contratante");
