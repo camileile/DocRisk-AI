@@ -18,7 +18,10 @@ def test_manager_creates_operator_shared_access_and_revokes_token(banco, monkeyp
         assert user["nome"] == "Novo operador" and user["org_id"] == "ORG-BETA"
         assert user["papel"] == "OPERADOR_FORN"
         token = {"Authorization": "Bearer " + user["token_teste"]}
-        # Novo operador pode consultar lote de outro usuário da mesma empresa.
+        assert client.get(f"/api/batches/{batch}", headers=token).status_code == 404
+        assert client.put(f"/api/contract-access/users/{user['id']}/contracts/CT-001",
+                          headers=h, json={"ativo": True}).status_code == 200
+        # Colegas compartilham documentos apenas no contrato atribuído.
         assert client.get(f"/api/batches/{batch}", headers=token).status_code == 200
         assert client.get("/api/me", headers=token).json()["papel"] == "OPERADOR_FORN"
         listing = client.get("/api/supplier/operators", headers=h)

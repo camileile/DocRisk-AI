@@ -429,6 +429,8 @@ def review_document(document_id: int, payload: dict[str, Any],
             raise HTTPException(409, "O documento mudou durante a solicitação. Recarregue os dados.")
         _reconcile_pairs(conn, doc["contract_id"], _document_pair(doc))
         auditar(conn, user, "DOCUMENTO_INICIAR_REVISAO", str(document_id))
+        # O navegador consulta o detalhe imediatamente após a resposta.
+        conn.commit()
         return {"document_id": document_id, "acao": action,
                 "status": StatusDocumento.REVISAO_HUMANA.value}
     if conn.execute("SELECT 1 FROM aej_documents WHERE document_id=?", (document_id,)).fetchone():
@@ -522,8 +524,10 @@ def review_document(document_id: int, payload: dict[str, Any],
     else:
         raise HTTPException(422, "Ação deve ser aprovar, corrigir_campos, dividir, unir_proximo ou solicitar_correcao")
     auditar(conn, user, f"DOCUMENTO_{action.upper()}", str(document_id))
-    return {"document_id": document_id, "acao": action, "status": conn.execute(
+    result = {"document_id": document_id, "acao": action, "status": conn.execute(
         "SELECT status FROM documents WHERE id=?", (document_id,)).fetchone()[0]}
+    conn.commit()
+    return result
 
 
 @router.get("/api/supplier/issues")

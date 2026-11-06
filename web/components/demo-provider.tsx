@@ -4,7 +4,8 @@
 import { Fragment, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { api, ApiError, getToken, setToken, type Contract, type Me, type Papel } from "@/lib/api";
 import { clerkEnabled } from "@/lib/auth-mode";
-import { configureClerkSession, selectClerkLink, clearClerkSession, onSessionInvalidated } from "@/lib/api-session";
+import { configureClerkSession, selectClerkLink, clearClerkSession, onSessionInvalidated,
+  getSessionVersion, onContractsChanged, refreshContractScope } from "@/lib/api-session";
 import { DEMO_CONTRACTS, demoUser, getDemoRole, setDemoRole } from "@/lib/offline-demo";
 
 export type AuthLink = { id: string; nome: string; org_nome: string; papel: Papel };
@@ -49,6 +50,37 @@ export function DemoProvider({ children, identityBridge }: { children: ReactNode
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [contract, setContract] = useState("");
   const [competence, setCompetence] = useState("10/2026");
+  const contractsRef = useRef(contracts);
+  contractsRef.current = contracts;
+  const scopeRefresh = useRef(false);
+
+  useEffect(() => {
+    if (!me || isDemo) return;
+    let disposed = false;
+    const refresh = async () => {
+      if (disposed || scopeRefresh.current) return;
+      scopeRefresh.current = true;
+      const version = getSessionVersion();
+      try {
+        const list = await api<Contract[]>("/api/contracts");
+        if (disposed || version !== getSessionVersion()) return;
+        const ids = (items: Contract[]) => JSON.stringify(items.map(item => item.id).sort());
+        if (ids(list) !== ids(contractsRef.current)) {
+          refreshContractScope();
+          contractsRef.current = list;
+          setContracts(list);
+          setContract(current => list.some(item => item.id === current) ? current : (list[0]?.id ?? ""));
+          setSessionVersion(value => value + 1);
+        }
+      } catch { /* A operação original apresenta a falha; uma consulta posterior pode retomar. */ }
+      finally { scopeRefresh.current = false; }
+    };
+    const listener = () => { void refresh(); };
+    const unsubscribe = onContractsChanged(listener);
+    window.addEventListener("focus", listener);
+    const interval = window.setInterval(listener, 30000);
+    return () => { disposed = true; unsubscribe(); window.removeEventListener("focus", listener); window.clearInterval(interval); };
+  }, [me?.id, activeLink, isDemo]);
 
   const load = useCallback(async (): Promise<Me | null> => {
     const attempt = ++generation.current;

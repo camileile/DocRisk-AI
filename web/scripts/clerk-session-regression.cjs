@@ -9,6 +9,7 @@ global.IS_REACT_ACT_ENVIRONMENT = true;
   let signedIn = true;
   let signOuts = 0;
   let linksQueries = 0;
+  let analystContracts = ['CT-A'];
   const token = async () => signedIn ? 'jwt-test' : null;
   const signOut = async () => { signOuts++; signedIn = false; };
   const env = environment(true, { process: { env: { ...process.env, NEXT_PUBLIC_AUTH_MODE: 'clerk' } } }, {
@@ -27,7 +28,8 @@ global.IS_REACT_ACT_ENVIRONMENT = true;
     if (resource === '/api/me') return session.captureSession().link === 'link-analyst'
       ? {id:'analyst',nome:'Analista',org_id:'BH',org_tipo:'BERNHOEFT',papel:'ANALISTA_BH'}
       : {id:'supplier',nome:'Operador',org_id:'FORN',org_tipo:'FORNECEDORA',papel:'OPERADOR_FORN'};
-    if (resource === '/api/contracts') return [{id:session.captureSession().link==='link-analyst'?'CT-A':'CT-B'}];
+    if (resource === '/api/contracts') return session.captureSession().link==='link-analyst'
+      ? analystContracts.map(id => ({id})) : [{id:'CT-B'}];
     throw Error('unexpected resource '+resource);
   };
   let value;
@@ -39,6 +41,19 @@ global.IS_REACT_ACT_ENVIRONMENT = true;
   assert.equal(value.me,null);assert.equal(value.links.length,2);
   await act(async()=>{await value.chooseLink('link-analyst');});
   assert.equal(value.me.id,'analyst');assert.equal(value.contract,'CT-A');
+  const previousScope = session.captureSession();
+  analystContracts = ['CT-C'];
+  await act(async()=>{session.notifyContractsChanged();});
+  assert.equal(value.contract,'CT-C');
+  assert.equal(value.contracts.length,1);
+  assert.equal(value.me.id,'analyst','contract revocation must not log out another authorized contract');
+  assert(previousScope.signal.aborted,'responses belonging to the revoked scope must be cancelled');
+  const stableVersion = session.getSessionVersion();
+  await act(async()=>{session.notifyContractsChanged();});
+  assert.equal(session.getSessionVersion(),stableVersion,'a repeated 404 must not create a remount loop');
+  analystContracts = [];
+  await act(async()=>{session.notifyContractsChanged();});
+  assert.equal(value.contract,'');assert.equal(value.contracts.length,0);
   await assert.rejects(value.chooseLink('forged-link'));
   await act(async()=>{await value.chooseLink('link-supplier');});
   assert.equal(value.me.id,'supplier');assert.equal(value.contract,'CT-B');

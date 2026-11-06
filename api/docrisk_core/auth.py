@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from typing import Iterable
 
@@ -64,8 +65,19 @@ def contratos_do_usuario(conn: sqlite3.Connection, usuario: Usuario) -> list[str
     coluna = coluna_por_tipo.get(usuario.org_tipo)
     if coluna is None:
         return []
-    rows = conn.execute(f"SELECT id FROM contracts WHERE {coluna}=? ORDER BY id",
-                        (usuario.org_id,)).fetchall()
+    # A organização limita o escopo; analistas e operadores precisam também de
+    # concessão individual vigente. Sem concessão, nenhum contrato é liberado.
+    if usuario.papel in {Papel.ANALISTA_BH, Papel.OPERADOR_FORN}:
+        now = datetime.now(timezone.utc).isoformat()
+        rows = conn.execute(
+            f"SELECT c.id FROM contracts c WHERE c.{coluna}=? AND EXISTS ("
+            "SELECT 1 FROM user_contract_grants g WHERE g.contract_id=c.id AND g.user_id=? "
+            "AND g.revoked_at IS NULL AND g.granted_at<=? "
+            "AND (g.expires_at IS NULL OR g.expires_at>?)) ORDER BY c.id",
+            (usuario.org_id, usuario.id, now, now)).fetchall()
+    else:
+        rows = conn.execute(f"SELECT id FROM contracts WHERE {coluna}=? ORDER BY id",
+                            (usuario.org_id,)).fetchall()
     return [row[0] for row in rows]
 
 
@@ -73,7 +85,8 @@ def exigir_contrato(conn: sqlite3.Connection, usuario: Usuario, contract_id: str
     if contract_id not in contratos_do_usuario(conn, usuario):
         auditar(conn, usuario, "CONTRATO_NEGADO", contract_id, "NEGADO")
         conn.commit()
-        raise HTTPException(status_code=404, detail="Contrato não encontrado")
+        raise HTTPException(status_code=404, detail="Contrato não encontrado",
+                            headers={"X-DocRisk-Contracts-Changed": "1"})
 
 
 def exigir_papel(usuario: Usuario, papeis: Iterable[Papel]) -> None:

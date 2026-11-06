@@ -36,6 +36,9 @@ def test_search_is_limited_to_selected_authorized_contract(banco):
     with TestClient(app) as client:
         h = headers("u-oper-beta")
         assert client.get("/api/search", headers=h, params={"q": "horas", "contract_id": "CT-001"}).json()[0]["page_id"] == page
+        assert client.get("/api/search", headers=h, params={"q": "horas", "contract_id": "CT-BETA-2"}).status_code == 404
+        assert client.put('/api/contract-access/users/u-oper-beta/contracts/CT-BETA-2',
+                          headers=headers('u-gestor-beta'), json={'ativo': True}).status_code == 200
         assert client.get("/api/search", headers=h, params={"q": "horas", "contract_id": "CT-BETA-2"}).json() == []
         assert client.get("/api/search", headers=h, params={"q": "horas", "contract_id": "CT-002"}).status_code == 404
 
