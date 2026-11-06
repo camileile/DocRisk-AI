@@ -56,7 +56,9 @@ export type Doc = {
   aej?: { origem: "AEJ"; worker_link_id: string; calculation_status: string; p7s_validated: false };
 };
 export type DocDetail = Doc & {
-  paginas_detalhe: { page_id: number; ordem: number; texto: string }[];
+  paginas_detalhe: { page_id: number; ordem: number; texto?: string }[];
+  evidencias_campos?: Partial<Record<keyof Campos, { page_id: number; ordem: number; valor: string | number; origem: string; confianca_classificacao: number | null }[]>>;
+  revisoes_campos?: { id: number; autor: string; created_at: string; justificativa: string; antes: Campos; depois: Campos; fontes: Partial<Record<keyof Campos, number>> }[];
   versoes: { id: number; versao: number; status: DocStatus; batch_id: number; created_at: string }[];
   aej?: {
     worker_link_id: string;

@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Check, Merge, Scissors, Undo2 } from "lucide-react";
@@ -9,10 +9,11 @@ import {
   ErrorState,
   LoadingState,
   Notice,
-  PageImage,
   PageIntro,
 } from "@/components/workspace-parts";
 import { api, formatHours, pageList, typeLabels, type DocDetail } from "@/lib/api";
+import { DocumentViewer } from "@/components/document-viewer";
+import { FieldReview } from "@/components/field-review";
 import { useApi } from "@/lib/use-api";
 import { useSession } from "@/components/demo-provider";
 
@@ -30,8 +31,10 @@ function ReviewDetail() {
   const { isDemo } = useSession();
   const id = useSearchParams().get("id");
   const router = useRouter();
-  const { data: d, error, loading, reload } = useApi<DocDetail>(id ? `/api/documents/${id}` : null);
+  const { data: d, error, loading, reload } = useApi<DocDetail>(id ? `/api/documents/${id}?include_page_text=false` : null);
   const workers = useApi<{ id: string; nome: string }[]>(d ? `/api/contracts/${d.contract_id}/workers` : null);
+  const [focusedPageId, setFocusedPageId] = useState<number>();
+  const acting = useRef(false);
   const [tipo, setTipo] = useState("");
   const [worker, setWorker] = useState("");
   const [competencia, setCompetencia] = useState("");
@@ -49,6 +52,7 @@ function ReviewDetail() {
     setWorker(d.worker_id ?? "");
     setCompetencia(d.competencia ?? "");
     setSplitAfter(1);
+    setFocusedPageId(undefined);
   }, [d]);
 
   if (!id) return <EmptyState title="Documento não informado." text="Abra um item da fila de revisão." />;
@@ -58,16 +62,19 @@ function ReviewDetail() {
   const foco = FOCO.includes(tipo);
 
   async function act(payload: Record<string, unknown>, success: string, leave = false) {
+    if (acting.current) return;
+    acting.current = true;
     setBusy(true);
     setFeedback(null);
     try {
       await api(`/api/documents/${d!.id}/review`, { method: "PATCH", body: JSON.stringify(payload) });
       setFeedback({ tone: "success", text: success });
       if (leave) router.push("/painel/revisao");
-      else void reload();
+      else await reload();
     } catch (err) {
       setFeedback({ tone: "error", text: err instanceof Error ? err.message : "Falha na ação" });
     } finally {
+      acting.current = false;
       setBusy(false);
     }
   }
@@ -194,18 +201,11 @@ function ReviewDetail() {
         </div>
       ) : <div className="review-workspace">
         <div className="review-pages">
-          {d.paginas_detalhe.map((p, i) => (
-            <figure key={p.page_id} className="workspace-card">
-              <figcaption>Página {i + 1} do documento · página {p.ordem} do lote</figcaption>
-              <PageImage pageId={p.page_id} alt={`Página ${p.ordem} do lote`} />
-              <details>
-                <summary>Texto lido (OCR)</summary>
-                <pre className="ocr-text">{p.texto || "Nenhum texto lido."}</pre>
-              </details>
-            </figure>
-          ))}
+          <DocumentViewer key={d.id} documentId={d.id} pages={d.paginas} selectedPageId={focusedPageId} onPageChange={setFocusedPageId} />
         </div>
         <aside className="review-actions">
+          <FieldReview key={`${d.id}-${d.updated_at}`} doc={d} disabled={isDemo || busy || !reviewable}
+            onSelectPage={setFocusedPageId} onSave={payload => void act(payload, "Campos corrigidos com justificativa. Confira a classificação antes de aprovar.")} />
           <section className="workspace-card">
             <h2>Classificação</h2>
             <p className="muted">

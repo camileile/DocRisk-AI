@@ -239,3 +239,16 @@ CREATE TABLE IF NOT EXISTS platform_settings (
   contato TEXT NOT NULL DEFAULT ''
 );
 INSERT OR IGNORE INTO platform_settings (id,nome) VALUES (1,'DocRisk AI');
+
+-- Histórico interno de correções humanas: nunca exposto em auditoria administrativa.
+CREATE TABLE IF NOT EXISTS document_field_reviews (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  document_id INTEGER NOT NULL REFERENCES documents(id),
+  user_id TEXT NOT NULL REFERENCES users(id),
+  antes_json TEXT NOT NULL,
+  depois_json TEXT NOT NULL,
+  fontes_json TEXT NOT NULL,
+  justificativa TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_document_field_reviews ON document_field_reviews(document_id, id);

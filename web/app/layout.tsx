@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./workspace.css";
 import "./api-integration.css";
+import "./document-viewer.css";
 import { DemoProvider } from "@/components/demo-provider";
 import { SessionToolbar } from "@/components/session-toolbar";
 export const metadata: Metadata = {

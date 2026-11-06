@@ -9,10 +9,10 @@ import {
   EmptyState,
   ErrorState,
   LoadingState,
-  PageImage,
   PageIntro,
 } from "@/components/workspace-parts";
 import { downloadBatchSource, formatHours, pageList, typeLabels, type DocDetail } from "@/lib/api";
+import { DocumentViewer } from "@/components/document-viewer";
 import { useApi } from "@/lib/use-api";
 import { useState } from "react";
 
@@ -35,7 +35,7 @@ function DocumentDetail() {
   const { me, setContract } = useSession();
   const [sourceBusy, setSourceBusy] = useState(false);
   const [sourceError, setSourceError] = useState("");
-  const { data: d, error, loading, reload } = useApi<DocDetail>(id ? `/api/documents/${id}` : null);
+  const { data: d, error, loading, reload } = useApi<DocDetail>(id ? `/api/documents/${id}?include_page_text=false` : null);
   if (!id) return <EmptyState title="Documento não informado." text="Abra um documento a partir da lista." />;
   if (loading) return <LoadingState />;
   if (error || !d) return <ErrorState message={error ?? "Documento não encontrado"} onRetry={reload} />;
@@ -144,18 +144,7 @@ function DocumentDetail() {
           )}
         </section>
       </div>
-      {d.paginas_detalhe.map((p, i) => (
-        <section key={p.page_id} id={`pagina-${p.page_id}`} className="workspace-card page-pair">
-          <div>
-            <h3>Página {i + 1} do documento · página {p.ordem} do lote</h3>
-            <PageImage pageId={p.page_id} alt={`Página ${p.ordem} do lote ${d.batch_id}`} />
-          </div>
-          <div>
-            <h3>Texto lido (OCR)</h3>
-            <pre className="ocr-text">{p.texto || "Nenhum texto lido nesta página."}</pre>
-          </div>
-        </section>
-      ))}
+      <DocumentViewer key={d.id} documentId={d.id} pages={d.paginas} />
     </>
   );
 }
