@@ -79,3 +79,16 @@ pip-compile --generate-hashes --extra test --strip-extras --allow-unsafe -o requ
 Instalação reproduzível, lock com hashes, scans executados e classificados, licenças avaliadas,
 SBOM e política definidos; vulnerabilidade alta corrigida. Pendentes: CI remoto (Linux/3.12) e
 decisões humanas sobre AGPL/PyMuPDF e LICENSE do repositório.
+
+## Reconciliação Codex — 2026-11-06
+Base a1f6109; backup backup/d4-05-20261106 (dcb749f); rebase sem conflitos.
+Lock regenerado com PyJWT[crypto] da autenticação Clerk; Pillow 13 preservado.
+Ambiente isolado novo .venv-dev4, Windows/Python 3.13.14/Node 22.23.2.
+piptools compile --generate-hashes --extra test --strip-extras --allow-unsafe;
+pip install --require-hashes -r api/requirements.lock aprovado.
+pip-audit --require-hashes --disable-pip: nenhuma vulnerabilidade conhecida.
+npm ci / npm audit: zero vulnerabilidades. SBOMs Python e web regenerados.
+pytest api/tests -q: 370 aprovados, 1 ignorado (98,75s).
+TypeScript, compileall e diff --check aprovados. Não existe LICENSE na base.
+Avaliação/licenciamento PyMuPDF e licença do projeto continuam pendentes de decisão.
+Status: PARCIAL (validação local aprovada; licenças e CI Linux pendentes).
