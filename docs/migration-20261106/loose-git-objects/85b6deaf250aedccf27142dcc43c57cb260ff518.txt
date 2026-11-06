@@ -1,0 +1,4 @@
+# Frozen evaluation assets: preserve the exact bytes covered by holdout.sha256.
+/api/tests/fixtures/d1_08/corpus_holdout.pdf -text
+/api/tests/fixtures/d1_08/gabarito_holdout.json -text
+/api/tests/fixtures/d1_08/holdout.sha256 text eol=lf
