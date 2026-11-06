@@ -6,7 +6,7 @@ from docrisk_core import config, db
 from docrisk_core.ai.textlayer import TextLayerProvider
 from docrisk_core.api import app
 from docrisk_core.pipeline import worker
-from test_f2_worker import BETA, LOTE, banco, documentos, pdf, q
+from test_f2_worker import BETA, HOLERITE, LOTE, banco, documentos, pdf, q
 
 
 def _token(user_id):
@@ -497,3 +497,19 @@ def test_resubmit_repetido_nao_cria_lote_duplicado(banco, monkeypatch):
 
     assert issue["status"] == "REENVIADA"
     assert len(json.loads(issue["historico_json"])) == 1
+
+
+def test_aprovar_duplicidade_deixa_uma_unica_versao_vigente(banco):
+    primeiro = worker.criar_lote(BETA, "CT-001", "h1.pdf", pdf(HOLERITE.format(t="T001", h="6,00")))
+    worker.processar_lote(primeiro, provedor=TextLayerProvider())
+    segundo = worker.criar_lote(BETA, "CT-001", "h2.pdf", pdf(HOLERITE.format(t="T001", h="7,00")))
+    worker.processar_lote(segundo, provedor=TextLayerProvider())
+    [antigo] = documentos(primeiro)
+    [duplicado] = documentos(segundo)
+    assert duplicado["status"] == "REVISAO_HUMANA"
+    with TestClient(app) as client:
+        r = client.patch(f"/api/documents/{duplicado['id']}/review", headers=_headers(), json={"acao": "aprovar"})
+    assert r.status_code == 200, r.text
+    vigentes = q("SELECT id, versao, substitui_id FROM documents WHERE worker_id='T001' AND tipo='HOLERITE' "
+                 "AND competencia='10/2026' AND status<>'SUBSTITUIDO'")
+    assert [(v["id"], v["versao"], v["substitui_id"]) for v in vigentes] == [(duplicado["id"], 2, antigo["id"])]

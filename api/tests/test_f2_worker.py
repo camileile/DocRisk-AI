@@ -313,3 +313,17 @@ def test_thread_retoma_lote_pendente_e_processa_novos(banco, monkeypatch):
     finally:
         worker.parar_worker()
         ai.redefinir_provider()
+
+
+def test_mesmo_conteudo_enviado_de_novo_vira_nova_versao_sem_revisao(banco):
+    # Ex.: o mesmo PDF reenviado (demo com cache). Não é ambiguidade: as páginas são idênticas.
+    dados = pdf(HOLERITE.format(t="T001", h="6,00"))
+    primeiro = worker.criar_lote(BETA, "CT-001", "h1.pdf", dados)
+    worker.processar_lote(primeiro, provedor=TextLayerProvider())
+    segundo = worker.criar_lote(BETA, "CT-001", "h1-de-novo.pdf", dados)
+    worker.processar_lote(segundo, provedor=TextLayerProvider())
+    [antigo] = documentos(primeiro)
+    [novo] = documentos(segundo)
+    assert antigo["status"] == "SUBSTITUIDO"
+    assert novo["status"] == "APTO" and novo["versao"] == 2 and novo["substitui_id"] == antigo["id"]
+    assert "Possível duplicidade" not in novo["motivos_revisao"]

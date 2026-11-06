@@ -463,14 +463,16 @@ def consolidar_lote(conn: sqlite3.Connection, batch_id: int) -> set[tuple[str, s
     if lote is None:
         raise LoteNaoEncontrado(f"Lote {batch_id} não existe.")
     contract_id = lote["contract_id"]
-    paginas = conn.execute("SELECT id, ordem, status, analise_json FROM pages WHERE batch_id = ? ORDER BY ordem",
-                           (batch_id,)).fetchall()
+    paginas = conn.execute(
+        "SELECT id, ordem, status, analise_json, sha256 FROM pages WHERE batch_id = ? ORDER BY ordem",
+        (batch_id,)).fetchall()
     if not paginas or any(p["status"] != StatusPagina.OK.value for p in paginas):
         raise ConsolidacaoImpossivel(f"Lote {batch_id} tem páginas ainda não lidas.")
 
     analises = [AnalisePagina.model_validate_json(p["analise_json"]) for p in paginas]
     ordens = [int(p["ordem"]) for p in paginas]
     pagina_id = {int(p["ordem"]): int(p["id"]) for p in paginas}
+    pagina_hash = {int(p["ordem"]): p["sha256"] for p in paginas}
     trabalhadores = {r[0] for r in conn.execute("SELECT id FROM workers WHERE contract_id = ?", (contract_id,))}
 
     agora = db.agora()
@@ -494,6 +496,13 @@ def consolidar_lote(conn: sqlite3.Connection, batch_id: int) -> set[tuple[str, s
                         (lote["issue_id"], contract_id, anterior["id"], seg.trabalhador_id,
                          seg.competencia, seg.tipo.value)).fetchone()
                     reenvio_autorizado = issue is not None
+                if not reenvio_autorizado:
+                    # Mesmo conteúdo (mesmas imagens de página, na mesma ordem) = o mesmo documento
+                    # enviado de novo, não ambiguidade: vira nova versão, como antes.
+                    hashes_anterior = [r[0] for r in conn.execute(
+                        "SELECT p.sha256 FROM doc_pages dp JOIN pages p ON p.id = dp.page_id"
+                        " WHERE dp.document_id = ? ORDER BY dp.posicao", (anterior["id"],))]
+                    reenvio_autorizado = hashes_anterior == [pagina_hash[o] for o in seg.paginas]
             if vigentes and not reenvio_autorizado:
                 detalhes = (f"{len(vigentes)} documentos vigentes" if len(vigentes) != 1
                             else f"documento vigente #{vigentes[0]['id']}")
