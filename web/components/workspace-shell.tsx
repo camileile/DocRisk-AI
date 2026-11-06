@@ -137,7 +137,8 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
               role === "ANALISTA_BH"
                 ? item.href !== "/painel/envio"
                 : item.href !== "/painel/revisao" &&
-                  item.href !== "/painel/conciliacoes",
+                  item.href !== "/painel/conciliacoes" &&
+                  item.href !== "/painel/pareceres",
             )
             .map(({ href, label, icon: Icon }) => (
               <Link
