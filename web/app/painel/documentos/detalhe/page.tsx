@@ -32,7 +32,7 @@ function money(value: number | null | undefined) {
 
 function DocumentDetail() {
   const id = useSearchParams().get("id");
-  const { me } = useSession();
+  const { me, setContract } = useSession();
   const [sourceBusy, setSourceBusy] = useState(false);
   const [sourceError, setSourceError] = useState("");
   const { data: d, error, loading, reload } = useApi<DocDetail>(id ? `/api/documents/${id}` : null);
@@ -79,6 +79,11 @@ function DocumentDetail() {
             </div>
           ))}
         </section>
+      )}
+      {me?.org_tipo === "FORNECEDORA" && d.status === "PENDENTE_CORRECAO" && (
+        <Link className="button secondary" href="/painel/pendencias" onClick={() => setContract(d.contract_id)}>
+          Consultar correções deste contrato <ArrowUpRight size={16} />
+        </Link>
       )}
       <div className="dashboard-grid">
         <section className="workspace-card">

@@ -16,10 +16,12 @@ import { api, docStatusLabels, pageList, typeLabels, type Doc, type SearchHit } 
 import { useApi } from "@/lib/use-api";
 
 export default function DocumentsPage() {
-  const { contract } = useSession();
+  const { contract, me } = useSession();
+  const supplier = me?.org_tipo === "FORNECEDORA";
   const [status, setStatus] = useState("");
   const [tipo, setTipo] = useState("");
   const params = new URLSearchParams();
+  if (contract) params.set("contract_id", contract);
   if (status) params.set("status", status);
   if (tipo) params.set("tipo", tipo);
   const { data, error, loading, reload } = useApi<Doc[]>(`/api/documents?${params.toString()}`);
@@ -30,9 +32,9 @@ export default function DocumentsPage() {
       <PageIntro
         eyebrow="DOCUMENTOS CLASSIFICADOS"
         title="Separados, classificados e pesquisáveis."
-        description="Cada documento lógico foi montado a partir das páginas do lote, com tipo, trabalhador, competência e texto lido."
+        description="Consulte os documentos da fornecedora neste contrato, inclusive os enviados por outros operadores. A seleção de contrato limita a lista e a busca."
       />
-      <SearchBox />
+      <SearchBox key={contract} contract={contract} />
       <div className="list-toolbar">
         <label className="filter-label">
           Tipo
@@ -47,7 +49,7 @@ export default function DocumentsPage() {
           Situação
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="">Todas</option>
-            {(["APTO", "PENDENTE_CORRECAO", "REVISAO_HUMANA", "SUBSTITUIDO"] as const).map((k) => (
+            {(["APTO", "PENDENTE_CORRECAO", supplier ? "EM_ANALISE" : "REVISAO_HUMANA", "SUBSTITUIDO"] as const).map((k) => (
               <option key={k} value={k}>{docStatusLabels[k]}</option>
             ))}
           </select>
@@ -97,7 +99,7 @@ export default function DocumentsPage() {
   );
 }
 
-function SearchBox() {
+function SearchBox({ contract }: { contract: string }) {
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<SearchHit[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +110,7 @@ function SearchBox() {
     setBusy(true);
     setError(null);
     try {
-      setHits(await api<SearchHit[]>(`/api/search?q=${encodeURIComponent(query.trim())}`));
+      setHits(await api<SearchHit[]>(`/api/search?q=${encodeURIComponent(query.trim())}&contract_id=${encodeURIComponent(contract)}`));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha na busca");
       setHits(null);

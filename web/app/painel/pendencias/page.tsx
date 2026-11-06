@@ -12,6 +12,7 @@ import {
   PageIntro,
 } from "@/components/workspace-parts";
 import { api, formatDate, issueCategoryLabels, issueStatusLabels, typeLabels, type Issue } from "@/lib/api";
+import { validateApiUploadFile } from "@/lib/api-client";
 import { useApi } from "@/lib/use-api";
 
 const OPEN = ["ABERTA", "NOTIFICADA", "REABERTA"];
@@ -76,7 +77,9 @@ function IssueCard({ issue: i, canResubmit, onSent }: { issue: Issue; canResubmi
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   async function resubmit() {
-    if (!file) return;
+    if (!file || busy) return;
+    const invalid = validateApiUploadFile(file);
+    if (invalid) { setFeedback(invalid); return; }
     setBusy(true);
     setFeedback(null);
     const form = new FormData();
@@ -131,7 +134,7 @@ function IssueCard({ issue: i, canResubmit, onSent }: { issue: Issue; canResubmi
         <div className="inline-form">
           <label className="filter-label">
             Documento corrigido
-            <input type="file" accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+            <input type="file" accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.aej,.txt" disabled={busy} onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
           </label>
           <button className="button" disabled={!file || busy} onClick={resubmit}>
             <FileUp size={16} /> {busy ? "Enviando…" : "Reenviar"}

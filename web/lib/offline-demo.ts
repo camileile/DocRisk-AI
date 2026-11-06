@@ -239,13 +239,14 @@ export function demoRead(path: string, role: Papel): unknown {
   if (route === "/api/issues" && role === "ANALISTA_BH") return ISSUES;
   if (route === "/api/documents") {
     return DOCS.filter((d) =>
+      (!url.searchParams.get("contract_id") || d.contract_id === url.searchParams.get("contract_id")) &&
       (!url.searchParams.get("tipo") || d.tipo === url.searchParams.get("tipo")) &&
-      (!url.searchParams.get("status") || d.status === url.searchParams.get("status"))
+      (!url.searchParams.get("status") || visibleDoc(d, role).status === url.searchParams.get("status"))
     ).map((d) => visibleDoc(d, role));
   }
   if (route === "/api/search") {
     const q = (url.searchParams.get("q") ?? "").toLowerCase();
-    const hits: SearchHit[] = DOCS.filter((d) => q && (
+    const hits: SearchHit[] = DOCS.filter((d) => (!url.searchParams.get("contract_id") || d.contract_id === url.searchParams.get("contract_id")) && q && (
       d.worker_id?.toLowerCase().includes(q) ||
       d.tipo.toLowerCase().includes(q) ||
       "horas extras fictícias documento".includes(q)
@@ -271,7 +272,7 @@ export function demoRead(path: string, role: Papel): unknown {
         ...visibleDoc(d, role),
         aej: undefined, // a demonstração offline não tem documentos derivados de AEJ
         paginas_detalhe: d.paginas.map((p) => ({ ...p, texto: "EXEMPLO FICTÍCIO — " + d.tipo + ", trabalhador " + (d.worker_id ?? "não identificado") + ", competência " + (d.competencia ?? "não informada") })),
-        versoes: [{ id: d.id, versao: d.versao, status: d.status, batch_id: d.batch_id, created_at: d.created_at }],
+        versoes: [{ id: d.id, versao: d.versao, status: visibleDoc(d, role).status, batch_id: d.batch_id, created_at: d.created_at }],
       };
       return detail;
     }

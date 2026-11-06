@@ -503,11 +503,15 @@ def analyses(historico: bool = False, user: Usuario = Depends(usuario_atual),
 
 @router.get("/api/documents")
 def list_documents(status: str | None = None, tipo: str | None = None,
+                   contract_id: str | None = None,
                    user: Usuario = Depends(usuario_atual),
                    conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
     """Documentos classificados dos contratos do usuário (Bernhoeft e fornecedora)."""
     _require_batch_reader(user)
     ids = contratos_do_usuario(conn, user)
+    if contract_id:
+        _contract_or_404(conn, user, contract_id)
+        ids = [contract_id]
     if not ids:
         return []
     marks = ",".join("?" for _ in ids)
@@ -515,7 +519,7 @@ def list_documents(status: str | None = None, tipo: str | None = None,
     params: list[Any] = list(ids)
     if status:
         sql += " AND status=?"
-        params.append(status.upper())
+        params.append("REVISAO_HUMANA" if user.papel in PAPEIS_FORNECEDORA and status.upper() == "EM_ANALISE" else status.upper())
     if tipo:
         sql += " AND tipo=?"
         params.append(tipo.upper())
@@ -541,6 +545,10 @@ def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
             "SELECT id, versao, status, batch_id, created_at FROM documents WHERE contract_id=? AND tipo=? "
             "AND worker_id=? AND competencia=? ORDER BY versao, id",
             (row["contract_id"], row["tipo"], row["worker_id"], row["competencia"])).fetchall())
+    if user.papel in PAPEIS_FORNECEDORA:
+        for version in versoes:
+            if version["status"] == StatusDocumento.REVISAO_HUMANA.value:
+                version["status"] = "EM_ANALISE"
     item["versoes"] = versoes
     aej = conn.execute("SELECT calculation_json FROM aej_documents WHERE document_id=?", (document_id,)).fetchone()
     if aej is not None and user.org_tipo == "BERNHOEFT":
@@ -650,11 +658,15 @@ async def resubmit_issue(issue_id: int, file: UploadFile = File(...),
 
 @router.get("/api/search")
 def search(q: str = Query(min_length=1, max_length=250),
+          contract_id: str | None = None,
           user: Usuario = Depends(usuario_atual),
           conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
     if user.org_tipo == "CONTRATANTE":
         raise HTTPException(403, "Busca textual não está disponível para a contratante")
     ids = contratos_do_usuario(conn, user)
+    if contract_id:
+        _contract_or_404(conn, user, contract_id)
+        ids = [contract_id]
     if not ids:
         return []
     marks = ",".join("?" for _ in ids)
