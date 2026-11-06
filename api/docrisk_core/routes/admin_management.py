@@ -11,7 +11,7 @@ from datetime import date, timedelta
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .. import config, db
 from ..auth import Usuario, auditar, contratos_do_usuario, exigir_papel, usuario_atual
@@ -35,6 +35,8 @@ def _conn():
 
 def _authorize(user: Usuario) -> None:
     exigir_papel(user, [Papel.ADMIN_BH])
+    if user.org_tipo != "BERNHOEFT":
+        raise HTTPException(403, "Perfil incompatível com a organização auditora.")
 
 
 def _write_allowed(user: Usuario) -> None:
@@ -89,7 +91,14 @@ def _users(conn: sqlite3.Connection, user: Usuario, orgs: list[dict[str, Any]]) 
     return [dict(row) for row in rows]
 
 
-class CompanyInput(BaseModel):
+class NamedInput(BaseModel):
+    @field_validator("nome", mode="before", check_fields=False)
+    @classmethod
+    def trim_name(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
+
+class CompanyInput(NamedInput):
     tipo: Literal["CONTRATANTE", "FORNECEDORA"]
     nome: str = Field(min_length=2, max_length=160)
     cnpj: str | None = Field(default=None, max_length=32)
@@ -97,7 +106,7 @@ class CompanyInput(BaseModel):
     contrato_nome: str | None = None
 
 
-class ContractInput(BaseModel):
+class ContractInput(NamedInput):
     nome: str = Field(min_length=3, max_length=160)
     contratante_id: str
     fornecedora_id: str
@@ -105,7 +114,7 @@ class ContractInput(BaseModel):
     fim: date | None = None
 
 
-class UserInput(BaseModel):
+class UserInput(NamedInput):
     nome: str = Field(min_length=2, max_length=140)
     org_id: str
     papel: Literal["ADMIN_BH", "ANALISTA_BH", "GESTOR_CONTR", "GESTOR_FORN"]
@@ -154,11 +163,16 @@ def overview(contratante_id: str | None = None, user: Usuario = Depends(usuario_
     contracts = [c for c in all_contracts if not contratante_id or c["contratante_id"] == contratante_id]
     ids = [c["id"] for c in contracts]
     operacao = metricas.calcular_metricas(conn, ids)
+    companies = _organizations(conn, user)
+    clients = {o["id"] for o in companies if o["tipo"] == "CONTRATANTE"
+               and (not contratante_id or o["id"] == contratante_id)}
+    suppliers = ({c["fornecedora_id"] for c in contracts} if contratante_id else
+                 {o["id"] for o in companies if o["tipo"] == "FORNECEDORA"})
     hoje = date.today()
     limite = hoje + timedelta(days=30)
     return {
-        "contratantes": len({c["contratante_id"] for c in contracts}),
-        "fornecedoras": len({c["fornecedora_id"] for c in contracts}),
+        "contratantes": len(clients),
+        "fornecedoras": len(suppliers),
         "contratos_ativos": sum(c["status"] == "ATIVO" for c in contracts),
         "contratos_vencendo_30d": sum(c["status"] == "ATIVO" and c["fim"] is not None and
                                      hoje <= date.fromisoformat(c["fim"]) <= limite for c in contracts),
@@ -263,3 +277,28 @@ def update_user_status(uid: str, payload: StatusInput,
     # Persistir antes da resposta: a interface consulta novamente imediatamente.
     conn.commit()
     return {"id": uid, "ativo": payload.ativo}
+
+
+def audit_for_admin(conn: sqlite3.Connection, user: Usuario) -> list[dict[str, Any]]:
+    """Ações da auditora e eventos operacionais de seus contratos, antes do limite.
+
+    Não basta filtrar pela fornecedora: ela pode trabalhar para outra auditora.
+    """
+    _authorize(user)
+    rows = conn.execute(
+        "SELECT a.id,a.user_id,a.org_id,a.acao,a.alvo,a.resultado,a.instante FROM audit a "
+        "WHERE a.org_id=? OR "
+        "(a.acao IN ('LOTE_ENVIADO','LOTE_REPROCESSADO') AND EXISTS ("
+        " SELECT 1 FROM batches b JOIN contracts c ON c.id=b.contract_id "
+        " WHERE c.bernhoeft_id=? AND a.alvo=CAST(b.id AS TEXT))) OR "
+        "(a.acao='PENDENCIA_REENVIADA' AND EXISTS ("
+        " SELECT 1 FROM issues i JOIN contracts c ON c.id=i.contract_id "
+        " WHERE c.bernhoeft_id=? AND a.alvo=CAST(i.id AS TEXT))) OR "
+        "(a.acao LIKE 'DOCUMENTO_%' AND EXISTS ("
+        " SELECT 1 FROM documents d JOIN contracts c ON c.id=d.contract_id "
+        " WHERE c.bernhoeft_id=? AND a.alvo=CAST(d.id AS TEXT))) OR "
+        "(a.acao='CONTRATO_NEGADO' AND EXISTS ("
+        " SELECT 1 FROM contracts c WHERE c.bernhoeft_id=? AND a.alvo=c.id)) "
+        "ORDER BY a.id DESC LIMIT 500", (user.org_id,) * 5,
+    ).fetchall()
+    return [dict(row) for row in rows]

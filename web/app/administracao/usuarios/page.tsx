@@ -33,7 +33,7 @@ export default function AdminUsersPage() {
   const selection = internal ? me?.org_id ?? "" : orgId;
 
   async function createUser() {
-    if (isDemo || !nome.trim() || !selection) return;
+    if (isDemo || busyId || !nome.trim() || !selection) return;
     setBusyId("create");
     setIssued(null);
     setFeedback(null);
@@ -55,7 +55,7 @@ export default function AdminUsersPage() {
   }
 
   async function toggleStatus(user: AdminUser) {
-    if (isDemo || user.id === me?.id) return;
+    if (isDemo || busyId || user.id === me?.id) return;
     setBusyId(user.id);
     setFeedback(null);
     setError(null);

@@ -31,7 +31,7 @@ export default function CompaniesPage() {
   const contratos = registry.data?.contratos ?? [];
 
   async function submitCompany() {
-    if (isDemo || !nome.trim() || (tipo === "FORNECEDORA" && (!contratante || !contratoNome.trim()))) return;
+    if (isDemo || busy || !nome.trim() || (tipo === "FORNECEDORA" && (!contratante || !contratoNome.trim()))) return;
     setBusy(true);
     setFeedback(null);
     setFailed(null);
@@ -59,7 +59,7 @@ export default function CompaniesPage() {
   }
 
   async function submitContract() {
-    if (isDemo || !relContratante || !relFornecedora || !relNome.trim()) return;
+    if (isDemo || busy || !relContratante || !relFornecedora || !relNome.trim()) return;
     setBusy(true);
     setFeedback(null);
     setFailed(null);

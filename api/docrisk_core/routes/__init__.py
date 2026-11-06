@@ -22,7 +22,7 @@ from ..rules import metricas, metricas_analista, parecer, pendencias, portal_con
 
 router = APIRouter()
 
-from .admin_management import router as admin_management_router
+from .admin_management import audit_for_admin, router as admin_management_router
 router.include_router(admin_management_router)
 
 
@@ -107,12 +107,12 @@ def _document_or_404(conn: sqlite3.Connection, user: Usuario, document_id: int) 
     return row
 
 
-def _require_ber_user(user: Usuario) -> None:
-    exigir_papel(user, PAPEIS_BERNHOEFT)
+def _require_analyst(user: Usuario) -> None:
+    exigir_papel(user, [Papel.ANALISTA_BH])
 
 
 def _require_batch_reader(user: Usuario) -> None:
-    exigir_papel(user, [*PAPEIS_FORNECEDORA, *PAPEIS_BERNHOEFT])
+    exigir_papel(user, [*PAPEIS_FORNECEDORA, Papel.ANALISTA_BH])
 
 
 @router.get("/api/demo/users")
@@ -177,7 +177,7 @@ def _substituir_espelho_anterior(conn: sqlite3.Connection, contract_id: str, wor
 @router.get("/api/contracts/{contract_id}/aej-mappings")
 def list_aej_mappings(contract_id: str, user: Usuario = Depends(usuario_atual),
                       conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, str]]:
-    _require_ber_user(user)
+    _require_analyst(user)
     _contract_or_404(conn, user, contract_id)
     return _rows(conn.execute(
         "SELECT m.worker_link_id, m.worker_id, w.nome AS worker_name "
@@ -189,7 +189,7 @@ def list_aej_mappings(contract_id: str, user: Usuario = Depends(usuario_atual),
 def put_aej_mapping(contract_id: str, worker_link_id: str, worker_id: str = Body(embed=True),
                     user: Usuario = Depends(usuario_atual),
                     conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, str]:
-    _require_ber_user(user)
+    _require_analyst(user)
     _contract_or_404(conn, user, contract_id)
     if not worker_link_id.isdigit() or not worker_id.strip():
         raise HTTPException(422, "Informe vínculo AEJ numérico e trabalhador do contrato.")
@@ -332,6 +332,7 @@ def batch_documents(batch_id: int, user: Usuario = Depends(usuario_atual),
 @router.get("/api/pages/{page_id}/image")
 def page_image(page_id: int, user: Usuario = Depends(usuario_atual),
                conn: sqlite3.Connection = Depends(get_conn)) -> FileResponse:
+    _require_batch_reader(user)
     row = conn.execute(
         "SELECT p.image_path, b.contract_id FROM pages p JOIN batches b ON b.id=p.batch_id "
         "WHERE p.id=?", (page_id,)).fetchone()
@@ -477,7 +478,7 @@ def _issue_rows(conn: sqlite3.Connection, ids: list[str]) -> list[dict[str, Any]
 @router.get("/api/issues")
 def issues(user: Usuario = Depends(usuario_atual),
            conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
-    _require_ber_user(user)
+    _require_analyst(user)
     ids = contratos_do_usuario(conn, user)
     if not ids:
         return []
@@ -488,7 +489,7 @@ def issues(user: Usuario = Depends(usuario_atual),
 def analyses(historico: bool = False, user: Usuario = Depends(usuario_atual),
              conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
     """Análises por par trabalhador+competência. Padrão: só a atual; historico=true traz as versões."""
-    _require_ber_user(user)
+    _require_analyst(user)
     ids = contratos_do_usuario(conn, user)
     if not ids:
         return []
@@ -562,7 +563,7 @@ def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
 def review_aej_document(document_id: int, payload: dict[str, Any] = Body(...),
                         user: Usuario = Depends(usuario_atual),
                         conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
-    _require_ber_user(user)
+    _require_analyst(user)
     doc = _document_or_404(conn, user, document_id)
     if conn.execute("SELECT 1 FROM aej_documents WHERE document_id=?", (document_id,)).fetchone() is None:
         raise HTTPException(409, "Documento não é uma derivação AEJ.")
@@ -663,8 +664,7 @@ def search(q: str = Query(min_length=1, max_length=250),
           contract_id: str | None = None,
           user: Usuario = Depends(usuario_atual),
           conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
-    if user.papel == Papel.ADMIN_PLATAFORMA:
-        raise HTTPException(403, "Busca textual não está disponível para a administração geral")
+    _require_batch_reader(user)
     if user.org_tipo == "CONTRATANTE":
         raise HTTPException(403, "Busca textual não está disponível para a contratante")
     ids = contratos_do_usuario(conn, user)
@@ -715,7 +715,7 @@ def create_report(payload: dict[str, Any], user: Usuario = Depends(usuario_atual
 @router.get("/api/reports")
 def list_reports(user: Usuario = Depends(usuario_atual),
                  conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
-    exigir_papel(user, [Papel.ANALISTA_BH, Papel.ADMIN_BH])
+    exigir_papel(user, [Papel.ANALISTA_BH])
     ids = contratos_do_usuario(conn, user)
     if not ids:
         return []
@@ -733,7 +733,7 @@ def list_reports(user: Usuario = Depends(usuario_atual),
 def preview_report(report_id: int, user: Usuario = Depends(usuario_atual),
                    conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     """Prévia do parecer com as análises ATUAIS (nada é gravado). Só Bernhoeft."""
-    _require_ber_user(user)
+    _require_analyst(user)
     report = conn.execute("SELECT * FROM reports WHERE id=?", (report_id,)).fetchone()
     if report is None:
         raise HTTPException(404, "Parecer não encontrado")
@@ -798,6 +798,7 @@ def client_overview(fornecedora_id: str | None = None, contract_id: str | None =
 @router.post("/api/batches/{batch_id}/reprocess", status_code=202)
 def reprocess_batch(batch_id: int, user: Usuario = Depends(usuario_atual),
                     conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, int | str]:
+    _require_batch_reader(user)
     batch = _batch_or_404(conn, user, batch_id)
     if user.papel not in PAPEIS_BERNHOEFT and user.papel != Papel.GESTOR_FORN and user.id != batch["uploaded_by"]:
         raise HTTPException(403, "Somente Bernhoeft, o gestor da fornecedora ou quem enviou o lote pode reprocessá-lo")
@@ -832,7 +833,7 @@ def analyst_overview(
 @router.get("/api/bernhoeft/metrics")
 def bernhoeft_metrics(user: Usuario = Depends(usuario_atual),
                       conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
-    _require_ber_user(user)
+    exigir_papel(user, PAPEIS_BERNHOEFT)
     ids = contratos_do_usuario(conn, user)
     try:
         return metricas.calcular_metricas(conn, ids)
@@ -843,6 +844,4 @@ def bernhoeft_metrics(user: Usuario = Depends(usuario_atual),
 @router.get("/api/audit")
 def audit_log(user: Usuario = Depends(usuario_atual),
               conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
-    exigir_papel(user, [Papel.ADMIN_BH])
-    return _rows(conn.execute("SELECT id, user_id, org_id, acao, alvo, resultado, instante "
-                              "FROM audit ORDER BY id DESC LIMIT 500").fetchall())
+    return audit_for_admin(conn, user)
