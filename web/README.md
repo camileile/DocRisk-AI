@@ -9,6 +9,12 @@ npm run dev
 
 Validação: `npm run build` e `npm run typecheck`. A exportação estática fica em `out/`, com `trailingSlash` para acesso direto às rotas em servidores estáticos.
 
+## Primeira integração com API F1 (ambiente local)
+
+Além da demonstração sintética, há agora um modo de integração **opt-in** para analista e fornecedora, ativado somente quando `NEXT_PUBLIC_DOCRISK_API_URL` estiver configurada no build. O usuário informa um token local de teste na tela `/acesso`; a aplicação consulta `/api/me`, `/api/contracts`, `/api/batches` e detalhes/documentos do lote. O token permanece apenas na memória, e as demais telas são bloqueadas no modo API para evitar mistura de dados reais e sintéticos.
+
+Veja [INTEGRACAO_F1_FRONTEND.md](../docs/INTEGRACAO_F1_FRONTEND.md) para instalar, validar o CORS e usar tokens de teste **somente em localhost**. O frontend continua exportado estaticamente; lotes numéricos reais têm detalhes na própria listagem, e não em rotas dinâmicas não prerenderizadas.
+
 ## Páginas
 
 | Rota | Conteúdo |
@@ -55,7 +61,7 @@ Os exemplos sintéticos estão em `lib/demo.ts`; os estados seguem os nomes de `
 - Administração e auditoria, pareceres e portal da contratante estão disponíveis como demonstração. A fila e a conferência documental estão disponíveis como demonstração.
 - Os três módulos futuros continuam apenas como visão de expansão na landing.
 
-O backend expõe rotas de autenticação e operações em `api/docrisk_core/routes/__init__.py`, mas a interface ainda não está integrada à API e parte dos serviços de processamento/regras depende das frentes F2/F3. O formulário de contato continua sem canal comercial fictício e sem envio.
+O backend expõe rotas de autenticação e operações em `api/docrisk_core/routes/__init__.py`. A primeira integração F1 com identificação, contratos e lotes já existe em modo local opt-in; envio, revisão, conciliação e pareceres continuam sem integração. Parte dos serviços de processamento/regras depende das frentes F2/F3. O formulário de contato continua sem canal comercial fictício e sem envio.
 
 ## Verificações desta etapa
 
