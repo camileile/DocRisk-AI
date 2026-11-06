@@ -52,6 +52,19 @@ async function httpAndBodies() {
     for (const action of [() => env.api('/api/me'), () => env.apiBlob('/api/pages/1/image'), () => env.downloadBatchSource(1)])
       await assert.rejects(action(), e => error(env, status, 'http')(e) && !e.message.includes('internal-secret') && e.retryable === (status >= 500));
   }
+  // Mensagem `detail` do backend: exibida quando é texto simples; o resto cai na mensagem controlada.
+  const json = (body, status) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+  env.context.fetch = async () => json({ detail: 'Somente rascunhos podem ser publicados' }, 409);
+  await assert.rejects(env.api('/api/reports/1/publish', { method: 'POST' }),
+    e => error(env, 409, 'http')(e) && e.message === 'Somente rascunhos podem ser publicados');
+  env.context.fetch = async () => json({ detail: 'Falha simulada do portal' }, 503);
+  await assert.rejects(env.api('/api/client/overview'), e => e.message === 'Falha simulada do portal' && e.retryable);
+  for (const unsafe of ['<b>internal-secret</b>', 'Traceback (most recent call last): internal-secret',
+    'linha 1\ninternal-secret', 'x'.repeat(301), [{ loc: ['body'], msg: 'internal-secret' }]]) {
+    env.context.fetch = async () => json({ detail: unsafe }, 422);
+    await assert.rejects(env.api('/api/me'), e => error(env, 422, 'http')(e) &&
+      !e.message.includes('internal-secret') && !e.message.includes('xxxx'));
+  }
   env.context.fetch = async () => new Response('not json');
   await assert.rejects(env.api('/api/me'), error(env, 200, 'invalid_response'));
   env.context.fetch = async () => { throw new TypeError('network down'); };
