@@ -1,4 +1,4 @@
-import { captureSession, invalidateSession } from "./api-session";
+import { captureSession, invalidateSession, notifyContractsChanged } from "./api-session";
 import { publicDemoOnly } from "./auth-mode";
 
 export const PUBLIC_DEMO_MESSAGE = "Esta versão pública oferece somente a demonstração offline; nenhuma API é acessada.";
@@ -128,6 +128,7 @@ export async function request<T>(
       const detail = await apiDetail(response);
       check();
       const failure = httpError(response.status, detail);
+      if (response.headers.get("X-DocRisk-Contracts-Changed") === "1") notifyContractsChanged();
       if ((response.status === 401 || response.headers.get("X-DocRisk-Link-Invalid") === "1") && session.clerkProvider) {
         invalidateSession();
         throw failure;

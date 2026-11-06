@@ -106,6 +106,8 @@ pulado automaticamente se o Tesseract não estiver instalado.
 
 ## Regras do projeto
 
+Analistas e operadores precisam de concessão individual de contratos. ADMIN_BH atribui contratos em **Gestão de Usuários**; GESTOR_FORN em **Operadores**. Atualizar uma instalação Clerk não concede acessos automaticamente aos usuários existentes. Veja [operação, migração e testes](docs/ACESSO_INDIVIDUAL_CONTRATOS.md).
+
 - IA lê a página; **regras em Python decidem** fronteiras, bloqueios e conciliação.
 - Toda rota confere organização + contrato + papel **no back-end**.
 - Chave do Gemini só no `.env` (fora do Git).

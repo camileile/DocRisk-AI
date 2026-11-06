@@ -72,6 +72,7 @@ def test_author_and_conference_responsible_are_snapshot_identities(banco):
     with db.tx() as conn:
         conn.execute("INSERT INTO users (id,nome,org_id,role,token) VALUES ('second','Segunda Analista','ORG-BH','ANALISTA_BH','synthetic-second-token')")
     with TestClient(app) as client:
+        assert client.put('/api/contract-access/users/second/contracts/CT-001', headers=headers('u-admin'), json={'ativo': True}).status_code == 200
         rid=create(client)
         author_preview=preview(client,rid)
         assert publish(client,rid,author_preview,'second').status_code==409

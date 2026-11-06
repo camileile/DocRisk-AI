@@ -4,6 +4,8 @@ As telas existentes de envio, lotes, documentos e pendências foram reaproveitad
 
 Nova tela: `/painel/operadores`, exclusiva de GESTOR_FORN. Lista a equipe da organização inteira, independentemente do filtro de contrato, cadastra operadores e ativa/desativa seus acessos sem apagar histórico.
 
+Em **Gerenciar contratos de [operador]**, o gestor atribui ou revoga cada contrato da sua própria fornecedora, com validade opcional. Operadores novos não herdam contratos automaticamente. O fluxo Clerk usa convite para criar o vínculo; cadastro por token continua restrito à demo. Consulte `ACESSO_INDIVIDUAL_CONTRATOS.md`.
+
 API: GET/POST `/api/supplier/operators`, PATCH `/api/supplier/operators/{id}/status`. A organização e o papel OPERADOR_FORN são determinados pelo backend. Não é possível escolher outra empresa, promover usuários nem alterar gestores. A listagem nunca retorna tokens. Desativação invalida o acesso já emitido na próxima requisição.
 
 Cadastros e alterações de acesso exigem DOCRISK_DEMO_MODE=1. O cadastro retorna um token de teste uma única vez, conforme o padrão do Admin Bernhoeft. Não há convite ou autenticação produtiva nesta etapa. Na demonstração offline, a lista é fictícia e somente para consulta.

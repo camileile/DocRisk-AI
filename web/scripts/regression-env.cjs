@@ -15,7 +15,10 @@ function environment(blocked = false, overrides = {}, modules = {}) {
       removeItem(key) { if (blocked) throw Error('blocked'); storage.delete(key); },
     },
     fetch: async () => { fetches++; throw Error('unexpected operational fetch'); },
-    setTimeout, clearTimeout, window: { setTimeout, clearTimeout },
+    setTimeout, clearTimeout, window: {
+      setTimeout, clearTimeout, setInterval, clearInterval,
+      addEventListener() {}, removeEventListener() {},
+    },
     ...overrides,
   });
   const cache = new Map();

@@ -45,7 +45,8 @@ O primeiro comando **não grava**. O segundo exige confirmação explícita, ver
 4. ADMIN_BH cria contratante e fornecedora, contrato(s) e convida analista e gestores.
 5. Dev2 provisiona somente trabalhadores sintéticos no(s) contrato(s) necessário(s).
 6. GESTOR_FORN aceita vínculo e convida operador; operador aceita seu próprio vínculo.
-7. Cada participante acessa seu próprio painel com Clerk; ninguém recebe token demonstrativo.
+7. ADMIN_BH atribui contratos aos analistas em **Gestão de Usuários**; GESTOR_FORN atribui contratos aos operadores em **Operadores**. Sem concessão individual, esses usuários não acessam contratos. Consulte `ACESSO_INDIVIDUAL_CONTRATOS.md`.
+8. Cada participante acessa seu próprio painel com Clerk; ninguém recebe token demonstrativo.
 
 ## Checklist obrigatório de aceite
 

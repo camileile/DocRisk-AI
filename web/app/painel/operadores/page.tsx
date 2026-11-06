@@ -6,6 +6,7 @@ import { EmptyState, ErrorState, LoadingState, Notice, PageIntro } from "@/compo
 import { api } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 import { clerkEnabled } from "@/lib/auth-mode";
+import { ContractAccess } from "@/components/contract-access";
 
 type ManagedLink = { id: string; user_id: string; org_id: string; role: string; ativo: number };
 
@@ -25,6 +26,7 @@ function Operators() {
   const [message, setMessage] = useState("");
   const [failure, setFailure] = useState("");
   const [token, setToken] = useState("");
+  const [accessUser, setAccessUser] = useState<string | null>(null);
 
   async function create(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -101,12 +103,14 @@ function Operators() {
         const link = managedLinks.data?.find(item => item.user_id === o.id && item.org_id === o.org_id);
         const active = clerkEnabled ? Boolean(o.ativo && link?.ativo) : Boolean(o.ativo);
         return <tr key={o.id}><td>{o.nome}</td><td>{active ? "Ativo" : "Inativo"}</td>
-          <td><button className="button secondary"
+          <td><button className="button secondary" disabled={isDemo}
+            onClick={() => setAccessUser(o.id)}>Gerenciar contratos de {o.nome}</button><button className="button secondary"
             disabled={isDemo || busy || (clerkEnabled && (!link || managedLinks.loading))}
             onClick={() => void change(o)} aria-label={`${active ? "Desativar" : "Reativar"} ${o.nome}`}>
               {active ? "Desativar" : "Reativar"}
             </button></td></tr>;
       })}</tbody>
     </table></div></section>}
+    {accessUser && <ContractAccess key={accessUser} userId={accessUser} enabled={!isDemo} />}
   </>;
 }
