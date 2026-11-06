@@ -305,3 +305,60 @@ def test_search_snippet_uses_neutral_markers(banco):
     assert response.status_code == 200
     assert "A&B [[malicious]]" in response.text
     assert "&amp;" not in response.text
+
+def test_resubmit_processes_real_batch_sync(banco, monkeypatch):
+    from docrisk_core.routes import worker as route_worker
+
+    with db.tx() as conn:
+        issue_id = conn.execute(
+            "INSERT INTO issues (contract_id, categoria, motivo, acao, status, "
+            "created_at, updated_at, historico_json) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            ("CT-001", "ILEGIVEL", "ilegível", "reenviar", "NOTIFICADA",
+             db.agora(), db.agora(), "[]"),
+        ).lastrowid
+
+    monkeypatch.setattr(config, "SYNC", True)
+
+    with TestClient(app) as client:
+        response = client.post(
+            f"/api/issues/{issue_id}/resubmit",
+            headers=_headers("u-oper-beta"),
+            files={"file": ("reenviado.pdf", pdf(*LOTE))},
+        )
+
+    assert response.status_code == 202
+    batch_id = response.json()["batch_id"]
+
+    with db.tx() as conn:
+        batch = conn.execute(
+            "SELECT status FROM batches WHERE id=?", (batch_id,)
+        ).fetchone()
+
+    assert batch["status"] == "CONCLUIDO"
+
+def test_resubmit_enqueues_batch_async(banco, monkeypatch):
+    from docrisk_core.routes import worker as route_worker
+
+    with db.tx() as conn:
+        issue_id = conn.execute(
+            "INSERT INTO issues (contract_id, categoria, motivo, acao, status, "
+            "created_at, updated_at, historico_json) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            ("CT-001", "ILEGIVEL", "ilegível", "reenviar", "NOTIFICADA",
+             db.agora(), db.agora(), "[]"),
+        ).lastrowid
+
+    queued = []
+    monkeypatch.setattr(config, "SYNC", False)
+    monkeypatch.setattr(route_worker, "enfileirar", queued.append)
+
+    with TestClient(app) as client:
+        response = client.post(
+            f"/api/issues/{issue_id}/resubmit",
+            headers=_headers("u-oper-beta"),
+            files={"file": ("reenviado.pdf", pdf(*LOTE))},
+        )
+
+    assert response.status_code == 202
+    assert queued == [response.json()["batch_id"]]
