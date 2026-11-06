@@ -56,6 +56,9 @@ async function run() {
         assert.equal(await page.getByRole("button", { name: "Criar rascunho" }).isDisabled(), true);
       }
       if (role === "Gestor da contratante") {
+        await page.getByRole("heading", { name: "Visão geral dos pareceres publicados." }).waitFor();
+        await page.getByText("Cobertura nos pareceres", { exact: true }).waitFor();
+        await page.getByRole("link", { name: "Pareceres publicados", exact: true }).click();
         await page.getByRole("heading", { name: /O que foi conferido/ }).waitFor();
         await page.goto(base + "/painel/", { waitUntil: "domcontentloaded" });
         await page.waitForURL((url) => url.pathname.startsWith("/contratante/"), { timeout: 15000 });

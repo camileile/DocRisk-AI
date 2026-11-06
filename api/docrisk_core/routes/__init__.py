@@ -18,7 +18,7 @@ from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT, PAPEIS_FORNECEDOR
                          StatusLote, TipoDocumento)
 from ..pipeline.render import ArquivoInvalido
 from ..pipeline import integracao_f3 as f3, revisao, worker
-from ..rules import metricas, metricas_analista, parecer, pendencias
+from ..rules import metricas, metricas_analista, parecer, pendencias, portal_contratante
 
 router = APIRouter()
 
@@ -753,18 +753,27 @@ def publish_report(report_id: int, user: Usuario = Depends(usuario_atual),
 
 
 @router.get("/api/client/reports")
-def client_reports(user: Usuario = Depends(usuario_atual),
+def client_reports(fornecedora_id: str | None = None, contract_id: str | None = None,
+                   competencia: str | None = Query(default=None, pattern=r"^(0[1-9]|1[0-2])/\d{4}$"),
+                   user: Usuario = Depends(usuario_atual),
                    conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
     exigir_papel(user, [Papel.GESTOR_CONTR])
-    ids = contratos_do_usuario(conn, user)
-    if not ids:
-        return []
-    marks = ",".join("?" for _ in ids)
-    rows = conn.execute(
-        f"SELECT id, contract_id, competencia, versao, status, conteudo_json, publicado_em "
-        f"FROM reports WHERE contract_id IN ({marks}) AND status=? ORDER BY publicado_em DESC",
-        (*ids, StatusParecer.APROVADO_PUBLICADO.value)).fetchall()
-    return [_report_result(row) for row in rows]
+    return portal_contratante.publicados(
+        conn, portal_contratante.contratos(conn, user), fornecedora_id=fornecedora_id,
+        contract_id=contract_id, competencia=competencia,
+    )
+
+
+@router.get("/api/client/overview")
+def client_overview(fornecedora_id: str | None = None, contract_id: str | None = None,
+                    competencia: str | None = Query(default=None, pattern=r"^(0[1-9]|1[0-2])/\d{4}$"),
+                    user: Usuario = Depends(usuario_atual),
+                    conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
+    exigir_papel(user, [Papel.GESTOR_CONTR])
+    return portal_contratante.overview(
+        conn, user, fornecedora_id=fornecedora_id, contract_id=contract_id,
+        competencia=competencia,
+    )
 
 
 @router.post("/api/batches/{batch_id}/reprocess", status_code=202)

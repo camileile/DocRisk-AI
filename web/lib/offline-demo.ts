@@ -5,6 +5,8 @@ import type {
   Metrics, Papel, Report, ReportContent, SearchHit,
 } from "./api";
 
+import { demoClientPortal } from "./client-portal";
+
 export const DEMO_ROLES: Papel[] = [
   "ADMIN_BH", "ANALISTA_BH", "GESTOR_FORN", "OPERADOR_FORN", "GESTOR_CONTR",
 ];
@@ -106,6 +108,14 @@ const REPORTS: Report[] = [
   { id: 601, contract_id: "demo-001", competencia: "10/2026", versao: 1, status: "APROVADO_PUBLICADO", conteudo_json: REPORT_CONTENT, observacoes: "Parecer de exemplo fictício.", autor_id: "demo-analista", created_at: date, publicado_em: "2026-11-01T15:00:00Z" },
 ];
 
+const CLIENT_REPORTS: Report[] = [...REPORTS, {
+  ...REPORTS[0], id: 602, competencia: "09/2026", publicado_em: "2026-10-01T15:00:00Z",
+  conteudo_json: { ...REPORT_CONTENT, competencia: "09/2026", gerado_em: "2026-09-30T13:00:00Z",
+    resumo: { trabalhadores: 4, avaliados: 0, com_divergencia: 0, dados_insuficientes: 0, sem_divergencia: 0, bloqueados: 0, em_revisao: 0, aguardando_documentos: 4 },
+    itens: REPORT_CONTENT.itens.map((i) => ({ ...i, situacao: "AGUARDANDO_DOCUMENTOS", resultado: "NAO_AVALIADO", detalhe: "Documentação não recebida nesta competência fictícia.", horas_ponto: null, horas_folha: null, diferenca_h: null, comprovante_presente: false, evidencias: [] })),
+  },
+}];
+
 const METRICS: Metrics = {
   documentos: { logicos: 6, versoes: 6, por_status: { APTO: 4, PENDENTE_CORRECAO: 1, REVISAO_HUMANA: 1 }, por_tipo: { ESPELHO_PONTO: 2, HOLERITE: 3, DESCONHECIDO: 1 }, substituidos: 0, taxa_revisao_humana: 1 / 6 },
   conciliacao: { pares: 4, aptos: 2, bloqueados: 1, em_revisao: 1, divergencias_a_verificar: 1, por_resultado: { DIVERGENCIA_A_VERIFICAR: 1, SEM_DIVERGENCIA_NOS_CAMPOS_COMPARADOS: 1 }, observacao: "Indicadores ilustrativos, gerados exclusivamente para demonstração." },
@@ -197,7 +207,8 @@ export function demoRead(path: string, role: Papel): unknown {
   if (route === "/api/bernhoeft/metrics" && (role === "ADMIN_BH" || role === "ANALISTA_BH")) return METRICS;
   if (route === "/api/audit" && role === "ADMIN_BH") return AUDIT;
   if (role === "GESTOR_CONTR") {
-    if (route === "/api/client/reports") return REPORTS;
+    if (route === "/api/client/overview") return demoClientPortal(url, CLIENT_REPORTS, "overview");
+    if (route === "/api/client/reports") return demoClientPortal(url, CLIENT_REPORTS, "reports");
     throw new Error("A contratante acessa apenas pareceres publicados.");
   }
   if (role === "ADMIN_BH") throw new Error("O administrador acessa somente a área administrativa nesta demonstração.");

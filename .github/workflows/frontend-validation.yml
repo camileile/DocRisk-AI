@@ -52,6 +52,7 @@ jobs:
           test -f out/painel/conciliacoes/index.html
           test -f out/painel/pareceres/index.html
           test -f out/contratante/index.html
+          test -f out/contratante/pareceres/index.html
           test -f out/administracao/index.html
       - name: Playwright e Chromium (somente testes)
         run: |
@@ -67,7 +68,9 @@ jobs:
           cat /tmp/docrisk-static.log
           exit 1
       - name: Demonstracao offline (5 perfis sem backend)
-        run: node scripts/offline-smoke.cjs
+        run: |
+          node scripts/offline-smoke.cjs
+          node scripts/contractor-smoke.cjs
       - name: Python 3.12
         uses: actions/setup-python@v5
         with:
@@ -87,7 +90,9 @@ jobs:
           cat /tmp/docrisk-api.log
           exit 1
       - name: Teste ponta a ponta por perfil (front + API, lote sintético completo)
-        run: node scripts/smoke.cjs
+        run: |
+          node scripts/smoke.cjs
+          DOCRISK_CONNECTED=1 node scripts/contractor-smoke.cjs
       - name: Criar lote PDF inteiramente sintético via API F1 + F2
         run: |
           python - <<'PY'
