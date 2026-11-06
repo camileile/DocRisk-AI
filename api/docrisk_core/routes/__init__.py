@@ -151,6 +151,24 @@ def list_workers(contract_id: str, user: Usuario = Depends(usuario_atual),
                               (contract_id,)).fetchall())
 
 
+def _substituir_espelho_anterior(conn: sqlite3.Connection, contract_id: str, worker_id: str,
+                                 competencia: str, novo_id: int, novo_status: StatusDocumento) -> None:
+    """O espelho AEJ recém-associado vira a versão vigente do par: o anterior (PDF ou outro AEJ)
+    passa a SUBSTITUIDO, como no reenvio, para nunca haver dois espelhos vigentes."""
+    anterior = conn.execute(
+        "SELECT id, versao FROM documents WHERE contract_id=? AND tipo='ESPELHO_PONTO' AND worker_id=? "
+        "AND competencia=? AND status<>? AND id<>? ORDER BY versao DESC, id DESC LIMIT 1",
+        (contract_id, worker_id, competencia, StatusDocumento.SUBSTITUIDO.value, novo_id),
+    ).fetchone()
+    if anterior is None:
+        return
+    conn.execute("UPDATE documents SET status=?, updated_at=? WHERE id=?",
+                 (StatusDocumento.SUBSTITUIDO.value, db.agora(), anterior["id"]))
+    conn.execute("UPDATE documents SET versao=?, substitui_id=? WHERE id=?",
+                 (int(anterior["versao"]) + 1, anterior["id"], novo_id))
+    f3.atualizar_por_nova_versao(conn, int(anterior["id"]), novo_status)
+
+
 @router.get("/api/contracts/{contract_id}/aej-mappings")
 def list_aej_mappings(contract_id: str, user: Usuario = Depends(usuario_atual),
                       conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, str]]:
@@ -202,9 +220,9 @@ def put_aej_mapping(contract_id: str, worker_link_id: str, worker_id: str = Body
     pendentes = conn.execute(
         "SELECT d.id, d.competencia, ad.calculation_json FROM aej_documents ad "
         "JOIN documents d ON d.id=ad.document_id WHERE d.contract_id=? AND ad.worker_link_id=? "
-        "AND d.worker_id IS NULL", (contract_id, worker_link_id),
+        "AND d.worker_id IS NULL ORDER BY d.id", (contract_id, worker_link_id),
     ).fetchall()
-    for doc in pendentes:
+    for doc in pendentes:  # em ordem de chegada: o AEJ mais recente termina como versão vigente
         detail = _json_object(doc["calculation_json"])
         warnings = [w for w in detail.get("warnings", [])
                     if w != "Vínculo AEJ sem mapeamento explícito para trabalhador do contrato."]
@@ -226,6 +244,8 @@ def put_aej_mapping(contract_id: str, worker_link_id: str, worker_id: str = Body
         )
         conn.execute("UPDATE aej_documents SET calculation_json=? WHERE document_id=?",
                      (json.dumps(detail, ensure_ascii=False), doc["id"]))
+        _substituir_espelho_anterior(conn, contract_id, worker_id.strip(), doc["competencia"],
+                                     int(doc["id"]), status)
         pares.add((worker_id.strip(), doc["competencia"]))
     for mapped_worker, competencia in sorted(pares):
         f3.conciliar(conn, contract_id, mapped_worker, competencia)
