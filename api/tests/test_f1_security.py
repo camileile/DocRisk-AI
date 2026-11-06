@@ -212,6 +212,7 @@ def _assert_upload_rejected_without_batch(client, filename, content):
 
     assert response.status_code == 422, response.text
     assert after == before
+    return response
 
 
 @pytest.mark.parametrize(
@@ -230,16 +231,35 @@ def test_upload_rejeita_arquivos_invalidos_sem_criar_lote(
         _assert_upload_rejected_without_batch(client, filename, content)
 
 
-def test_upload_rejeita_arquivo_acima_de_50mb_sem_criar_lote(banco):
-    content = b"x" * (50 * 1024 * 1024 + 1)
+def test_upload_rejeita_arquivo_acima_de_50mb_sem_criar_lote(banco, monkeypatch):
+    import pymupdf as fitz
+
+    # Um PDF válido: sem o limite de tamanho, a validação de formato o aceitaria.
+    with fitz.open() as document:
+        page = document.new_page()
+        page.insert_text((50, 50), "Documento sintetico")
+        document.update_stream(
+            page.get_contents()[0],
+            b"%" + b"x" * (50 * 1024 * 1024) + b"\n",
+            compress=False,
+        )
+        content = document.tobytes()
+    assert len(content) > 50 * 1024 * 1024
+    with fitz.open(stream=content, filetype="pdf") as document:
+        assert document.page_count == 1
+
+    queued = []
+    monkeypatch.setattr(worker, "enfileirar", queued.append)
 
     with TestClient(app) as client:
-        _assert_upload_rejected_without_batch(client, "grande.pdf", content)
+        response = _assert_upload_rejected_without_batch(client, "grande.pdf", content)
+    assert response.json()["detail"] == "Arquivo vazio ou acima do limite de upload"
+    assert queued == []
 
 def test_upload_aceita_tiff_multipagina(banco, monkeypatch):
     from io import BytesIO
+    from pathlib import Path
     from PIL import Image
-    from docrisk_core.routes import worker
 
     quadros = [
         Image.new("RGB", (200, 100), cor)
@@ -254,14 +274,21 @@ def test_upload_aceita_tiff_multipagina(banco, monkeypatch):
     )
     content = buffer.getvalue()
 
-    monkeypatch.setattr(
-        worker,
-        "criar_lote",
-        lambda *args, **kwargs: 123,
-    )
-    monkeypatch.setattr(worker, "enfileirar", lambda *args, **kwargs: None)
+    queued = []
+    monkeypatch.setattr(worker, "enfileirar", queued.append)
 
     with TestClient(app) as client:
         response = _upload_batch(client, "lote.tif", content)
 
     assert response.status_code == 202, response.text
+    batch_id = response.json()["batch_id"]
+    assert queued == [batch_id]
+    with db.tx() as conn:
+        batch = conn.execute("SELECT * FROM batches WHERE id=?", (batch_id,)).fetchone()
+    assert batch is not None
+    assert batch["tipo_arquivo"] == "TIFF"
+    assert batch["total_pages"] == 3
+    assert batch["contract_id"] == "CT-001"
+    assert batch["uploaded_by"] == "u-oper-beta"
+    assert batch["status"] == "RECEBIDO"
+    assert Path(batch["arquivo"]).read_bytes() == content
