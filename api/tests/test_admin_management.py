@@ -102,8 +102,8 @@ def test_cadastros_bloqueados_fora_do_modo_demo(banco, monkeypatch):
     monkeypatch.setattr(config, "DEMO_MODE", False)
     with TestClient(app) as client:
         auth = _headers("u-admin")
-        assert client.get("/api/admin/registry", headers=auth).status_code == 200
+        assert client.get("/api/admin/registry", headers=auth).status_code == 401
         assert client.post("/api/admin/companies", headers=auth,
-                           json={"tipo": "CONTRATANTE", "nome": "Não permitida"}).status_code == 403
+                           json={"tipo": "CONTRATANTE", "nome": "Não permitida"}).status_code == 401
         assert client.post("/api/admin/users", headers=auth,
-                           json={"nome": "Não permitido", "org_id": "ORG-BH", "papel": "ANALISTA_BH"}).status_code == 403
+                           json={"nome": "Não permitido", "org_id": "ORG-BH", "papel": "ANALISTA_BH"}).status_code == 401

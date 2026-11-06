@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Check, Merge, Scissors, Undo2 } from "lucide-react";
@@ -9,24 +9,15 @@ import {
   ErrorState,
   LoadingState,
   Notice,
-  PageImage,
   PageIntro,
 } from "@/components/workspace-parts";
 import { api, formatHours, pageList, typeLabels, type DocDetail } from "@/lib/api";
+import { DocumentViewer } from "@/components/document-viewer";
+import { FieldReview } from "@/components/field-review";
 import { useApi } from "@/lib/use-api";
 import { useSession } from "@/components/demo-provider";
 
 const FOCO = ["ESPELHO_PONTO", "HOLERITE", "COMPROVANTE_PAGAMENTO"];
-const FIELD_KEYS = ["horas_extras_h", "horas_extras_valor", "valor_liquido", "valor_pago", "data_pagamento"] as const;
-type FieldKey = (typeof FIELD_KEYS)[number];
-const FIELD_LABELS: Record<FieldKey, string> = {
-  horas_extras_h: "Horas extras (h)",
-  horas_extras_valor: "Valor de horas extras (R$)",
-  valor_liquido: "Valor líquido (R$)",
-  valor_pago: "Valor pago (R$)",
-  data_pagamento: "Data de pagamento (DD/MM/AAAA)",
-};
-
 export default function Page() {
   return (
     <Suspense fallback={<LoadingState />}>
@@ -39,8 +30,10 @@ function ReviewDetail() {
   const { isDemo } = useSession();
   const id = useSearchParams().get("id");
   const router = useRouter();
-  const { data: d, error, loading, reload } = useApi<DocDetail>(id ? `/api/documents/${id}` : null);
+  const { data: d, error, loading, reload } = useApi<DocDetail>(id ? `/api/documents/${id}?include_page_text=false` : null);
   const workers = useApi<{ id: string; nome: string }[]>(d ? `/api/contracts/${d.contract_id}/workers` : null);
+  const [focusedPageId, setFocusedPageId] = useState<number>();
+  const acting = useRef(false);
   const [tipo, setTipo] = useState("");
   const [worker, setWorker] = useState("");
   const [competencia, setCompetencia] = useState("");
@@ -51,11 +44,6 @@ function ReviewDetail() {
   const [feedback, setFeedback] = useState<{ tone: "success" | "error"; text: string } | null>(null);
   const [aejHours, setAejHours] = useState("");
   const [aejJustification, setAejJustification] = useState("");
-  const [fieldValues, setFieldValues] = useState<Record<FieldKey, string>>({
-    horas_extras_h: "", horas_extras_valor: "", valor_liquido: "", valor_pago: "", data_pagamento: "",
-  });
-  const [fieldReason, setFieldReason] = useState("");
-  const [fieldSource, setFieldSource] = useState("");
 
   useEffect(() => {
     if (!d) return;
@@ -63,7 +51,7 @@ function ReviewDetail() {
     setWorker(d.worker_id ?? "");
     setCompetencia(d.competencia ?? "");
     setSplitAfter(1);
-    setFieldValues(Object.fromEntries(FIELD_KEYS.map((key) => [key, d.campos[key] == null ? "" : String(d.campos[key])])) as Record<FieldKey, string>);
+    setFocusedPageId(undefined);
   }, [d]);
 
   if (!id) return <EmptyState title="Documento não informado." text="Abra um item da fila de revisão." />;
@@ -73,16 +61,19 @@ function ReviewDetail() {
   const foco = FOCO.includes(tipo);
 
   async function act(payload: Record<string, unknown>, success: string, leave = false) {
+    if (acting.current) return;
+    acting.current = true;
     setBusy(true);
     setFeedback(null);
     try {
       await api(`/api/documents/${d!.id}/review`, { method: "PATCH", body: JSON.stringify(payload) });
       setFeedback({ tone: "success", text: success });
       if (leave) router.push("/painel/revisao");
-      else void reload();
+      else await reload();
     } catch (err) {
       setFeedback({ tone: "error", text: err instanceof Error ? err.message : "Falha na ação" });
     } finally {
+      acting.current = false;
       setBusy(false);
     }
   }
@@ -121,23 +112,6 @@ function ReviewDetail() {
     }
   }
 
-  function saveFieldCorrections() {
-    const fields: Record<string, number | string> = {};
-    for (const key of FIELD_KEYS) {
-      const value = fieldValues[key].trim();
-      if (!value) continue;
-      const parsed = key === "data_pagamento" ? value : Number(value);
-      if (String(parsed) !== String(d!.campos[key] ?? "")) fields[key] = parsed;
-    }
-    if (!Object.keys(fields).length) {
-      setFeedback({ tone: "error", text: "Altere pelo menos um campo para registrar a revisão." });
-      return;
-    }
-    void act(
-      { acao: "corrigir_campos", campos: fields, motivo: fieldReason.trim(), fonte: fieldSource.trim() },
-      "Campos corrigidos com histórico preservado e conciliação recalculada.",
-    );
-  }
 
   return (
     <>
@@ -227,65 +201,11 @@ function ReviewDetail() {
         </div>
       ) : <div className="review-workspace">
         <div className="review-pages">
-          {d.paginas_detalhe.map((p, i) => (
-            <figure key={p.page_id} className="workspace-card">
-              <figcaption>Página {i + 1} do documento · página {p.ordem} do lote</figcaption>
-              <PageImage pageId={p.page_id} alt={`Página ${p.ordem} do lote`} />
-              <details>
-                <summary>Texto lido (OCR)</summary>
-                <pre className="ocr-text">{p.texto || "Nenhum texto lido."}</pre>
-              </details>
-            </figure>
-          ))}
+          <DocumentViewer key={d.id} documentId={d.id} pages={d.paginas} selectedPageId={focusedPageId} onPageChange={setFocusedPageId} />
         </div>
         <aside className="review-actions">
-          <section className="workspace-card">
-            <h2>Corrigir campos extraídos</h2>
-            <p className="muted">A correção preserva o valor original e registra autor, motivo, fonte e versão do documento.</p>
-            {FIELD_KEYS.map((key) => (
-              <label className="filter-label" key={key}>
-                {FIELD_LABELS[key]}
-                <input
-                  type={key === "data_pagamento" ? "text" : "number"}
-                  min={key === "data_pagamento" ? undefined : "0"}
-                  step={key === "data_pagamento" ? undefined : "0.01"}
-                  placeholder={key === "data_pagamento" ? "31/10/2026" : "Informe o valor conferido"}
-                  value={fieldValues[key]}
-                  onChange={(event) => setFieldValues((current) => ({ ...current, [key]: event.target.value }))}
-                  disabled={isDemo || busy || d.status === "SUBSTITUIDO"}
-                />
-              </label>
-            ))}
-            <label className="filter-label">
-              Motivo da correção
-              <textarea rows={2} maxLength={1000} value={fieldReason}
-                onChange={(event) => setFieldReason(event.target.value)} disabled={isDemo || busy || d.status === "SUBSTITUIDO"} />
-            </label>
-            <label className="filter-label">
-              Fonte da conferência
-              <input maxLength={500} placeholder="Ex.: holerite, página 2" value={fieldSource}
-                onChange={(event) => setFieldSource(event.target.value)} disabled={isDemo || busy || d.status === "SUBSTITUIDO"} />
-            </label>
-            <button className="button secondary"
-              disabled={isDemo || busy || d.status === "SUBSTITUIDO" || !fieldReason.trim() || !fieldSource.trim()}
-              onClick={saveFieldCorrections}>
-              Registrar correção estruturada
-            </button>
-            {!!d.revisoes_campos?.length && (
-              <details>
-                <summary>Histórico de correções ({d.revisoes_campos.length})</summary>
-                <ul className="plain-list">
-                  {d.revisoes_campos.map((review) => (
-                    <li key={review.revision_number}>
-                      {FIELD_LABELS[review.field_name]}: {String(review.valor_original ?? "—")} → {String(review.valor_corrigido ?? "—")}
-                      <br />{review.author_name} · versão {review.document_version} · {review.source}
-                      <br />Motivo: {review.reason}
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            )}
-          </section>
+          <FieldReview key={`${d.id}-${d.updated_at}`} doc={d} disabled={isDemo || busy || !reviewable}
+            onSelectPage={setFocusedPageId} onSave={payload => void act(payload, "Campos corrigidos com justificativa. Confira a classificação antes de aprovar.")} />
           <section className="workspace-card">
             <h2>Classificação</h2>
             <p className="muted">

@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "split": "holdout",
+  "seed": 8808,
+  "is_evaluation_holdout": true,
+  "distribution": {
+    "ambiguidade": 1,
+    "ausencia_documento": 1,
+    "ausencia_pagina": 1,
+    "campo_so_em_reais": 1,
+    "multipagina": 1,
+    "rotacao": 1,
+    "scan": 1
+  },
+  "pages": [
+    {
+      "page": 1,
+      "case": "scan_ilegivel_para_textlayer",
+      "modality": "scan",
+      "rotation_degrees": 270
+    },
+    {
+      "page": 2,
+      "case": "identidade_ambigua_na_continuacao",
+      "modality": "digital",
+      "rotation_degrees": 0
+    },
+    {
+      "page": 3,
+      "case": "identidade_ambigua_na_continuacao",
+      "modality": "digital",
+      "rotation_degrees": 0
+    },
+    {
+      "page": 4,
+      "case": "multipagina_rotacionada",
+      "modality": "digital",
+      "rotation_degrees": 0
+    },
+    {
+      "page": 5,
+      "case": "multipagina_rotacionada",
+      "modality": "digital",
+      "rotation_degrees": 270
+    },
+    {
+      "page": 6,
+      "case": "horas_extras_so_em_reais",
+      "modality": "digital",
+      "rotation_degrees": 0
+    },
+    {
+      "page": 7,
+      "case": "rotacao_180",
+      "modality": "digital",
+      "rotation_degrees": 90
+    },
+    {
+      "page": 8,
+      "case": "pagina_faltante",
+      "modality": "digital",
+      "rotation_degrees": 0
+    },
+    {
+      "page": 9,
+      "case": "holerite_ausente",
+      "modality": "digital",
+      "rotation_degrees": 0
+    }
+  ],
+  "cases": [
+    {
+      "id": "scan_ilegivel_para_textlayer",
+      "kind": "scan",
+      "pages": [
+        1
+      ],
+      "workers": [
+        "T202"
+      ],
+      "ausencias_documentais": []
+    },
+    {
+      "id": "identidade_ambigua_na_continuacao",
+      "kind": "ambiguidade",
+      "pages": [
+        2,
+        3
+      ],
+      "workers": [
+        "T205",
+        "T206"
+      ],
+      "ausencias_documentais": []
+    },
+    {
+      "id": "multipagina_rotacionada",
+      "kind": "multipagina",
+      "pages": [
+        4,
+        5
+      ],
+      "workers": [
+        "T201"
+      ],
+      "ausencias_documentais": []
+    },
+    {
+      "id": "horas_extras_so_em_reais",
+      "kind": "campo_so_em_reais",
+      "pages": [
+        6
+      ],
+      "workers": [
+        "T202"
+      ],
+      "ausencias_documentais": [
+        "ESPELHO_PONTO"
+      ]
+    },
+    {
+      "id": "rotacao_180",
+      "kind": "rotacao",
+      "pages": [
+        7
+      ],
+      "workers": [
+        "T203"
+      ],
+      "ausencias_documentais": []
+    },
+    {
+      "id": "pagina_faltante",
+      "kind": "ausencia_pagina",
+      "pages": [
+        8
+      ],
+      "workers": [
+        "T204"
+      ],
+      "ausencias_documentais": []
+    },
+    {
+      "id": "holerite_ausente",
+      "kind": "ausencia_documento",
+      "pages": [
+        9
+      ],
+      "workers": [
+        "T207"
+      ],
+      "ausencias_documentais": [
+        "HOLERITE"
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "case": "scan_ilegivel_para_textlayer",
+      "pages": [
+        1
+      ],
+      "tipo": "DESCONHECIDO",
+      "trabalhador_id": null,
+      "status_esperado": "REVISAO_HUMANA"
+    },
+    {
+      "case": "identidade_ambigua_na_continuacao",
+      "pages": [
+        2
+      ],
+      "tipo": "ESPELHO_PONTO",
+      "trabalhador_id": "T205",
+      "status_esperado": "PENDENTE_CORRECAO"
+    },
+    {
+      "case": "identidade_ambigua_na_continuacao",
+      "pages": [
+        3
+      ],
+      "tipo": "DESCONHECIDO",
+      "trabalhador_id": "T206",
+      "status_esperado": "REVISAO_HUMANA"
+    },
+    {
+      "case": "multipagina_rotacionada",
+      "pages": [
+        4,
+        5
+      ],
+      "tipo": "ESPELHO_PONTO",
+      "trabalhador_id": "T201",
+      "status_esperado": "APTO"
+    },
+    {
+      "case": "horas_extras_so_em_reais",
+      "pages": [
+        6
+      ],
+      "tipo": "HOLERITE",
+      "trabalhador_id": "T202",
+      "status_esperado": "APTO",
+      "horas_extras_h": null,
+      "horas_extras_valor": 230.0
+    },
+    {
+      "case": "rotacao_180",
+      "pages": [
+        7
+      ],
+      "tipo": "COMPROVANTE_PAGAMENTO",
+      "trabalhador_id": "T203",
+      "status_esperado": "APTO"
+    },
+    {
+      "case": "pagina_faltante",
+      "pages": [
+        8
+      ],
+      "tipo": "ESPELHO_PONTO",
+      "trabalhador_id": "T204",
+      "status_esperado": "PENDENTE_CORRECAO"
+    },
+    {
+      "case": "holerite_ausente",
+      "pages": [
+        9
+      ],
+      "tipo": "ESPELHO_PONTO",
+      "trabalhador_id": "T207",
+      "status_esperado": "APTO"
+    }
+  ]
+}

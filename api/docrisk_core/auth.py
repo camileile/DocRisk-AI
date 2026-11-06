@@ -31,7 +31,8 @@ def usuario_atual(authorization: str = Header(default=""), x_docrisk_link: str =
         with db.tx() as conn:
             return resolve_link(conn, principal, x_docrisk_link)
     if config.AUTH_MODE != "token" or not config.DEMO_MODE:
-        raise HTTPException(401, "Conecte-se pelo login produtivo.")
+        raise HTTPException(401, "Conecte-se pelo login produtivo.",
+                            headers={"WWW-Authenticate": "Bearer"})
     with db.tx() as conn:
         row = conn.execute(
             "SELECT u.id, u.nome, u.org_id, o.tipo AS org_tipo, u.role "

@@ -203,3 +203,14 @@ def test_token_mode_requires_explicit_demo_configuration(identity, monkeypatch):
     monkeypatch.setattr(config,'DEMO_MODE',False)
     with TestClient(app) as client:
         assert client.get('/api/me',headers={'Authorization':'Bearer '+token}).status_code==401
+
+
+@pytest.mark.parametrize('uid', ['u-admin', 'platform'])
+def test_clerk_identity_authenticates_without_demo_mode(identity, monkeypatch, uid):
+    monkeypatch.setattr(config, 'DEMO_MODE', False)
+    with TestClient(app) as client:
+        response = client.get('/api/me', headers=identity['headers'](uid))
+        assert response.status_code == 200, response.text
+        expected = 'ADMIN_PLATAFORMA' if uid == 'platform' else 'ADMIN_BH'
+        assert response.json()['papel'] == expected
+        assert client.get('/api/demo/users').status_code == 404

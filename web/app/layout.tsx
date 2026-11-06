@@ -3,6 +3,7 @@ import "./globals.css";
 import "./workspace.css";
 import "./api-integration.css";
 import { AuthRoot } from "@/components/auth-root";
+import "./document-viewer.css";
 import { SessionToolbar } from "@/components/session-toolbar";
 export const metadata: Metadata = {
   title: "DocRisk AI | Inteligência documental, decisões mais claras",

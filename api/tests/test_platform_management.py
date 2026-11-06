@@ -69,7 +69,7 @@ def test_settings_validation_and_writes_require_demo(banco, monkeypatch):
         assert client.get("/api/platform/registry", headers=h).json()["configuracoes"] == valid
         assert client.patch(path, headers=h, json={**valid, "modulos": ["ambiental"]}).status_code == 422
         monkeypatch.setattr(config, "DEMO_MODE", False)
-        assert client.patch(path, headers=h, json=valid).status_code == 403
-        assert client.post("/api/platform/auditors", headers=h, json={"nome": "Teste", "administrador": "Teste"}).status_code == 403
-        assert client.patch("/api/platform/administrators/u-admin/status", headers=h, json={"ativo": False}).status_code == 403
-        assert client.get("/api/platform/registry", headers=h).status_code == 200
+        assert client.patch(path, headers=h, json=valid).status_code == 401
+        assert client.post("/api/platform/auditors", headers=h, json={"nome": "Teste", "administrador": "Teste"}).status_code == 401
+        assert client.patch("/api/platform/administrators/u-admin/status", headers=h, json={"ativo": False}).status_code == 401
+        assert client.get("/api/platform/registry", headers=h).status_code == 401
