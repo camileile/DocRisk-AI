@@ -10,6 +10,7 @@ import {
   Check,
 } from "lucide-react";
 import { useDemo } from "@/components/demo-provider";
+import { ApiOverview } from "@/components/api-overview";
 import { documents, issues } from "@/lib/demo";
 import {
   DocumentBadge,
@@ -18,6 +19,11 @@ import {
   EmptyState,
 } from "@/components/workspace-parts";
 export default function Dashboard() {
+  const { apiSession } = useDemo();
+  return apiSession ? <ApiOverview /> : <DemoDashboard />;
+}
+
+function DemoDashboard() {
   const { role, contract, competence } = useDemo();
   const supplier = role === "OPERADOR_FORN";
   const docs = documents.filter(

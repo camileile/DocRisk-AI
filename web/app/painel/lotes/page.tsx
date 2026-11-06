@@ -11,6 +11,7 @@ import {
   CheckCheck,
 } from "lucide-react";
 import { useDemo } from "@/components/demo-provider";
+import { ApiBatches } from "@/components/api-batches";
 import { PageIntro, EmptyState } from "@/components/workspace-parts";
 import { BatchBadge } from "@/components/batch-badge";
 import {
@@ -22,6 +23,11 @@ import {
   type BatchStatus,
 } from "@/lib/batches";
 export default function BatchesPage() {
+  const { apiSession } = useDemo();
+  return apiSession ? <ApiBatches /> : <DemoBatchesPage />;
+}
+
+function DemoBatchesPage() {
   const { role, contract, competence } = useDemo();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("todos");

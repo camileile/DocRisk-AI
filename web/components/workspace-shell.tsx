@@ -36,7 +36,7 @@ const navigation = [
 ];
 export function WorkspaceShell({ children }: { children: ReactNode }) {
   const path = usePathname().replace(/\/$/, "");
-  const { role, setRole, contract, setContract, competence, setCompetence } =
+  const { role, setRole, contract, setContract, competence, setCompetence, apiSession } =
     useDemo();
   const [open, setOpen] = useState(false);
   if (!role)
@@ -126,7 +126,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
             <X size={20} />
           </button>
         </div>
-        <span className="sidebar-caption">ESPAÇO DE TRABALHO</span>
+        <span className="sidebar-caption">{apiSession ? "API DE TESTE · F1" : "ESPAÇO DE TRABALHO"}</span>
         <div className="workspace-module">
           <span>Trabalhista</span>
           <small>Módulo do MVP</small>
@@ -134,7 +134,9 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
         <nav aria-label="Navegação do painel">
           {navigation
             .filter((item) =>
-              role === "ANALISTA_BH"
+              apiSession
+                ? item.href === "/painel" || item.href === "/painel/lotes"
+                : role === "ANALISTA_BH"
                 ? item.href !== "/painel/envio"
                 : item.href !== "/painel/revisao" &&
                   item.href !== "/painel/conciliacoes" &&
@@ -162,8 +164,8 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           <div className="sidebar-demo">
             <FlaskConical size={18} />
             <p>
-              <strong>Modo demonstração</strong>
-              <span>Somente dados sintéticos</span>
+              <strong>{apiSession ? "API local conectada" : "Modo demonstração"}</strong>
+              <span>{apiSession ? "Contratos e lotes da API" : "Somente dados sintéticos"}</span>
             </p>
           </div>
           <Link href="/acesso" onClick={() => setRole(null)}>
@@ -201,19 +203,20 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
             </span>
             <div>
               <strong>
-                {role === "ANALISTA_BH"
+                {apiSession?.user.nome ?? (role === "ANALISTA_BH"
                   ? "Analista Bernhoeft"
-                  : "Operador da fornecedora"}
+                  : "Operador da fornecedora")}
               </strong>
-              <small>Perfil de demonstração</small>
+              <small>{apiSession ? apiSession.user.papel + " · API de teste" : "Perfil de demonstração"}</small>
             </div>
           </div>
         </header>
         <div className="workspace-demo-bar">
           <FlaskConical size={15} />
           <span>
-            Dados de exemplo. As ações destas telas ainda não estão conectadas à
-            API.
+            {apiSession
+              ? "API F1 conectada: identidade, contratos e lotes do banco. Outras áreas continuam indisponíveis nesta integração."
+              : "Dados de exemplo. As ações destas telas ainda não estão conectadas à API."}
           </span>
         </div>
         <main className="workspace-body" id="conteudo-painel">
@@ -226,16 +229,20 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                   value={contract}
                   onChange={(e) => setContract(e.target.value)}
                 >
-                  {contracts
-                    .filter((c) => role === "ANALISTA_BH" || c.id === "CTR-001")
-                    .map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} · {c.id}
-                      </option>
-                    ))}
+                  {apiSession
+                    ? (apiSession.contracts.length
+                        ? apiSession.contracts.map((c) => (
+                            <option key={c.id} value={c.id}>{c.nome} · {c.id}</option>
+                          ))
+                        : <option value="">Nenhum contrato autorizado</option>)
+                    : contracts
+                        .filter((c) => role === "ANALISTA_BH" || c.id === "CTR-001")
+                        .map((c) => (
+                          <option key={c.id} value={c.id}>{c.name} · {c.id}</option>
+                        ))}
                 </select>
               </label>
-              <label>
+              {!apiSession && <label>
                 Competência
                 <select
                   value={competence}
@@ -244,10 +251,16 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                   <option>10/2026</option>
                   <option>09/2026</option>
                 </select>
-              </label>
+              </label>}
             </div>
           </div>
-          {children}
+          {apiSession && path !== "/painel" && path !== "/painel/lotes" ? (
+            <div className="workspace-card api-unavailable">
+              <h2>Esta área ainda não está integrada à API.</h2>
+              <p>Para evitar misturar informações do backend com exemplos sintéticos, consulte por enquanto a visão geral ou a lista de lotes.</p>
+              <Link className="button secondary" href="/painel/lotes">Consultar lotes da API</Link>
+            </div>
+          ) : children}
         </main>
       </div>
     </div>

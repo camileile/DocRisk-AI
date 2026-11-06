@@ -38,6 +38,8 @@ jobs:
       - name: TypeScript
         run: npm run typecheck
       - name: Build e exportação estática
+        env:
+          NEXT_PUBLIC_DOCRISK_API_URL: http://127.0.0.1:8000
         run: npm run build
       - name: Validar rotas geradas
         run: |
@@ -64,3 +66,74 @@ jobs:
           exit 1
       - name: Teste de navegação por perfil
         run: node scripts/smoke.cjs
+      - name: Teste de integração F1 com respostas controladas
+        run: node scripts/integration-smoke.cjs
+
+      - name: Python 3.12 para teste com API real
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar backend local de testes
+        run: python -m pip install -e "../api[test]"
+      - name: Iniciar FastAPI em loopback
+        run: |
+          DOCRISK_DEMO_MODE=1 DOCRISK_SYNC=1 AI_PROVIDER=textlayer \
+            DOCRISK_DATA_DIR="$RUNNER_TEMP/docrisk-f1-integration" \
+            python -m uvicorn docrisk_core.api:app --host 127.0.0.1 --port 8000 > /tmp/docrisk-api.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:8000/health > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/docrisk-api.log
+          exit 1
+      - name: Criar lote PDF inteiramente sintético via API F1 + F2
+        run: |
+          python - <<'PY'
+          import httpx
+          import pymupdf as fitz
+
+          base = "http://127.0.0.1:8000"
+          with httpx.Client(base_url=base, timeout=60) as api:
+              response = api.get("/api/demo/users")
+              assert response.status_code == 200
+              supplier = next(u for u in response.json() if u["id"] == "u-oper-beta")
+              header = {"Authorization": "Bearer " + supplier["token"]}
+              document = fitz.open()
+              page = document.new_page(width=595, height=842)
+              lines = [
+                  "DEMONSTRATIVO DE PAGAMENTO DE SALARIO",
+                  "Matricula: T001",
+                  "Competencia: 10/2026",
+                  "Proventos | Descontos",
+                  "Salario base | R$ 1.800,00",
+                  "Horas extras 50% | Ref.: 8,00 h | R$ 160,00",
+                  "Pagina 1 de 1",
+              ]
+              for index, line in enumerate(lines):
+                  page.insert_text((50, 60 + index * 18), line, fontsize=10)
+              payload = document.tobytes()
+              document.close()
+              response = api.post("/api/supplier/batches", headers=header,
+                  data={"contract_id": "CT-001"},
+                  files={"file": ("integracao-f1-sintetico.pdf", payload, "application/pdf")})
+              assert response.status_code == 202, f"Upload F1: HTTP {response.status_code}"
+              batch_id = response.json()["batch_id"]
+              result = api.get(f"/api/batches/{batch_id}", headers=header)
+              assert result.status_code == 200
+              assert result.json()["status"] == "CONCLUIDO", f"Lote: {result.json()['status']}"
+              docs = api.get(f"/api/batches/{batch_id}/documents", headers=header)
+              assert docs.status_code == 200 and len(docs.json()) >= 1
+          print("Lote PDF sintético processado e consultado na API real")
+          PY
+      - name: Disponibilizar frontend estático na origem permitida pelo CORS
+        run: |
+          python3 -m http.server 3000 --bind 127.0.0.1 --directory out > /tmp/docrisk-web-live.log 2>&1 &
+          for i in $(seq 1 20); do
+            if curl -fsS http://localhost:3000/acesso/ > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/docrisk-web-live.log
+          exit 1
+      - name: Testar navegador contra FastAPI e SQLite reais
+        run: node scripts/live-api-smoke.cjs
+
