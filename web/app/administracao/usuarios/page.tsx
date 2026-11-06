@@ -6,6 +6,7 @@ import { EmptyState, ErrorState, LoadingState, Notice, PageIntro } from "@/compo
 import { api, type AdminRegistry, type AdminUser } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 import { clerkEnabled } from "@/lib/auth-mode";
+import { ContractAccess } from "@/components/contract-access";
 
 type ManagedLink = { id: string; user_id: string; org_id: string; role: string; ativo: number };
 
@@ -29,6 +30,7 @@ export default function AdminUsersPage() {
   const [issued, setIssued] = useState<{ name: string; token: string } | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [accessUser, setAccessUser] = useState<string | null>(null);
 
   const empresas = registry.data?.empresas ?? [];
   const available = empresas.filter((org) =>
@@ -172,6 +174,8 @@ export default function AdminUsersPage() {
                       <td>{u.org_nome}</td>
                       <td><span className={"status-badge " + (active ? "success" : "warning")}><i />{active ? "Ativo" : "Inativo"}</span></td>
                       <td>
+                        {u.papel === "ANALISTA_BH" && <button className="button secondary" disabled={isDemo}
+                          onClick={() => setAccessUser(u.id)}>Gerenciar contratos de {u.nome}</button>}
                         <button className="admin-row-button button secondary"
                           disabled={isDemo || Boolean(busyId) || u.id === me?.id || (clerkEnabled && (!link || managedLinks.loading))}
                           onClick={() => void toggleStatus(u)}>
@@ -186,6 +190,7 @@ export default function AdminUsersPage() {
           )}
         </section>
       )}
+      {accessUser && <ContractAccess key={accessUser} userId={accessUser} enabled={!isDemo} />}
     </>
   );
 }

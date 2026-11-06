@@ -1,4 +1,4 @@
-import { captureSession, invalidateSession } from "./api-session";
+import { captureSession, invalidateSession, notifyContractsChanged } from "./api-session";
 
 export const API_URL = (
   process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_DOCRISK_API_URL || "http://127.0.0.1:8000"
@@ -123,6 +123,7 @@ export async function request<T>(
       const detail = await apiDetail(response);
       check();
       const failure = httpError(response.status, detail);
+      if (response.headers.get("X-DocRisk-Contracts-Changed") === "1") notifyContractsChanged();
       if ((response.status === 401 || response.headers.get("X-DocRisk-Link-Invalid") === "1") && session.clerkProvider) {
         invalidateSession();
         throw failure;

@@ -148,6 +148,28 @@ async function cancellationAndSession() {
   }
   console.log('PASS: caller abort, session replacement and stale files discarded with/without storage');
 }
+async function contractScopes() {
+  const env = connected();
+  let refreshed = 0;
+  const unsubscribe = env.session.onContractsChanged(() => { refreshed++; });
+  env.context.fetch = async () => new Response('{}', { status: 404, headers: { 'X-DocRisk-Contracts-Changed': '1' } });
+  await assert.rejects(env.api('/api/documents/1'), e => e.status === 404);
+  assert.equal(refreshed, 1);
+  assert.equal(env.getToken(), 'test-token', 'contract denial must not log out the identity');
+  env.context.fetch = async () => new Response('{}', { status: 403 });
+  await assert.rejects(env.api('/api/me'), e => e.status === 403);
+  assert.equal(refreshed, 1, 'ordinary forbidden actions do not refresh contract scope');
+  const body = deferred();
+  env.context.fetch = async () => ({ ok: true, status: 200, blob: () => body.promise });
+  const request = env.apiBlob('/api/pages/1/image');
+  const rejected = assert.rejects(request, error(env, 0, 'session'));
+  await Promise.resolve();
+  env.session.refreshContractScope();
+  body.resolve(new Blob(['obsolete page']));
+  await rejected;
+  unsubscribe();
+  console.log('PASS: contract denial refreshes scope without logout; stale page bodies discarded');
+}
 async function clerkSessions() {
   let bearer = 'jwt-first';
   const calls = [];
@@ -178,5 +200,5 @@ async function clerkSessions() {
   assert.equal(calls.length, 2, 'old token provider must not trigger a request after logout');
   console.log('PASS: Clerk renewal, binding headers, revoked context, no stored JWT and late identity discarded');
 }
-(async () => { await httpAndBodies(); await uploadsAndTimeouts(); await cancellationAndSession(); await clerkSessions(); })()
+(async () => { await httpAndBodies(); await uploadsAndTimeouts(); await cancellationAndSession(); await contractScopes(); await clerkSessions(); })()
   .catch(e => { console.error(e); process.exitCode = 1; });
