@@ -137,19 +137,20 @@ def test_absent_value_stays_null_and_approved_document_cannot_be_edited(document
                               json=payload(document, esperado_em=detail["updated_at"]))
         assert denied.status_code == 409
 
-def test_existing_d1_06_history_and_page_corrections_share_schema(document):
+def test_legacy_field_review_is_rejected_and_document_history_only_records_valid_edits(document):
     with TestClient(app) as client:
         url = f"/api/documents/{document['id']}/review"
         legacy = client.patch(url, headers=headers(), json={
             "acao": "corrigir_campos", "campos": {"horas_extras_h": 10},
             "motivo": "Conferência D1-06", "fonte": "Holerite, página 1"})
-        assert legacy.status_code == 200, legacy.text
+        assert legacy.status_code == 422
         before = client.get(f"/api/documents/{document['id']}", headers=headers()).json()
+        assert before["revisoes_campos"] == []
         updated = client.patch(url, headers=headers(), json=payload(document, esperado_em=before["updated_at"]))
         assert updated.status_code == 200, updated.text
         after = client.get(f"/api/documents/{document['id']}", headers=headers()).json()
     history = after["revisoes_campos"]
-    assert len(history) == 2
-    assert {r["revision_number"] for r in history} == {1, 2}
-    assert {r["source"] for r in history} == {"Holerite, página 1", f"Página #{document['pages'][1]}"}
-    assert {r["author_id"] for r in history} == {"u-analista"}
+    assert len(history) == 1
+    assert history[0]["revision_number"] == 1
+    assert history[0]["source"] == f"Página #{document['pages'][1]}"
+    assert history[0]["author_id"] == "u-analista"
