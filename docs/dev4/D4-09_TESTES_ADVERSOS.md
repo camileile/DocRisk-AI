@@ -61,3 +61,15 @@ AI_PROVIDER=textlayer .venv/Scripts/python.exe -m pytest -q                     
 
 Suíte automatizada cobrindo multiempresa, uploads, concorrência e privacidade; um defeito grave
 encontrado, corrigido e coberto por regressão. Pendentes: itens acima e CI remoto.
+
+## Reconciliação Codex — 2026-11-06
+Base a1f6109; backup backup/d4-09-20261106 (1cab173).
+Conflito resubmit resolvido preservando UPDATE condicional, resposta 409 e limpeza
+ do lote concorrente de Dev2; corpo bloqueante mantido em run_in_threadpool.
+Teste CC02 ampliado para 16 uploads concorrentes; 16 respostas 202 e lotes/
+arquivos distintos. Suíte: 403 aprovados, 1 ignorado (109,02s), Windows/Python
+3.13.14, dados sintéticos/TextLayer, sem API paga. Reenvio/consistência incluídos.
+A branch original está em uso na pasta que o usuário mandou manter intocada.
+Esta adaptação fica em codex/d4-09-validated-snapshot, cópia isolada de d591967.
+Não movida para a branch original; depende da liberação daquela árvore.
+Status: PARCIAL (validação local aprovada; referência original não atualizada).
