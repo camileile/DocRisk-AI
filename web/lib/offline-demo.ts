@@ -119,6 +119,17 @@ const AUDIT: AuditEvent[] = [
   { id: 702, user_id: "demo-analista", org_id: "demo-bh", acao: "PARECER_PUBLICADO", alvo: "parecer #601", resultado: "OK", instante: "2026-11-01T15:00:00Z" },
 ];
 
+function visibleDoc(doc: Doc, role: Papel): Doc {
+  if (role === "ANALISTA_BH") return doc;
+  return {
+    ...doc,
+    status: doc.status === "REVISAO_HUMANA" ? "EM_ANALISE" : doc.status,
+    confianca: undefined,
+    motivos_revisao: undefined,
+    campos: {},
+  };
+}
+
 export function demoRead(path: string, role: Papel): unknown {
   const url = new URL(path, "https://demo.invalid");
   const route = url.pathname;
@@ -138,7 +149,7 @@ export function demoRead(path: string, role: Papel): unknown {
     return DOCS.filter((d) =>
       (!url.searchParams.get("tipo") || d.tipo === url.searchParams.get("tipo")) &&
       (!url.searchParams.get("status") || d.status === url.searchParams.get("status"))
-    );
+    ).map((d) => visibleDoc(d, role));
   }
   if (route === "/api/search") {
     const q = (url.searchParams.get("q") ?? "").toLowerCase();
@@ -154,7 +165,7 @@ export function demoRead(path: string, role: Papel): unknown {
     return hits;
   }
   const batchDocs = route.match(/^\/api\/batches\/(\d+)\/documents$/);
-  if (batchDocs) return Number(batchDocs[1]) === 101 ? DOCS : [];
+  if (batchDocs) return Number(batchDocs[1]) === 101 ? DOCS.map((d) => visibleDoc(d, role)) : [];
   const batch = route.match(/^\/api\/batches\/(\d+)$/);
   if (batch) {
     const found = BATCHES.find((b) => b.id === Number(batch[1]));
@@ -165,7 +176,7 @@ export function demoRead(path: string, role: Papel): unknown {
     const d = DOCS.find((item) => item.id === Number(doc[1]));
     if (d) {
       const detail: DocDetail = {
-        ...d,
+        ...visibleDoc(d, role),
         paginas_detalhe: d.paginas.map((p) => ({ ...p, texto: "EXEMPLO FICTÍCIO — " + d.tipo + ", trabalhador " + (d.worker_id ?? "não identificado") + ", competência " + (d.competencia ?? "não informada") })),
         versoes: [{ id: d.id, versao: d.versao, status: d.status, batch_id: d.batch_id, created_at: d.created_at }],
       };
