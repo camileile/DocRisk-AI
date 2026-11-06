@@ -1,0 +1,11 @@
+ensaio em C:\Users\Pichau\AppData\Local\Temp\docrisk-ensaio-AEezZg api=http://127.0.0.1:55328 web=http://127.0.0.1:55329
+
+OK   E1 build e exportação estática (8.2s)
+OK   E2 demonstração offline (6 perfis, sem API) (7.1s)
+OK   E3 API real até /health (banco novo) (1.1s)
+OK   E4 roteiro conectado completo por perfil (7.3s)
+OK   E5 portal da contratante conectado (3.5s)
+OK   E6 contingência: queda abrupta e reinício da API (1.4s)
+FAIL E7 navegador contra FastAPI/SQLite após reinício (34.4s) — live-api-smoke.cjs saiu 1: [2m       - waiting 500ms[22m |  |     at enter (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\scripts\live-api-smoke.cjs:31:72) |     at async run (C:\Users\Pichau\Documents\GitHub\DocRisk-dev4-reconcile\web\scripts\live-api-smoke.cjs:61:5) { |   name: 'TimeoutError' | }
+
+6/7 etapas OK; total 63s; logs em C:\Users\Pichau\AppData\Local\Temp\docrisk-ensaio-AEezZg

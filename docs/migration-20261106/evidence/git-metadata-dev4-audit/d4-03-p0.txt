@@ -1,0 +1,7 @@
+
+> docrisk-web@0.1.0 test:p0
+> node scripts/p0-regression.cjs
+
+PASS: six offline profiles, blocked storage, forbidden writes/files and logout: zero network calls
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+PASS: stale responses discarded, empty paths cleared, transient polling recovered, terminal/permanent errors stopped; session data isolated

@@ -1,0 +1,11 @@
+ensaio em C:\Users\Pichau\AppData\Local\Temp\docrisk-ensaio-mX2RfE api=http://127.0.0.1:57802 web=http://127.0.0.1:57803
+
+OK   E1 build e exportação estática (16s)
+OK   E2 demonstração offline (6 perfis, sem API) (8.6s)
+OK   E3 API real até /health (banco novo) (2s)
+OK   E4 roteiro conectado completo por perfil (7.6s)
+OK   E5 portal da contratante conectado (3.8s)
+OK   E6 contingência: queda abrupta e reinício da API (1.8s)
+OK   E7 navegador contra FastAPI/SQLite após reinício (6.3s)
+
+7/7 etapas OK; total 46.1s; logs em C:\Users\Pichau\AppData\Local\Temp\docrisk-ensaio-mX2RfE

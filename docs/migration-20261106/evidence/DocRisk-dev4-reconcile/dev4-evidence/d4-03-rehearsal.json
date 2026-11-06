@@ -1,0 +1,63 @@
+{
+  "node": "v22.23.2",
+  "plataforma": "win32",
+  "total_segundos": 63,
+  "etapas": [
+    {
+      "id": "E1",
+      "etapa": "build e exportação estática",
+      "ok": true,
+      "segundos": 8.2,
+      "erro": null,
+      "rsc_compat_windows_copiados": 25
+    },
+    {
+      "id": "E2",
+      "etapa": "demonstração offline (6 perfis, sem API)",
+      "ok": true,
+      "segundos": 7.1,
+      "erro": null
+    },
+    {
+      "id": "E3",
+      "etapa": "API real até /health (banco novo)",
+      "ok": true,
+      "segundos": 1.1,
+      "erro": null,
+      "segundos_ate_health": 1.092
+    },
+    {
+      "id": "E4",
+      "etapa": "roteiro conectado completo por perfil",
+      "ok": true,
+      "segundos": 7.3,
+      "erro": null,
+      "passos": 9
+    },
+    {
+      "id": "E5",
+      "etapa": "portal da contratante conectado",
+      "ok": true,
+      "segundos": 3.5,
+      "erro": null
+    },
+    {
+      "id": "E6",
+      "etapa": "contingência: queda abrupta e reinício da API",
+      "ok": true,
+      "segundos": 1.4,
+      "erro": null,
+      "api_indisponivel_confirmado": true,
+      "segundos_reinicio": 0.885,
+      "segundos_ate_health": 0.877
+    },
+    {
+      "id": "E7",
+      "etapa": "navegador contra FastAPI/SQLite após reinício",
+      "ok": false,
+      "segundos": 34.4,
+      "erro": "live-api-smoke.cjs saiu 1: \u001b[2m       - waiting 500ms\u001b[22m |  |     at enter (C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\web\\scripts\\live-api-smoke.cjs:31:72) |     at async run (C:\\Users\\Pichau\\Documents\\GitHub\\DocRisk-dev4-reconcile\\web\\scripts\\live-api-smoke.cjs:61:5) { |   name: 'TimeoutError' | }"
+    }
+  ],
+  "logs": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-AEezZg"
+}

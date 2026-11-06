@@ -1,0 +1,63 @@
+{
+  "node": "v22.23.2",
+  "plataforma": "win32",
+  "total_segundos": 70.8,
+  "etapas": [
+    {
+      "id": "E1",
+      "etapa": "build e exportação estática",
+      "ok": true,
+      "segundos": 36.1,
+      "erro": null,
+      "rsc_compat_windows_copiados": 28
+    },
+    {
+      "id": "E2",
+      "etapa": "demonstração offline (6 perfis, sem API)",
+      "ok": true,
+      "segundos": 12.3,
+      "erro": null
+    },
+    {
+      "id": "E3",
+      "etapa": "API real até /health (banco novo)",
+      "ok": true,
+      "segundos": 1.8,
+      "erro": null,
+      "segundos_ate_health": 1.742
+    },
+    {
+      "id": "E4",
+      "etapa": "roteiro conectado completo por perfil",
+      "ok": true,
+      "segundos": 8.4,
+      "erro": null,
+      "passos": 9
+    },
+    {
+      "id": "E5",
+      "etapa": "portal da contratante conectado",
+      "ok": true,
+      "segundos": 3.7,
+      "erro": null
+    },
+    {
+      "id": "E6",
+      "etapa": "contingência: queda abrupta e reinício da API",
+      "ok": true,
+      "segundos": 2.1,
+      "erro": null,
+      "api_indisponivel_confirmado": true,
+      "segundos_reinicio": 1.546,
+      "segundos_ate_health": 1.536
+    },
+    {
+      "id": "E7",
+      "etapa": "navegador contra FastAPI/SQLite após reinício",
+      "ok": true,
+      "segundos": 6.4,
+      "erro": null
+    }
+  ],
+  "logs": "C:\\Users\\Pichau\\AppData\\Local\\Temp\\docrisk-ensaio-ovGIkF"
+}

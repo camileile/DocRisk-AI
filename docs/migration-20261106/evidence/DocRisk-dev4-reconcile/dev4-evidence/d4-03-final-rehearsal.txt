@@ -1,0 +1,11 @@
+ensaio em C:\Users\Pichau\AppData\Local\Temp\docrisk-ensaio-ovGIkF api=http://127.0.0.1:63002 web=http://127.0.0.1:63003
+
+OK   E1 build e exportação estática (36.1s)
+OK   E2 demonstração offline (6 perfis, sem API) (12.3s)
+OK   E3 API real até /health (banco novo) (1.8s)
+OK   E4 roteiro conectado completo por perfil (8.4s)
+OK   E5 portal da contratante conectado (3.7s)
+OK   E6 contingência: queda abrupta e reinício da API (2.1s)
+OK   E7 navegador contra FastAPI/SQLite após reinício (6.4s)
+
+7/7 etapas OK; total 70.8s; logs em C:\Users\Pichau\AppData\Local\Temp\docrisk-ensaio-ovGIkF
