@@ -6,6 +6,10 @@ import { formatDate, type AuditEvent, type Metrics } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 
 const actionLabels: Record<string, string> = {
+  EMPRESA_CRIADA: "Empresa cadastrada",
+  CONTRATO_CRIADO: "Contrato criado",
+  USUARIO_CRIADO: "Usuário cadastrado",
+  USUARIO_STATUS_ALTERADO: "Acesso de usuário alterado",
   LOTE_ENVIADO: "Lote enviado",
   LOTE_REPROCESSADO: "Lote reprocessado",
   CONTRATO_NEGADO: "Acesso a contrato negado",
@@ -37,7 +41,7 @@ export default function AuditPage() {
       <PageIntro
         eyebrow="TRILHA DE AUDITORIA"
         title="Quem fez o quê, e quando."
-        description="Registro das ações e dos acessos negados gravado pela API. A trilha nunca guarda conteúdo de documentos."
+        description="Ações da sua organização auditora e eventos vinculados aos seus contratos. A trilha não contém documentos nem eventos de outras auditoras."
       />
       {m && (
         <div className="stat-grid">

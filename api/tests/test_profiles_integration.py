@@ -68,8 +68,8 @@ def test_six_profiles_from_auditor_registration_to_published_report(banco, monke
         assert client.get("/api/client/overview", headers=customer).json()["resumo"]["taxa_divergencias"] == 1.0
         assert client.get(f"/api/batches/{batch}", headers=customer).status_code == 403
         # A Bernhoeft demo, outra empresa e a administração geral não recebem os documentos.
-        for actor in [headers("u-admin"), headers("u-oper-beta")]:
-            assert client.get(f"/api/batches/{batch}", headers=actor).status_code == 404
+        assert client.get(f"/api/batches/{batch}", headers=headers("u-admin")).status_code == 403
+        assert client.get(f"/api/batches/{batch}", headers=headers("u-oper-beta")).status_code == 404
         assert client.get(f"/api/batches/{batch}", headers=general).status_code == 403
         assert client.post(f"/api/reports/{report['id']}/publish", headers=operator).status_code == 403
         assert client.get("/api/platform/registry", headers=admin).status_code == 403

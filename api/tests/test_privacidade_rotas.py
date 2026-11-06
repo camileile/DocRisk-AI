@@ -40,13 +40,15 @@ def test_ocr_inteiro_so_para_bernhoeft(lote_enviado):
 
 def test_pdf_anonimizado_so_do_documento_e_sem_dado_pessoal(lote_enviado):
     client, doc = lote_enviado
-    for usuario in ("u-oper-beta", "u-gestor-beta", "u-analista", "u-admin"):
+    for usuario in ("u-oper-beta", "u-gestor-beta", "u-analista"):
         r = client.get(f"/api/documents/{doc}/anonimizado", headers=_h(usuario))
         assert r.status_code == 200 and r.headers["content-type"] == "application/pdf", usuario
         assert len(fitz.open(stream=io.BytesIO(r.content), filetype="pdf")) == 1
         assert CPF_T001 not in _texto(r) and RG_T001 not in _texto(r) and "T001" in _texto(r)
+    # O Admin faz somente gestão; a tentativa negada não conta como download.
+    assert client.get(f"/api/documents/{doc}/anonimizado", headers=_h("u-admin")).status_code == 403
     with db.tx() as conn:
-        assert conn.execute("SELECT COUNT(*) FROM audit WHERE acao='DOCUMENTO_ANONIMIZADO_BAIXADO'").fetchone()[0] == 4
+        assert conn.execute("SELECT COUNT(*) FROM audit WHERE acao='DOCUMENTO_ANONIMIZADO_BAIXADO'").fetchone()[0] == 3
 
 
 def test_contratante_nao_baixa_documentos_antes_ou_depois_da_publicacao(lote_enviado):
