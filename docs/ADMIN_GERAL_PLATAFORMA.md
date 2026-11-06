@@ -13,3 +13,22 @@ O administrador de uma auditora nova começa com escopo empresarial vazio e não
 A demonstração offline inclui o sexto perfil, sem contratos e somente consulta. O acesso com token continua demonstrativo; autenticação corporativa, convites, recuperação de acesso e provisionamento produtivo do administrador geral permanecem pendentes.
 
 Validação enxuta: três cenários focados de API (identidade/permissões/idempotência, cadastro e revogação de administrador de auditora, configurações e bloqueio de mutações fora do demo) e build com TypeScript. Suíte completa e navegador ficam para a integração final dos seis perfis. Sem merge ou deploy; refinamento visual adiado.
+
+## Cadastro da auditora e administrador inicial (Clerk)
+
+No modo demonstrativo (DOCRISK_AUTH_MODE=token e DOCRISK_DEMO_MODE=1), o cadastro continua criando a organização e o usuário ADMIN_BH imediatamente, devolvendo um token **apenas de teste**. A demonstração offline permanece somente leitura.
+
+No modo operacional (DOCRISK_AUTH_MODE=clerk e DOCRISK_DEMO_MODE=0), a mesma ação exige **nome da organização, nome e e-mail do administrador inicial**. A API:
+
+1. Confirma a identidade institucional ADMIN_PLATAFORMA e o vínculo Clerk ativo de quem está cadastrando.
+2. Rejeita nomes de auditoras duplicados, inclusive diferenças de caixa e espaços nas extremidades.
+3. Cria a organização e emite um convite para ADMIN_BH pelo fluxo já existente de Clerk, com validade de 72 horas.
+4. Só considera a criação concluída quando o convite é registrado como PENDING. Falha no envio desfaz o cadastro da organização e remove o convite local.
+5. **Não cria usuário operacional nem retorna token demonstrativo** nessa etapa. O administrador é criado em users e recebe vínculo autorizado somente após confirmar o e-mail e aceitar o convite.
+6. Exibe convite pendente e administrador ativado na listagem de auditoras. A revogação de vínculo real acontece na tela Vínculos; botões de status por token de testes permanecem indisponíveis em modo Clerk.
+
+O Admin Geral pode emitir novo convite para ADMIN_BH em uma auditora já cadastrada, pela gestão de vínculos, caso o convite anterior expire ou seja revogado. Recuperação de senha é responsabilidade do Clerk. A auditora começa sem contratos ou empresas.
+
+Este ajuste não implementa autorização individual por contrato nem libera outras mutações de plataforma para produção. O ensaio real depende de uma instância Clerk configurada, e-mail controlado, domínio autorizado e armazenamento persistente.
+
+Evidências: api/tests/test_d3_07_clerk.py e web/components/platform-portal.tsx.
