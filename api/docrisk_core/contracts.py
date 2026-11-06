@@ -186,7 +186,9 @@ def _duracao_horas(valor: str) -> float:
 
 
 def _normalizar_numero_campo(valor: Any, campo: str) -> float | None:
-    if valor is None:
+    # Texto vazio = campo não informado (o leitor às vezes devolve "" em vez de null):
+    # não é valor inválido e não deve mandar o documento para revisão.
+    if valor is None or (isinstance(valor, str) and not valor.strip()):
         return None
     if isinstance(valor, bool):
         raise ValueError("booleano não é número válido")

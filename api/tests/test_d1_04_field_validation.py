@@ -90,3 +90,13 @@ def test_duracao_incompleta_vai_para_revisao_humana():
 
 def test_tolerancia_float_fica_limitada_a_numeros_finitos():
     assert math.isfinite(normalizar_duracao("8h30"))
+
+
+@pytest.mark.parametrize("campo", ["horas_extras_h", "horas_extras_valor", "valor_liquido", "valor_pago"])
+def test_texto_vazio_e_campo_ausente_sem_aviso(campo):
+    # O leitor às vezes devolve "" em vez de null: ausência não é valor inválido.
+    for vazio in ("", "   "):
+        analise = AnalisePagina.model_validate(
+            {"texto": "x", "tipo": "HOLERITE", "legivel": True, "campos": {campo: vazio}})
+        assert getattr(analise.campos, campo) is None
+        assert analise.avisos_validacao == []
