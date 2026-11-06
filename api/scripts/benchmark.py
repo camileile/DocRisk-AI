@@ -18,6 +18,7 @@ import pymupdf as fitz
 
 from docrisk_core import config, db
 from docrisk_core.auth import Usuario
+from docrisk_core.benchmark_metrics import NUMERIC_FIELDS, calcular_metricas
 from docrisk_core.contracts import Papel
 from docrisk_core.pipeline import worker
 from gerar_lote_demo import gerar_parametrizado
@@ -91,7 +92,8 @@ def main() -> None:
         with db.tx() as conn:
             lote = conn.execute("SELECT status, erro, total_pages FROM batches WHERE id=?", (lote_id,)).fetchone()
             docs = conn.execute(
-                "SELECT d.tipo, d.worker_id, d.competencia, d.status, GROUP_CONCAT(p.ordem) AS paginas "
+                "SELECT d.tipo, d.worker_id, d.competencia, d.status, d.campos_json, "
+                "GROUP_CONCAT(p.ordem) AS paginas "
                 "FROM documents d JOIN doc_pages dp ON dp.document_id=d.id JOIN pages p ON p.id=dp.page_id "
                 "WHERE d.batch_id=? GROUP BY d.id ORDER BY MIN(p.ordem)", (lote_id,)).fetchall()
             analyses = {r["worker_id"]: (r["status"], json.loads(r["resultado_json"]))
@@ -102,12 +104,17 @@ def main() -> None:
             raise RuntimeError(f"Lote não concluiu: status={lote['status']}, erro={lote['erro']}")
         esperado_por_pag = {p: d for d in gabarito["documentos"] for p in d["paginas"]}
         encontrado_por_pag = {}
+        predicted_docs = []
         fronteiras = tipos = 0
         for d in docs:
             paginas = sorted(int(x) for x in d["paginas"].split(","))
             esperado = esperado_por_pag[paginas[0]]
             fronteiras += paginas == esperado["paginas"]
             tipos += d["tipo"] == esperado["tipo"]
+            predicted_docs.append({
+                "pages": paginas, "tipo": d["tipo"], "trabalhador_id": d["worker_id"], "status": d["status"],
+                "campos": json.loads(d["campos_json"]),
+            })
             for p in paginas:
                 encontrado_por_pag[p] = d["tipo"]
         conciliacoes = sum(
@@ -123,6 +130,7 @@ def main() -> None:
                 f"tipos {tipos}/{len(gabarito['documentos'])}, "
                 f"conciliações {conciliacoes}/{len(gabarito['conciliacao'])}."
             )
+        metricas = calcular_metricas(gabarito["documentos"], predicted_docs)
         # Render padrão: 595x842 pt a 150 DPI = aprox. 1240x1754 px.
         # Fórmula publicada pelo Google: crop=floor(min(lado)/1,5), 258 tokens/crop.
         largura, altura = 595 * 150 / 72, 842 * 150 / 72
@@ -135,6 +143,16 @@ def main() -> None:
         paginas_min = 300 / (decorrido / 60)
         media = decorrido / 300
         pct = lambda n, total: f"{100*n/total:.1f}% ({n}/{total})"
+        pct_ratio = lambda value: f"{100*value:.1f}%"
+        tipos_md = "\n".join(
+            f"| {nome} | {pct_ratio(m['precision'])} | {pct_ratio(m['recall'])} | {m['tp']} | {m['fp']} | {m['fn']} |"
+            for nome, m in metricas["types"].items()
+        )
+        campos_md = "\n".join(
+            f"| `{nome}` | {pct_ratio(m['precision'])} | {pct_ratio(m['recall'])} | {m['mae']:.3f} |"
+            if m["mae"] is not None else f"| `{nome}` | {pct_ratio(m['precision'])} | {pct_ratio(m['recall'])} | — |"
+            for nome, m in metricas["fields"].items()
+        )
         conteudo = f"""# Benchmark TextLayer do lote de 100 trabalhadores
 
 ## Escopo e amostra
@@ -171,6 +189,25 @@ def main() -> None:
 - Tipos de documento: {pct(tipos, len(gabarito['documentos']))}
 - Conciliação (status e resultado): {pct(conciliacoes, len(gabarito['conciliacao']))}
 
+## Métricas detalhadas D1-09
+
+- Fronteiras exatas: precisão {pct_ratio(metricas['boundaries']['precision'])}, recall {pct_ratio(metricas['boundaries']['recall'])} ({metricas['boundaries']['exact']} corretas; {metricas['boundaries']['predicted']} previstas; {metricas['boundaries']['expected']} esperadas).
+- Tipo por documento, alinhado pela primeira página:
+
+| Tipo | Precisão | Recall | TP | FP | FN |
+|---|---:|---:|---:|---:|---:|
+{tipos_md}
+
+- Campos numéricos usam tolerância absoluta {next(iter(metricas['fields'].values()))['tolerance'] if metricas['fields'] else 0.01}; valores ausentes contam como FN e MAE usa os pares numéricos previstos.
+
+| Campo | Precisão | Recall | MAE |
+|---|---:|---:|---:|
+{campos_md}
+
+- Associação ao trabalhador: precisão {pct_ratio(metricas['association']['precision'])}, recall {pct_ratio(metricas['association']['recall'])} (TP {metricas['association']['tp']}, FP {metricas['association']['fp']}, FN {metricas['association']['fn']}).
+- Revisão humana: taxa {pct_ratio(metricas['review']['rate'])}; precisão {pct_ratio(metricas['review']['precision'])}; recall {pct_ratio(metricas['review']['recall'])}.
+- Falsos alertas de revisão: {metricas['review']['fp']} (taxa {pct_ratio(metricas['review']['false_alert_rate'])}); falsos negativos de revisão: {metricas['review']['false_negatives']}.
+- Avaliação sobre gabarito sintético fixo do lote de desenvolvimento; não estima desempenho em documentos reais. O holdout D1-08 não é carregado.
 ## Estimativa de custo Gemini (não medida)
 
 - Resolução de renderização: aproximadamente {int(largura)}×{int(altura)} px (150 DPI)
