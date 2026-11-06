@@ -21,10 +21,12 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from pydantic import ValidationError
+
 from .. import config, db
 from ..aej import parse_aej_detalhado
 from ..ai import (
-    ErroIA, ProvedorLeitura, analisar_com_proveniencia, chave_cache, get_provider,
+    ErroIA, ProvedorLeitura, analisar_com_proveniencia, chave_cache, chave_cache_legada, get_provider,
     metadados_basicos,
 )
 from ..contracts import (
@@ -320,17 +322,22 @@ def _processar_lote_aej(batch_id: int) -> None:
              batch_id, resumo["workers_count"], len(periodos) * resumo["workers_count"])
 
 
-def _chave(provedor: ProvedorLeitura, pagina: sqlite3.Row) -> str:
-    """Muda se mudar a imagem, o texto digital, o provedor, o modelo ou a versão do prompt."""
+def _entrada_cache(pagina: sqlite3.Row) -> str:
+    """Identifica a imagem e o texto digital, igualmente nas duas versões da chave."""
     texto = (pagina["texto_camada"] or "").encode("utf-8")
     entrada = f"{pagina['sha256']}:{hashlib.sha256(texto).hexdigest()[:16]}"
-    return chave_cache(provedor, entrada, getattr(provedor, "modelo", ""))
+    return entrada
+
+
+def _chave(provedor: ProvedorLeitura, pagina: sqlite3.Row) -> str:
+    return chave_cache(provedor, _entrada_cache(pagina), getattr(provedor, "modelo", ""))
 
 
 def _analisar_pagina(pagina: sqlite3.Row, contract_id: str, provedor: ProvedorLeitura) -> bool:
     chave = _chave(provedor, pagina)
     inicio = time.monotonic()
     do_cache = False
+    cache_legado = False
     metadados = metadados_basicos(provedor)
     try:
         with db.tx() as conn:
@@ -338,6 +345,19 @@ def _analisar_pagina(pagina: sqlite3.Row, contract_id: str, provedor: ProvedorLe
         if linha is not None:
             analise = AnalisePagina.model_validate_json(linha[0])
             do_cache = True
+        else:
+            antiga = chave_cache_legada(provedor, _entrada_cache(pagina), getattr(provedor, "modelo", ""))
+            if antiga is not None:
+                with db.tx() as conn:
+                    legada = conn.execute("SELECT resultado_json FROM ai_cache WHERE chave = ?", (antiga,)).fetchone()
+                if legada is not None:
+                    try:
+                        analise = AnalisePagina.model_validate_json(legada[0])
+                    except ValidationError:
+                        log.warning("cache legado inválido ignorado página id=%s", pagina["id"])
+                    else:
+                        do_cache = cache_legado = True
+        if do_cache:
             metadados.update({
                 "input_tokens": 0 if provedor.nome == "gemini" else None,
                 "output_tokens": 0 if provedor.nome == "gemini" else None,
@@ -368,7 +388,7 @@ def _analisar_pagina(pagina: sqlite3.Row, contract_id: str, provedor: ProvedorLe
     ms = int((time.monotonic() - inicio) * 1000)
     resultado = analise.model_dump_json()
     with db.tx() as conn:
-        if not do_cache:
+        if not do_cache or cache_legado:
             conn.execute("INSERT OR REPLACE INTO ai_cache (chave, resultado_json, created_at) VALUES (?, ?, ?)",
                          (chave, resultado, db.agora()))
         conn.execute("UPDATE pages SET status = ?, texto = ?, analise_json = ?, ms = ?, erro = NULL WHERE id = ?",

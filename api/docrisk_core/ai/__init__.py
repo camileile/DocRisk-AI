@@ -51,6 +51,17 @@ def chave_cache(provedor: ProvedorLeitura, sha256_png: str, modelo: str = "") ->
     return f"{provedor.nome}:{modelo}:{VERSAO_PROMPT}:{VERSAO_SCHEMA}:{sha256_png}"
 
 
+def chave_cache_legada(provedor: ProvedorLeitura, sha256_png: str, modelo: str = "") -> str | None:
+    """Só p1/s1 é compatível com o contrato anterior à versão explícita do schema.
+
+    O resultado ainda precisa ser validado como AnalisePagina antes da promoção.
+    Novos prompts ou schemas não podem reutilizar silenciosamente o cache antigo.
+    """
+    if (VERSAO_PROMPT, VERSAO_SCHEMA) != ("p1", "s1"):
+        return None
+    return f"{provedor.nome}:{modelo}:p1:{sha256_png}"
+
+
 def metadados_basicos(provedor: ProvedorLeitura) -> dict[str, object]:
     gemini = provedor.nome == "gemini"
     return {

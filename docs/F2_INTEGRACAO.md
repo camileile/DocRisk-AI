@@ -79,6 +79,7 @@ Para o teste integrado com o lote da F3, use `AI_PROVIDER=textlayer` e `DOCRISK_
 ### Controle e proveniência (D1-10)
 
 - A resposta usa saída estruturada pelo schema `AnalisePagina`. Ao alterar o prompt ou o schema, incremente `VERSAO_PROMPT` ou `VERSAO_SCHEMA`; ambas fazem parte da chave do cache.
+- Para `p1/s1`, quando a chave nova não existe, o worker consulta a chave anterior do mesmo provedor, modelo, imagem e texto digital. Só reutiliza resultados válidos como `AnalisePagina`, promove-os à chave nova e preserva a entrada antiga. A execução registra cache hit e custo zero, sem chamada ao provedor. Entradas inválidas são ignoradas; novos prompts/schemas não usam essa compatibilidade.
 - `GEMINI_TIMEOUT_MS` limita o tempo HTTP por chamada (padrão `60000`) e `GEMINI_MAX_OUTPUT_TOKENS` limita a saída (padrão `2048`). Ambos precisam ser inteiros positivos.
 - Para estimar custo por página, configure `GEMINI_INPUT_USD_PER_MILLION` e `GEMINI_OUTPUT_USD_PER_MILLION` com as tarifas atuais do modelo escolhido. Sem as duas tarifas e os tokens retornados pelo SDK, `estimated_cost_usd` fica `NULL`; não é tratado como custo zero.
 - `ai_telemetry` registra uma linha por página, incluindo provedor, modelo, versões do prompt/schema, tokens, tarifas, custo estimado, timeout, limite de saída, duração, cache e status. Falhas registram somente o tipo da exceção, sem conteúdo do documento nem chave.
