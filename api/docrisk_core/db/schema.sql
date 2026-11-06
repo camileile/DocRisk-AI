@@ -90,6 +90,24 @@ CREATE TABLE IF NOT EXISTS doc_pages (
   posicao      INTEGER NOT NULL      -- 1..n dentro do documento
 );
 
+-- Histórico imutável de correções manuais de campos extraídos.
+CREATE TABLE IF NOT EXISTS document_field_reviews (
+  id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+  document_id          INTEGER NOT NULL REFERENCES documents(id),
+  field_name           TEXT NOT NULL,
+  original_value_json  TEXT NOT NULL,
+  corrected_value_json TEXT NOT NULL,
+  author_id            TEXT NOT NULL REFERENCES users(id),
+  reason               TEXT NOT NULL,
+  source               TEXT NOT NULL,
+  document_version     INTEGER NOT NULL,
+  revision_number      INTEGER NOT NULL,
+  created_at           TEXT NOT NULL,
+  UNIQUE (document_id, revision_number)
+);
+CREATE INDEX IF NOT EXISTS ix_document_field_reviews_document
+  ON document_field_reviews (document_id, revision_number);
+
 CREATE TABLE IF NOT EXISTS issues (
   id              INTEGER PRIMARY KEY AUTOINCREMENT,
   contract_id     TEXT NOT NULL REFERENCES contracts(id),

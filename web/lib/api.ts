@@ -67,6 +67,18 @@ export type Doc = {
 export type DocDetail = Doc & {
   paginas_detalhe: { page_id: number; ordem: number; texto: string }[];
   versoes: { id: number; versao: number; status: DocStatus; batch_id: number; created_at: string }[];
+  revisoes_campos?: {
+    field_name: keyof Campos;
+    valor_original: number | string | null;
+    valor_corrigido: number | string | null;
+    author_id: string;
+    author_name: string;
+    reason: string;
+    source: string;
+    document_version: number;
+    revision_number: number;
+    created_at: string;
+  }[];
   aej?: {
     worker_link_id: string;
     worker_id: string | null;
