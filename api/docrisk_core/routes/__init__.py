@@ -141,6 +141,16 @@ def list_contracts(user: Usuario = Depends(usuario_atual),
         f"FROM contracts WHERE id IN ({marks}) ORDER BY id", ids).fetchall())
 
 
+@router.get("/api/contracts/{contract_id}/workers")
+def list_workers(contract_id: str, user: Usuario = Depends(usuario_atual),
+                 conn: sqlite3.Connection = Depends(get_conn)) -> list[dict[str, Any]]:
+    """Trabalhadores (sintéticos) do contrato — Bernhoeft e fornecedora do contrato."""
+    _require_batch_reader(user)
+    _contract_or_404(conn, user, contract_id)
+    return _rows(conn.execute("SELECT id, nome FROM workers WHERE contract_id=? ORDER BY id",
+                              (contract_id,)).fetchall())
+
+
 @router.post("/api/supplier/batches", status_code=202)
 async def upload_batch(contract_id: str = Form(...), file: UploadFile = File(...),
                        user: Usuario = Depends(usuario_atual),
@@ -464,10 +474,17 @@ def search(q: str = Query(min_length=1, max_length=250),
         return []
     marks = ",".join("?" for _ in ids)
     try:
+        # Cada palavra vira um termo entre aspas: o texto do usuário nunca é sintaxe FTS5.
+        termos = " ".join('"' + t.replace('"', '""') + '"' for t in q.split())
+        if not termos:
+            return []
         rows = conn.execute(
-            f"SELECT f.page_id, f.contract_id, snippet(page_fts, 0, '[[', ']]', '…', 12) AS trecho "
-            f"FROM page_fts f WHERE page_fts MATCH ? AND f.contract_id IN ({marks}) LIMIT 100",
-            (q, *ids)).fetchall()
+            f"SELECT f.page_id, f.contract_id, snippet(page_fts, 0, '[[', ']]', '…', 12) AS trecho, "
+            f"dp.document_id, p.ordem, p.batch_id "
+            f"FROM page_fts f JOIN pages p ON p.id=f.page_id "
+            f"LEFT JOIN doc_pages dp ON dp.page_id=f.page_id "
+            f"WHERE page_fts MATCH ? AND f.contract_id IN ({marks}) ORDER BY rank LIMIT 100",
+            (termos, *ids)).fetchall()
     except sqlite3.OperationalError as exc:
         raise HTTPException(400, "Consulta de busca inválida") from exc
     return [{**dict(row), "trecho": html.escape(row["trecho"] or "")} for row in rows]
