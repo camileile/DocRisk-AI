@@ -153,3 +153,88 @@ def test_existing_d1_06_history_and_page_corrections_share_schema(document):
     assert {r["revision_number"] for r in history} == {1, 2}
     assert {r["source"] for r in history} == {"Holerite, página 1", f"Página #{document['pages'][1]}"}
     assert {r["author_id"] for r in history} == {"u-analista"}
+
+
+def test_manual_review_of_apt_document_is_audited_and_recalculates(document, monkeypatch):
+    from docrisk_core.rules import conciliacao
+    recalculated = []
+    monkeypatch.setattr(conciliacao, "conciliar", lambda *args: recalculated.append(args[1:]))
+    with db.tx() as conn:
+        conn.execute("UPDATE documents SET status='APTO' WHERE id=?", (document["id"],))
+    endpoint = f"/api/documents/{document['id']}/review"
+    with TestClient(app) as client:
+        before = client.get(f"/api/documents/{document['id']}", headers=headers()).json()
+        assert before["status"] == "APTO"
+        response = client.patch(endpoint, headers=headers(), json={
+            "acao": "iniciar_revisao",
+            "motivo": "Conferir divergência identificada pelo analista.",
+            "esperado_em": before["updated_at"],
+        })
+        assert response.status_code == 200, response.text
+        assert response.json()["status"] == "REVISAO_HUMANA"
+        detail = client.get(f"/api/documents/{document['id']}", headers=headers()).json()
+        queue = client.get("/api/review-queue", headers=headers()).json()
+        supplier = client.get(f"/api/documents/{document['id']}", headers=headers("u-oper-beta")).json()
+    assert detail["status"] == "REVISAO_HUMANA" and detail["updated_at"] != before["updated_at"]
+    assert detail["revisado_por"] == "u-analista"
+    assert any("Conferir divergência identificada" in item for item in detail["motivos_revisao"])
+    assert any(row["id"] == document["id"] for row in queue)
+    assert supplier["status"] == "EM_ANALISE" and "motivos_revisao" not in supplier
+    assert recalculated == [("CT-001", "T001", "10/2026")]
+    with db.tx() as conn:
+        events = conn.execute(
+            "SELECT acao, alvo, resultado FROM audit WHERE acao='DOCUMENTO_INICIAR_REVISAO' "
+            "AND alvo=?", (str(document["id"]),)).fetchall()
+        assert len(events) == 1
+        assert events[0]["resultado"] == "PERMITIDO"
+
+
+@pytest.mark.parametrize("role", ["u-admin", "u-gestor-alfa", "u-gestor-beta", "u-oper-beta"])
+def test_manual_review_start_is_exclusive_to_analyst(document, role):
+    with db.tx() as conn:
+        conn.execute("UPDATE documents SET status='APTO' WHERE id=?", (document["id"],))
+    with TestClient(app) as client:
+        response = client.patch(f"/api/documents/{document['id']}/review", headers=headers(role),
+                                json={"acao": "iniciar_revisao", "motivo": "Revisão manual de conferência.",
+                                      "esperado_em": document["updated_at"]})
+    assert response.status_code == 403
+    with db.tx() as conn:
+        assert conn.execute("SELECT status FROM documents WHERE id=?",
+                            (document["id"],)).fetchone()[0] == "APTO"
+
+
+@pytest.mark.parametrize("invalid", [
+    {"motivo": "curto"}, {"motivo": " " * 20}, {"motivo": "x" * 501},
+    {"motivo": None}, {"motivo": 12345678912}, {"esperado_em": "2000-01-01"},
+    {"esperado_em": None},
+])
+def test_manual_review_start_rejects_invalid_request(document, invalid):
+    with db.tx() as conn:
+        conn.execute("UPDATE documents SET status='APTO' WHERE id=?", (document["id"],))
+    request = {
+        "acao": "iniciar_revisao", "motivo": "O analista identificou uma inconsistência.",
+        "esperado_em": document["updated_at"], **invalid,
+    }
+    with TestClient(app) as client:
+        response = client.patch(f"/api/documents/{document['id']}/review",
+                                headers=headers(), json=request)
+    assert response.status_code in {409, 422}, response.text
+    with db.tx() as conn:
+        assert conn.execute("SELECT status FROM documents WHERE id=?",
+                            (document["id"],)).fetchone()[0] == "APTO"
+
+
+@pytest.mark.parametrize("status", ["REVISAO_HUMANA", "PENDENTE_CORRECAO", "SUBSTITUIDO"])
+def test_manual_review_start_does_not_overwrite_existing_state(document, status):
+    with db.tx() as conn:
+        conn.execute("UPDATE documents SET status=? WHERE id=?", (status, document["id"]))
+    with TestClient(app) as client:
+        response = client.patch(f"/api/documents/{document['id']}/review",
+                                headers=headers(), json={
+            "acao": "iniciar_revisao", "motivo": "Revisão manual de conferência.",
+            "esperado_em": document["updated_at"],
+        })
+    assert response.status_code == 409
+    with db.tx() as conn:
+        assert conn.execute("SELECT status FROM documents WHERE id=?",
+                            (document["id"],)).fetchone()[0] == status
