@@ -92,9 +92,8 @@ def pending_invitations(identity=Depends(principal), conn=Depends(connection)):
         (email, now().isoformat()))]
 
 
-@router.post("/invitations", status_code=201)
-def create_invitation(payload: InvitationInput, x_docrisk_link: str = Header(default=""), identity=Depends(principal),
-                      user: Usuario = Depends(usuario_atual), conn=Depends(connection)):
+def issue_invitation(conn, user: Usuario, x_docrisk_link: str, payload: InvitationInput):
+    """Emite convite auditável; reutilizado no cadastro da auditora e na gestão de vínculos."""
     authorize_invitation(conn, user, payload.org_id, payload.role)
     redirect = urlsplit(config.CLERK_INVITE_REDIRECT_URL)
     origin = f"{redirect.scheme}://{redirect.netloc}"
@@ -127,6 +126,11 @@ def create_invitation(payload: InvitationInput, x_docrisk_link: str = Header(def
     auditar(conn, user, "CONVITE_CRIADO", invitation_id)
     return {"id": invitation_id, "expires_at": (created + timedelta(hours=72)).isoformat(), "status": "PENDING"}
 
+
+@router.post("/invitations", status_code=201)
+def create_invitation(payload: InvitationInput, x_docrisk_link: str = Header(default=""), identity=Depends(principal),
+                      user: Usuario = Depends(usuario_atual), conn=Depends(connection)):
+    return issue_invitation(conn, user, x_docrisk_link, payload)
 
 @router.get("/invitations")
 def list_invitations(identity=Depends(principal), user: Usuario = Depends(usuario_atual), conn=Depends(connection)):
