@@ -23,7 +23,10 @@ from typing import TYPE_CHECKING, Any
 
 from .. import config, db
 from ..aej import parse_aej_detalhado
-from ..ai import ErroIA, ProvedorLeitura, chave_cache, get_provider
+from ..ai import (
+    ErroIA, ProvedorLeitura, analisar_com_proveniencia, chave_cache, get_provider,
+    metadados_basicos,
+)
 from ..contracts import (
     TIPOS_FOCO, AnalisePagina, CategoriaPendencia, StatusDocumento, StatusLote, StatusPagina,
 )
@@ -328,15 +331,23 @@ def _analisar_pagina(pagina: sqlite3.Row, contract_id: str, provedor: ProvedorLe
     chave = _chave(provedor, pagina)
     inicio = time.monotonic()
     do_cache = False
+    metadados = metadados_basicos(provedor)
     try:
         with db.tx() as conn:
             linha = conn.execute("SELECT resultado_json FROM ai_cache WHERE chave = ?", (chave,)).fetchone()
         if linha is not None:
             analise = AnalisePagina.model_validate_json(linha[0])
             do_cache = True
+            metadados.update({
+                "input_tokens": 0 if provedor.nome == "gemini" else None,
+                "output_tokens": 0 if provedor.nome == "gemini" else None,
+                "total_tokens": 0 if provedor.nome == "gemini" else None,
+                "estimated_cost_usd": 0.0,
+                "cache_hit": True,
+            })
         else:
             png = Path(pagina["image_path"]).read_bytes()
-            analise = provedor.analisar(png, pagina["texto_camada"] or "")
+            analise, metadados = analisar_com_proveniencia(provedor, png, pagina["texto_camada"] or "")
             if not isinstance(analise, AnalisePagina):
                 analise = AnalisePagina.model_validate(analise)
     except Exception as exc:
@@ -349,6 +360,7 @@ def _analisar_pagina(pagina: sqlite3.Row, contract_id: str, provedor: ProvedorLe
         with db.tx() as conn:
             conn.execute("UPDATE pages SET status = ?, erro = ?, ms = ? WHERE id = ?",
                          (StatusPagina.ERRO.value, motivo[:500], ms, pagina["id"]))
+            _registrar_telemetria(conn, int(pagina["id"]), metadados, "ERRO", ms, type(exc).__name__)
         log.warning("página falhou id=%s ordem=%s provedor=%s erro=%s",
                     pagina["id"], pagina["ordem"], provedor.nome, type(exc).__name__)
         return False
@@ -361,12 +373,30 @@ def _analisar_pagina(pagina: sqlite3.Row, contract_id: str, provedor: ProvedorLe
                          (chave, resultado, db.agora()))
         conn.execute("UPDATE pages SET status = ?, texto = ?, analise_json = ?, ms = ?, erro = NULL WHERE id = ?",
                      (StatusPagina.OK.value, analise.texto, resultado, ms, pagina["id"]))
+        _registrar_telemetria(conn, int(pagina["id"]), metadados, "OK", ms, None)
         conn.execute("DELETE FROM page_fts WHERE page_id = ?", (pagina["id"],))
         conn.execute("INSERT INTO page_fts (texto, page_id, contract_id) VALUES (?, ?, ?)",
                      (analise.texto, pagina["id"], contract_id))
     log.info("página lida id=%s ordem=%s provedor=%s cache=%s ms=%d tipo=%s",
              pagina["id"], pagina["ordem"], provedor.nome, do_cache, ms, analise.tipo.value)
     return True
+
+
+def _registrar_telemetria(conn: sqlite3.Connection, page_id: int, metadados: dict[str, object],
+                          status: str, duration_ms: int, error_type: str | None) -> None:
+    campos = (
+        "provider", "model", "prompt_version", "schema_version", "input_tokens", "output_tokens",
+        "total_tokens", "input_price_usd_per_million", "output_price_usd_per_million",
+        "estimated_cost_usd", "timeout_ms", "max_output_tokens",
+    )
+    valores = [metadados.get(campo) for campo in campos]
+    conn.execute(
+        "INSERT OR REPLACE INTO ai_telemetry (page_id, provider, model, prompt_version, schema_version, "
+        "input_tokens, output_tokens, total_tokens, input_price_usd_per_million, "
+        "output_price_usd_per_million, estimated_cost_usd, timeout_ms, max_output_tokens, cache_hit, "
+        "status, duration_ms, error_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (page_id, *valores, int(bool(metadados.get("cache_hit"))), status, duration_ms, error_type, db.agora()),
+    )
 
 
 def processar_lote(batch_id: int, provedor: ProvedorLeitura | None = None) -> None:

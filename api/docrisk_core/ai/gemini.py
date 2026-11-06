@@ -29,7 +29,8 @@ from pydantic import ValidationError
 from .. import config
 from ..contracts import AnalisePagina
 from . import (
-    VERSAO_PROMPT, ErroConfiguracaoIA, ErroIAPermanente, ErroIATransitorio, RespostaIAInvalida,
+    VERSAO_PROMPT, VERSAO_SCHEMA, ErroConfiguracaoIA, ErroIAPermanente, ErroIATransitorio,
+    RespostaIAInvalida,
 )
 
 log = logging.getLogger("docrisk.ai.gemini")
@@ -207,7 +208,10 @@ class GeminiProvider:
                 raise ErroConfiguracaoIA(
                     "AI_PROVIDER=gemini, mas GEMINI_API_KEY não está configurada em api/.env.")
             from google import genai
-            cliente = genai.Client(api_key=chave)
+            cliente = genai.Client(
+                api_key=chave,
+                http_options=types.HttpOptions(timeout=config.GEMINI_TIMEOUT_MS),
+            )
         self._cliente = cliente
         self.modelo = (modelo or config.GEMINI_MODEL).strip()
         if not self.modelo:
@@ -220,6 +224,8 @@ class GeminiProvider:
         self._config = types.GenerateContentConfig(
             temperature=0,
             response_mime_type="application/json",
+            response_schema=AnalisePagina,
+            max_output_tokens=config.GEMINI_MAX_OUTPUT_TOKENS,
             system_instruction=INSTRUCAO_SISTEMA,
         )
 
@@ -229,6 +235,11 @@ class GeminiProvider:
         return min(self._espera_max, max(0.0, base))
 
     def analisar(self, png: bytes, texto_camada: str | None = None) -> AnalisePagina:
+        return self.analisar_com_proveniencia(png, texto_camada)[0]
+
+    def analisar_com_proveniencia(
+        self, png: bytes, texto_camada: str | None = None,
+    ) -> tuple[AnalisePagina, dict[str, Any]]:
         conteudo = [self._types.Part.from_bytes(data=png, mime_type="image/png"), PROMPT]
         for tentativa in range(1, self.max_tentativas + 1):
             self.limitador.aguardar()
@@ -258,8 +269,37 @@ class GeminiProvider:
                 raise
             log.info("gemini ok modelo=%s prompt=%s tentativa=%d ms=%d tipo=%s",
                      self.modelo, VERSAO_PROMPT, tentativa, ms, analise.tipo.value)
-            return analise
+            uso = getattr(resposta, "usage_metadata", None)
+            tokens_entrada = self._contagem_tokens(uso, "prompt_token_count")
+            tokens_saida = self._contagem_tokens(uso, "candidates_token_count")
+            tokens_total = self._contagem_tokens(uso, "total_token_count")
+            tarifa_entrada = config.GEMINI_INPUT_USD_PER_MILLION
+            tarifa_saida = config.GEMINI_OUTPUT_USD_PER_MILLION
+            custo = None
+            if (tokens_entrada is not None and tokens_saida is not None and
+                    tarifa_entrada is not None and tarifa_saida is not None):
+                custo = (tokens_entrada * tarifa_entrada + tokens_saida * tarifa_saida) / 1_000_000
+            return analise, {
+                "provider": self.nome,
+                "model": self.modelo,
+                "prompt_version": VERSAO_PROMPT,
+                "schema_version": VERSAO_SCHEMA,
+                "input_tokens": tokens_entrada,
+                "output_tokens": tokens_saida,
+                "total_tokens": tokens_total,
+                "input_price_usd_per_million": tarifa_entrada,
+                "output_price_usd_per_million": tarifa_saida,
+                "estimated_cost_usd": custo,
+                "timeout_ms": config.GEMINI_TIMEOUT_MS,
+                "max_output_tokens": config.GEMINI_MAX_OUTPUT_TOKENS,
+                "cache_hit": False,
+            }
         raise ErroIATransitorio("Gemini sem resposta.")  # pragma: no cover
+
+    @staticmethod
+    def _contagem_tokens(uso: Any, campo: str) -> int | None:
+        valor = getattr(uso, campo, None)
+        return valor if isinstance(valor, int) and valor >= 0 else None
 
 
 def listar_modelos_visao(cliente: Any = None) -> list[str]:

@@ -1,6 +1,6 @@
 # F2 — Motor documental e IA: como integrar
 
-Branch: `feat/f2-motor-ia`. Nada de `contracts.py` ou `schema.sql` foi alterado.
+Integração F2 do motor documental e IA. A extensão D1-10 adiciona telemetria em `schema.sql`; o contrato funcional da página permanece inalterado.
 
 ## Para a F1 (API)
 
@@ -75,3 +75,12 @@ Para o teste integrado com o lote da F3, use `AI_PROVIDER=textlayer` e `DOCRISK_
 - `api/.env`: `AI_PROVIDER=gemini`, `GEMINI_API_KEY=...`, `GEMINI_MODEL=...`, `GEMINI_RPM=...`.
 - Conferir modelos da conta: `python -m docrisk_core.ai.poc_gemini --modelos` (dentro de `api/`).
 - Prova de uma página fictícia: `python -m docrisk_core.ai.poc_gemini`.
+
+### Controle e proveniência (D1-10)
+
+- A resposta usa saída estruturada pelo schema `AnalisePagina`. Ao alterar o prompt ou o schema, incremente `VERSAO_PROMPT` ou `VERSAO_SCHEMA`; ambas fazem parte da chave do cache.
+- `GEMINI_TIMEOUT_MS` limita o tempo HTTP por chamada (padrão `60000`) e `GEMINI_MAX_OUTPUT_TOKENS` limita a saída (padrão `2048`). Ambos precisam ser inteiros positivos.
+- Para estimar custo por página, configure `GEMINI_INPUT_USD_PER_MILLION` e `GEMINI_OUTPUT_USD_PER_MILLION` com as tarifas atuais do modelo escolhido. Sem as duas tarifas e os tokens retornados pelo SDK, `estimated_cost_usd` fica `NULL`; não é tratado como custo zero.
+- `ai_telemetry` registra uma linha por página, incluindo provedor, modelo, versões do prompt/schema, tokens, tarifas, custo estimado, timeout, limite de saída, duração, cache e status. Falhas registram somente o tipo da exceção, sem conteúdo do documento nem chave.
+- Para uma página servida do cache, `cache_hit=1`; o uso e o custo desta execução ficam em zero para Gemini. Leitores locais registram custo de API zero e contagem de tokens nula.
+- `AI_PROVIDER` não troca de provedor automaticamente: configuração inválida ou indisponibilidade falha explicitamente, sem fallback oculto.

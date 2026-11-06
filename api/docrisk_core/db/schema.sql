@@ -148,9 +148,30 @@ CREATE TABLE IF NOT EXISTS audit (
 );
 
 CREATE TABLE IF NOT EXISTS ai_cache (
-  chave           TEXT PRIMARY KEY,  -- provedor:modelo:versao_prompt:sha256_png
+  chave           TEXT PRIMARY KEY,  -- provedor:modelo:versao_prompt:versao_schema:sha256_png
   resultado_json  TEXT NOT NULL,
   created_at      TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ai_telemetry (
+  page_id                       INTEGER PRIMARY KEY REFERENCES pages(id),
+  provider                      TEXT NOT NULL,
+  model                         TEXT NOT NULL,
+  prompt_version                TEXT NOT NULL,
+  schema_version                TEXT NOT NULL,
+  input_tokens                  INTEGER,
+  output_tokens                 INTEGER,
+  total_tokens                  INTEGER,
+  input_price_usd_per_million   REAL,
+  output_price_usd_per_million  REAL,
+  estimated_cost_usd            REAL,
+  timeout_ms                    INTEGER,
+  max_output_tokens             INTEGER,
+  cache_hit                     INTEGER NOT NULL DEFAULT 0,
+  status                        TEXT NOT NULL CHECK (status IN ('OK', 'ERRO')),
+  duration_ms                   INTEGER NOT NULL,
+  error_type                    TEXT,
+  created_at                    TEXT NOT NULL
 );
 
 -- AEJ: fonte original permanece em batches.arquivo, com hash em batches.sha256.
