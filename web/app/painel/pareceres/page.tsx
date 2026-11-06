@@ -130,7 +130,11 @@ function ReportPanel({ id, onPublished }: { id: number; onPublished: () => void 
     setBusy(true);
     setPublishError(null);
     try {
-      await api(`/api/reports/${id}/publish`, { method: "POST" });
+      if (!data.conteudo_sha256) throw new Error("Atualize a prévia antes de publicar.");
+      await api(`/api/reports/${id}/publish`, {
+        method: "POST",
+        body: JSON.stringify({ conteudo_sha256: data.conteudo_sha256 }),
+      });
       onPublished();
       await reload();
     } catch (err) {
@@ -152,7 +156,11 @@ function ReportPanel({ id, onPublished }: { id: number; onPublished: () => void 
           </button>
         )}
       </div>
-      {publishError && <Notice tone="error">{publishError}</Notice>}
+      {publishError && (
+        <Notice tone="error">
+          {publishError} <button className="table-action" onClick={() => void reload()}>Atualizar prévia</button>
+        </Notice>
+      )}
       {content && "resumo" in content ? (
         <ReportView content={content} draft={draft} />
       ) : (

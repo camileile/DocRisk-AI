@@ -60,7 +60,9 @@ def test_six_profiles_from_auditor_registration_to_published_report(banco, monke
         assert len(analyses) == 1
         assert analyses[0]["resultado"]["tipo"] == "DIVERGENCIA_A_VERIFICAR"
         report = post("/api/reports", analyst, {"contract_id": contract, "competencia": "10/2026"})
-        assert client.post(f"/api/reports/{report['id']}/publish", headers=analyst).status_code == 200
+        preview = client.get(f"/api/reports/{report['id']}/preview", headers=analyst)
+        assert client.post(f"/api/reports/{report['id']}/publish", headers=analyst,
+                           json={"conteudo_sha256": preview.json()["conteudo_sha256"]}).status_code == 200
         # 6. Contratante recebe apenas a publicação do seu contrato.
         published = client.get("/api/client/reports", headers=customer).json()
         assert [r["id"] for r in published] == [report["id"]]

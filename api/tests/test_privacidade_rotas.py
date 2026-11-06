@@ -64,7 +64,10 @@ def test_contratante_nao_baixa_documentos_antes_ou_depois_da_publicacao(lote_env
                         json={"contract_id": "CT-001", "competencia": "10/2026"})
     assert draft.status_code == 201, draft.text
     assert client.get(path, headers=customer).status_code == 403
-    published = client.post(f"/api/reports/{draft.json()['id']}/publish", headers=_h("u-analista"))
+    analyst = _h("u-analista")
+    preview = client.get(f"/api/reports/{draft.json()['id']}/preview", headers=analyst)
+    published = client.post(f"/api/reports/{draft.json()['id']}/publish", headers=analyst,
+                            json={"conteudo_sha256": preview.json()["conteudo_sha256"]})
     assert published.status_code == 200, published.text
     assert client.get("/api/client/reports", headers=customer).json()
     assert client.get(path, headers=customer).status_code == 403
