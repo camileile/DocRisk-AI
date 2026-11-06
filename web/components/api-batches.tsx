@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CircleAlert, Clock3, CheckCheck, Package, RefreshCw, Search, FileText, ChevronDown } from "lucide-react";
+import Link from "next/link";
+import { CircleAlert, Clock3, CheckCheck, Package, RefreshCw, Search, FileText, ChevronDown, Upload } from "lucide-react";
 import { useDemo } from "@/components/demo-provider";
 import { PageIntro, EmptyState } from "@/components/workspace-parts";
 import { BatchBadge } from "@/components/batch-badge";
@@ -107,9 +108,14 @@ export function ApiBatches() {
         title="Envios consultados no backend."
         description="Consulte os lotes autorizados pela API. Os dados abaixo são recebidos do SQLite de testes e não dos exemplos fixos do frontend."
         action={
-          <button type="button" className="button secondary" onClick={() => { setSelected(null); refresh(); }} disabled={loading}>
-            <RefreshCw size={16} /> {loading ? "Atualizando…" : "Atualizar lotes"}
-          </button>
+          <div className="api-page-actions">
+            {apiSession.user.org_tipo === "FORNECEDORA" && (
+              <Link className="button" href="/painel/envio"><Upload size={16}/> Enviar arquivo</Link>
+            )}
+            <button type="button" className="button secondary" onClick={() => { setSelected(null); refresh(); }} disabled={loading}>
+              <RefreshCw size={16} /> {loading ? "Atualizando…" : "Atualizar lotes"}
+            </button>
+          </div>
         }
       />
       <div className="stat-grid">
