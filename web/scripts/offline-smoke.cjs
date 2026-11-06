@@ -23,11 +23,17 @@ async function run() {
     if (req.url().includes(":8000/")) calls.push(req.url());
   });
   try {
+    await page.goto(base + "/", { waitUntil: "domcontentloaded" });
+    await page.getByRole("navigation", { name: "Navegação principal" }).getByRole("link", { name: "Acesso", exact: true }).click();
+    await page.waitForURL((url) => url.pathname === "/operacao/");
+    assert.equal(await page.getByRole("radio").count(), 0, "Acesso institucional não deve abrir os perfis fictícios.");
     await page.goto(base + "/acesso/", { waitUntil: "domcontentloaded" });
+    assert.equal(await page.getByRole("radio").count(), 0, "Rota antiga de acesso não deve abrir a demo.");
+    await page.goto(base + "/demo/", { waitUntil: "domcontentloaded" });
     assert.equal(await page.getByRole("radio").count(), 6);
     assert.equal(await page.getByText("Não foi possível conectar à API").count(), 0);
     for (const [role, route] of profiles) {
-      await page.goto(base + "/acesso/", { waitUntil: "domcontentloaded" });
+      await page.goto(base + "/demo/", { waitUntil: "domcontentloaded" });
       await page.getByRole("radio", { name: new RegExp(role, "i") }).check();
       await page.getByRole("button", { name: "Explorar demonstração" }).click();
       await page.waitForURL((url) => url.pathname === route, { timeout: 15000 });
@@ -100,7 +106,7 @@ async function run() {
         await page.goto(base + "/painel/", { waitUntil: "domcontentloaded" });
         await page.waitForURL((url) => url.pathname.startsWith("/contratante/"), { timeout: 15000 });
       }
-      await page.goto(base + "/acesso/", { waitUntil: "domcontentloaded" });
+      await page.goto(base + "/demo/", { waitUntil: "domcontentloaded" });
       assert.equal(await page.getByRole("radio").count(), 6);
     }
     assert.deepEqual(calls, [], "Modo demo nao deve acessar o backend");
