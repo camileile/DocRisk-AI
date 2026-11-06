@@ -37,7 +37,14 @@ async function run() {
       }
       if (role === "Analista Bernhoeft") {
         await page.goto(base + "/painel/revisao/", { waitUntil: "domcontentloaded" });
+        await page.getByRole("heading", { name: "Fila de Exceções" }).waitFor();
+        const nav = await page.locator('nav[aria-label="Navegação do painel"] a').allTextContents();
+        assert.deepEqual(nav.map((label) => label.trim()), [
+          "Visão geral", "Fila de Exceções", "Pareceres",
+        ]);
         await page.getByRole("link", { name: /Conferir/ }).first().waitFor();
+        await page.getByText("Diferença fictícia de 4 h", { exact: false }).waitFor();
+        await page.getByText("Página ilegível no arquivo de demonstração.", { exact: false }).waitFor();
         await page.goto(base + "/painel/pareceres/", { waitUntil: "domcontentloaded" });
         await page.getByText("Exemplo fictício:", { exact: false }).first().waitFor();
         assert.equal(await page.getByRole("button", { name: "Criar rascunho" }).isDisabled(), true);
