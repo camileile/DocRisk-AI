@@ -91,7 +91,9 @@ function ProcessingStatus({ receipt, token, submittedContract, filename }: {
           <span>Status consultado na API</span>
           {batch ? <BatchBadge status={batch.status} /> : <span className="api-status">Consultando…</span>}
         </div>
-        {batch && <small>{batch.total_pages} página(s) identificada(s) pelo backend</small>}
+        {batch && <small>{batch.tipo_arquivo === "AEJ"
+          ? "AEJ estruturado identificado pelo backend; processamento sem IA"
+          : `${batch.total_pages} página(s) identificada(s) pelo backend`}</small>}
       </div>
       {completed && (
         <p className="api-upload-notice api-upload-success">
@@ -201,9 +203,9 @@ export function ApiUpload() {
             <label className="upload-area">
               <Upload size={30} />
               <strong>Selecione um arquivo sintético</strong>
-              <span>PDF, PNG, JPG, JPEG ou TIFF · até 20 MB</span>
+              <span>PDF, imagem ou AEJ · até 20 MB (AEJ até 10 MB)</span>
               <input ref={inputRef} type="file" aria-label="Selecionar arquivo para envio real"
-                accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff"
+                accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.aej,.txt"
                 disabled={busy || Boolean(uploaded)}
                 onChange={(event) => pickFile(event.target.files)} />
             </label>
@@ -245,7 +247,8 @@ export function ApiUpload() {
             <li>Um arquivo gera um lote independente na API.</li>
             <li>O servidor valida o conteúdo, o tamanho, o contrato e a permissão do usuário.</li>
             <li>A F2 registra e classifica páginas; alguns documentos podem seguir para revisão humana.</li>
-            <li>Arquivos AEJ ainda não estão integrados ao envio operacional.</li>
+            <li>AEJ é processado como dado estruturado, sem envio à IA; o original e as linhas de origem são preservados.</li>
+            <li>O sistema não valida assinatura P7S. Vínculos sem mapeamento ou cálculos com alertas precisam de conferência da Bernhoeft.</li>
             <li>O status CONCLUÍDO não representa parecer ou conciliação da F3.</li>
           </ul>
           <div className="evidence-note"><CircleAlert size={19} />

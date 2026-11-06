@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from .. import config, db
+from ..aej import parse_aej_detalhado
 from ..ai import ErroIA, ProvedorLeitura, chave_cache, get_provider
 from ..contracts import (
     TIPOS_FOCO, AnalisePagina, CategoriaPendencia, StatusDocumento, StatusLote, StatusPagina,
@@ -201,6 +202,118 @@ def _registrar_paginas(lote: sqlite3.Row) -> None:
                  pagina.texto_camada, StatusPagina.PENDENTE.value))
 
 
+def _meses(inicio: str, fim: str) -> list[str]:
+    from datetime import date
+    a, b = date.fromisoformat(inicio), date.fromisoformat(fim)
+    resultado = []
+    ano, mes = a.year, a.month
+    while (ano, mes) <= (b.year, b.month):
+        resultado.append(f"{mes:02d}/{ano:04d}")
+        mes += 1
+        if mes == 13:
+            mes, ano = 1, ano + 1
+    return resultado
+
+
+def _processar_lote_aej(batch_id: int) -> None:
+    """Persiste AEJ original + registros e cria espelhos derivados sem leitor de IA."""
+    with db.tx() as conn:
+        lote = conn.execute("SELECT * FROM batches WHERE id=?", (batch_id,)).fetchone()
+        if lote is None:
+            raise LoteNaoEncontrado(f"Lote {batch_id} não existe.")
+        if conn.execute("SELECT 1 FROM documents WHERE batch_id=? LIMIT 1", (batch_id,)).fetchone():
+            conn.execute("UPDATE batches SET status=?, erro=NULL, finished_at=? WHERE id=?",
+                         (StatusLote.CONCLUIDO.value, db.agora(), batch_id))
+            return
+    arquivo = Path(lote["arquivo"])
+    conteudo = arquivo.read_bytes()
+    if hashlib.sha256(conteudo).hexdigest() != lote["sha256"]:
+        raise ArquivoInvalido("O arquivo AEJ original não corresponde ao hash registrado no recebimento.")
+    detalhe = parse_aej_detalhado(conteudo)
+    resumo = detalhe["summary"]
+    agora = db.agora()
+    periodos = _meses(resumo["period_start"], resumo["period_end"])
+    pares: set[tuple[str, str]] = set()
+
+    with db.tx() as conn:
+        conn.execute(
+            "INSERT OR IGNORE INTO aej_imports (batch_id, schema_version, period_start, period_end, "
+            "validation_json, p7s_present, parser_version, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (batch_id, resumo["schema_version"], resumo["period_start"], resumo["period_end"],
+             json.dumps({k: v for k, v in resumo.items() if k not in {"workers"}}, ensure_ascii=False),
+             int(any(r["record_type"] == "P7S_MARKER" for r in detalhe["records"])), "aej-parser-v2", agora),
+        )
+        conn.executemany(
+            "INSERT OR IGNORE INTO aej_records (batch_id, line_number, record_type, worker_link_id, raw_line) "
+            "VALUES (?, ?, ?, ?, ?)",
+            [(batch_id, r["line_number"], r["record_type"], r["worker_link_id"], r["raw_line"])
+             for r in detalhe["records"]],
+        )
+        for link_id, calculation in detalhe["calculations"].items():
+            mapping = conn.execute(
+                "SELECT worker_id FROM aej_worker_mappings WHERE contract_id=? AND worker_link_id=?",
+                (lote["contract_id"], link_id),
+            ).fetchone()
+            worker_id = str(mapping[0]) if mapping else None
+            for competencia in periodos:
+                mm, yyyy = competencia.split("/")
+                dias = [d for d in calculation["days"] if d["date"].startswith(f"{yyyy}-{mm}-")]
+                warnings = list(calculation["warnings"])
+                if not worker_id:
+                    warnings.append("Vínculo AEJ sem mapeamento explícito para trabalhador do contrato.")
+                if not dias:
+                    warnings.append("Nenhuma marcação encontrada para esta competência.")
+                horas = None
+                if worker_id and dias and calculation["calculation_status"] == "CALCULATED":
+                    mins = sum(int(d["observed_daily_excess_minutes"] or 0) for d in dias)
+                    horas = round(mins / 60, 2)
+                status = (StatusDocumento.APTO if horas is not None else StatusDocumento.REVISAO_HUMANA)
+                confianca = 1.0 if horas is not None else 0.0
+                calculo_doc = {
+                    "origem": "AEJ", "worker_link_id": link_id, "worker_id": worker_id,
+                    "competencia": competencia, "calculation_status": calculation["calculation_status"],
+                    "hours": horas, "method": calculation["method"], "warnings": list(dict.fromkeys(warnings)),
+                    "validation_warnings": calculation["validation_warnings"],
+                    "days": dias, "worker_record_line": calculation["worker_record_line"],
+                    "p7s_validated": False,
+                }
+                cur = conn.execute(
+                    "INSERT INTO documents (batch_id, contract_id, tipo, worker_id, competencia, status, "
+                    "confianca, motivos_revisao, campos_json, versao, created_at, updated_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)",
+                    (batch_id, lote["contract_id"], "ESPELHO_PONTO", worker_id, competencia, status.value,
+                     confianca, json.dumps(calculo_doc["warnings"], ensure_ascii=False),
+                     json.dumps({"horas_extras_h": horas}, ensure_ascii=False), agora, agora),
+                )
+                document_id = int(cur.lastrowid)
+                conn.execute(
+                    "INSERT INTO aej_documents (document_id, batch_id, worker_link_id, competencia, "
+                    "calculation_json, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                    (document_id, batch_id, link_id, competencia,
+                     json.dumps(calculo_doc, ensure_ascii=False), agora),
+                )
+                if worker_id:
+                    anterior = conn.execute(
+                        "SELECT id, versao FROM documents WHERE contract_id=? AND tipo='ESPELHO_PONTO' "
+                        "AND worker_id=? AND competencia=? AND status<>? AND batch_id<>? ORDER BY id DESC LIMIT 1",
+                        (lote["contract_id"], worker_id, competencia, StatusDocumento.SUBSTITUIDO.value,
+                         batch_id),
+                    ).fetchone()
+                    if anterior:
+                        conn.execute("UPDATE documents SET status=?,updated_at=? WHERE id=?",
+                                     (StatusDocumento.SUBSTITUIDO.value, agora, anterior["id"]))
+                        conn.execute("UPDATE documents SET versao=?,substitui_id=? WHERE id=?",
+                                     (int(anterior["versao"]) + 1, anterior["id"], document_id))
+                        f3.atualizar_por_nova_versao(conn, int(anterior["id"]), status)
+                    pares.add((worker_id, competencia))
+        for worker_id, competencia in sorted(pares):
+            f3.conciliar(conn, lote["contract_id"], worker_id, competencia)
+        conn.execute("UPDATE batches SET status=?, erro=NULL, finished_at=? WHERE id=?",
+                     (StatusLote.CONCLUIDO.value, db.agora(), batch_id))
+    log.info("lote AEJ concluído id=%d vínculos=%d documentos=%d p7s_validado=false",
+             batch_id, resumo["workers_count"], len(periodos) * resumo["workers_count"])
+
+
 def _chave(provedor: ProvedorLeitura, pagina: sqlite3.Row) -> str:
     """Muda se mudar a imagem, o texto digital, o provedor, o modelo ou a versão do prompt."""
     texto = (pagina["texto_camada"] or "").encode("utf-8")
@@ -267,6 +380,14 @@ def processar_lote(batch_id: int, provedor: ProvedorLeitura | None = None) -> No
             return
         conn.execute("UPDATE batches SET status = ?, erro = NULL WHERE id = ?",
                      (StatusLote.PROCESSANDO.value, batch_id))
+
+    if lote["tipo_arquivo"] == "AEJ":
+        try:
+            _processar_lote_aej(batch_id)
+        except Exception:
+            _marcar_falha(batch_id, "Falha ao validar ou consolidar o AEJ; o arquivo original foi preservado.")
+            raise
+        return
 
     try:
         _registrar_paginas(lote)

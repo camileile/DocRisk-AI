@@ -61,10 +61,33 @@ export type Doc = {
   created_at: string;
   updated_at: string;
   paginas: PageRef[];
+  aej?: { origem: "AEJ"; worker_link_id: string; calculation_status: string; p7s_validated: false };
 };
 export type DocDetail = Doc & {
   paginas_detalhe: { page_id: number; ordem: number; texto: string }[];
   versoes: { id: number; versao: number; status: DocStatus; batch_id: number; created_at: string }[];
+  aej?: {
+    worker_link_id: string;
+    worker_id: string | null;
+    competencia: string;
+    calculation_status: string;
+    hours: number | null;
+    method: string;
+    warnings: string[];
+    validation_warnings: string[];
+    p7s_validated: false;
+    days: {
+      date: string;
+      schedule_code: string | null;
+      schedule_line?: number | null;
+      contract_minutes: number | null;
+      worked_minutes: number | null;
+      observed_daily_excess_minutes: number | null;
+      source_lines: number[];
+      markings: { line_number: number; at: string; type: string; sequence: string; source: string }[];
+      excluded_markings: { line_number: number; at: string; type: string; sequence: string; source: string }[];
+    }[];
+  };
 };
 export type IssueStatus = "ABERTA" | "NOTIFICADA" | "REENVIADA" | "RESOLVIDA" | "REABERTA";
 export type Issue = {
@@ -114,7 +137,10 @@ export type ReportItem = {
   horas_folha: number | null;
   diferenca_h: number | null;
   comprovante_presente: boolean;
-  evidencias: { tipo: string; documento: number; versao: number; lote: number; paginas: number[] }[];
+  evidencias: {
+    tipo: string; documento: number; versao: number; lote: number; paginas: number[];
+    origem?: string; vinculo_aej?: string; linhas_origem?: number[];
+  }[];
 };
 export type ReportContent = {
   contrato: { id: string; nome: string };
@@ -237,6 +263,28 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   }
   if (!response.ok) throw new ApiError(response.status, await errorMessage(response));
   return (await response.json()) as T;
+}
+
+export async function downloadBatchSource(batchId: number): Promise<void> {
+  const token = getToken();
+  if (!token) throw new ApiError(401, "Conecte-se à API para baixar o arquivo original.");
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}/api/batches/${batchId}/source`, {
+      headers: { Authorization: `Bearer ${token}` }, cache: "no-store",
+    });
+  } catch {
+    throw new ApiError(0, `Não foi possível conectar à API em ${API_URL}.`);
+  }
+  if (!response.ok) throw new ApiError(response.status, await errorMessage(response));
+  const disposition = response.headers.get("content-disposition") ?? "";
+  const filename = disposition.match(/filename="?([^";]+)"?/i)?.[1] ?? `lote-${batchId}-original.aej`;
+  const url = URL.createObjectURL(await response.blob());
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export async function apiBlob(path: string): Promise<Blob> {

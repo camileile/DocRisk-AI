@@ -72,7 +72,9 @@ export function ReportView({ content, draft = false }: { content: ReportContent;
                     {item.evidencias.length === 0
                       ? "—"
                       : item.evidencias
-                          .map((e) => `${typeLabels[e.tipo] ?? e.tipo} v${e.versao} (lote ${e.lote}, p. ${e.paginas.join(",")})`)
+                          .map((e) => e.origem === "AEJ"
+                            ? (typeLabels[e.tipo] ?? e.tipo) + " v" + e.versao + " (lote " + e.lote + ", AEJ vínculo " + e.vinculo_aej + ", linhas " + (e.linhas_origem?.join(",") ?? "") + ")"
+                            : (typeLabels[e.tipo] ?? e.tipo) + " v" + e.versao + " (lote " + e.lote + ", p. " + e.paginas.join(",") + ")")
                           .join("; ")}
                   </td>
                 </tr>

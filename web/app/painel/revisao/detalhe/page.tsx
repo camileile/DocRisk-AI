@@ -38,6 +38,8 @@ function ReviewDetail() {
   const [acao, setAcao] = useState("Reenviar o documento completo e legível.");
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<{ tone: "success" | "error"; text: string } | null>(null);
+  const [aejHours, setAejHours] = useState("");
+  const [aejJustification, setAejJustification] = useState("");
 
   useEffect(() => {
     if (!d) return;
@@ -68,19 +70,126 @@ function ReviewDetail() {
     }
   }
 
+  async function approveAej() {
+    setBusy(true);
+    setFeedback(null);
+    try {
+      await api(`/api/documents/${d!.id}/aej-review`, {
+        method: "PATCH",
+        body: JSON.stringify({ horas_extras_h: Number(aejHours), justificativa: aejJustification.trim() }),
+      });
+      setFeedback({ tone: "success", text: "Horas confirmadas. A conciliação do trabalhador foi recalculada." });
+      router.push("/painel/revisao");
+    } catch (err) {
+      setFeedback({ tone: "error", text: err instanceof Error ? err.message : "Falha ao revisar AEJ" });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function mapAejWorker() {
+    if (!worker) return;
+    setBusy(true);
+    setFeedback(null);
+    try {
+      await api(`/api/contracts/${d!.contract_id}/aej-mappings/${d!.aej!.worker_link_id}`, {
+        method: "PUT", body: JSON.stringify({ worker_id: worker }),
+      });
+      setFeedback({ tone: "success", text: "Vínculo associado. Documentos AEJ pendentes foram recalculados." });
+      void reload();
+    } catch (err) {
+      setFeedback({ tone: "error", text: err instanceof Error ? err.message : "Falha ao mapear vínculo" });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <>
       <Link href="/painel/revisao" className="batch-back">
         <ArrowLeft size={16} /> Fila de revisão
       </Link>
       <PageIntro
-        eyebrow={`DOCUMENTO #${d.id} · LOTE #${d.batch_id} · ${pageList(d.paginas)}`}
+        eyebrow={`DOCUMENTO #${d.id} · LOTE #${d.batch_id} · ${d.aej ? `AEJ vínculo ${d.aej.worker_link_id}` : pageList(d.paginas)}`}
         title={`Conferir: ${typeLabels[d.tipo] ?? d.tipo}`}
         description={(d.motivos_revisao ?? []).join("; ") || "Sem motivos de revisão registrados."}
         action={<DocumentBadge status={d.status} />}
       />
       {feedback && <Notice tone={feedback.tone}>{feedback.text}</Notice>}
-      <div className="review-workspace">
+      {d.aej ? (
+        <div className="dashboard-grid">
+          <section className="workspace-card">
+            <h2>Origem e cálculo AEJ</h2>
+            <dl className="detail-list">
+              <dt>Vínculo no AEJ</dt><dd>{d.aej.worker_link_id}</dd>
+              <dt>Estado do cálculo</dt><dd>{d.aej.calculation_status}</dd>
+              <dt>Método</dt><dd>{d.aej.method}</dd>
+              <dt>Assinatura P7S</dt><dd>Não validada</dd>
+            </dl>
+            {d.aej.validation_warnings.length > 0 && (
+              <details>
+                <summary>Avisos de validação do arquivo</summary>
+                <ul>{d.aej.validation_warnings.map((warning, i) => <li key={i}>{warning}</li>)}</ul>
+              </details>
+            )}
+            {!d.worker_id && (
+              <>
+                <label className="filter-label">
+                  Trabalhador correspondente
+                  <select value={worker} onChange={(event) => setWorker(event.target.value)}>
+                    <option value="">Selecione o trabalhador…</option>
+                    {(workers.data ?? []).map((item) => <option key={item.id} value={item.id}>{item.id} · {item.nome}</option>)}
+                  </select>
+                </label>
+                <button className="button secondary" disabled={busy || !worker} onClick={mapAejWorker}>
+                  Associar vínculo AEJ
+                </button>
+              </>
+            )}
+            {d.aej.warnings.length > 0 && <ul>{d.aej.warnings.map((warning, i) => <li key={i}>{warning}</li>)}</ul>}
+            {d.status === "REVISAO_HUMANA" && d.worker_id ? (
+              <>
+                <label className="filter-label">
+                  Horas extras observadas após conferência manual
+                  <input type="number" min="0" step="0.01" value={aejHours}
+                    onChange={(event) => setAejHours(event.target.value)} />
+                </label>
+                <label className="filter-label">
+                  Justificativa da conferência
+                  <textarea rows={3} maxLength={500} value={aejJustification}
+                    onChange={(event) => setAejJustification(event.target.value)} />
+                </label>
+                <button className="button" disabled={busy || !aejHours || !aejJustification.trim()} onClick={approveAej}>
+                  <Check size={16} /> Confirmar horas conferidas
+                </button>
+              </>
+            ) : d.status === "APTO" ? (
+              <p className="muted">Horas derivadas confirmadas: {formatHours(d.campos.horas_extras_h)}.</p>
+            ) : null}
+            <p className="muted">O arquivo AEJ original e todas as linhas permanecem preservados no lote.</p>
+          </section>
+          <section className="workspace-card">
+            <h2>Marcações e origem</h2>
+            {d.aej.days.map((day) => (
+              <div key={day.date} className="aej-day">
+                <h3>{day.date} · horário {day.schedule_code ?? "não identificado"}</h3>
+                <p className="muted">
+                  Jornada contratual: {day.contract_minutes ?? "—"} min · observada: {day.worked_minutes ?? "—"} min ·
+                  excedente diário: {day.observed_daily_excess_minutes ?? "não calculado"} min
+                </p>
+                <ul className="plain-list">
+                  {[...day.markings, ...day.excluded_markings].sort((a, b) => a.line_number - b.line_number).map((mark) => (
+                    <li key={mark.line_number}>
+                      Linha {mark.line_number} · {mark.at} · {mark.type === "D" ? "desconsiderada" : mark.type === "E" ? "entrada" : "saída"}
+                      {mark.type !== "D" ? ` · fonte ${mark.source} · par ${mark.sequence}` : ""}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </section>
+        </div>
+      ) : <div className="review-workspace">
         <div className="review-pages">
           {d.paginas_detalhe.map((p, i) => (
             <figure key={p.page_id} className="workspace-card">
@@ -199,7 +308,7 @@ function ReviewDetail() {
             </button>
           </section>
         </aside>
-      </div>
+      </div>}
     </>
   );
 }
