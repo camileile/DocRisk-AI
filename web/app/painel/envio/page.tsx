@@ -2,9 +2,15 @@
 import { useRef, useState } from "react";
 import { Upload, FileText, X, Check, CircleAlert } from "lucide-react";
 import { useDemo } from "@/components/demo-provider";
+import { ApiUpload } from "@/components/api-upload";
 import { PageIntro } from "@/components/workspace-parts";
 const accepted = ["pdf", "png", "jpg", "jpeg", "aej"];
 export default function UploadPreview() {
+  const { apiSession } = useDemo();
+  return apiSession ? <ApiUpload /> : <DemoUploadPreview />;
+}
+
+function DemoUploadPreview() {
   const { role, contract, competence } = useDemo();
   const [files, setFiles] = useState<{ name: string; size: number }[]>([]);
   const [error, setError] = useState("");

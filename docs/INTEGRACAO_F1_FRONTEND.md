@@ -58,9 +58,10 @@ Somente os perfis `ANALISTA_BH`, `OPERADOR_FORN` e `GESTOR_FORN` entram no prime
 
 - `/painel`: identidade, contrato selecionado e indicadores **derivados dos lotes retornados pela API**.
 - `/painel/lotes`: situação, arquivo, quantidade de páginas, filtros, atualização manual e detalhe/documentos do lote por chamada à API. O token nunca é colocado na URL.
+- `/painel/envio`: **envio real de PDF, PNG, JPEG e TIFF** pela fornecedora conectada à API local, com confirmação explícita de que o arquivo é sintético. A API cria um lote por arquivo, e o frontend acompanha o status por consultas a `GET /api/batches/{id}` até conclusão/falha ou até o limite de verificações.
 - `/painel/lotes/{id}`: **não é uma rota real dinâmica para lotes numéricos**. O frontend usa exportação estática; detalhes reais são abertos em painel expansível na listagem. As rotas dinâmicas anteriores permanecem reservadas ao conjunto sintético prerenderizado.
-- Outras páginas operacionais são bloqueadas no modo API para impedir que informações sintéticas se misturem com as informações do backend. Na demonstração, permanecem disponíveis normalmente.
-- A lista de lotes não possui competência no modelo F1; portanto o filtro de competência é ocultado no modo API. Não há upload real, processamento AEJ, conciliação F3, auditoria real ou publicação de pareceres por esta integração.
+- As outras páginas operacionais (além de painel, lotes e envio permitido à fornecedora) continuam bloqueadas no modo API para impedir que informações sintéticas se misturem com as informações do backend. Na demonstração, permanecem disponíveis normalmente.
+- A lista de lotes não possui competência no modelo F1; portanto o filtro de competência é ocultado no modo API. **O upload é de um arquivo por lote**, limitado a 20 MB na interface de testes (o backend possui sua própria validação). AEJ continua indisponível no upload operacional. Não há conciliação F3, auditoria real ou publicação de pareceres nesta integração.
 - Se a API não responder, a interface **exibe um erro**; nunca substitui silenciosamente a resposta por dados fictícios.
 - O frontend faz consultas autenticadas mas não concede acesso por conta própria: o backend decide autorizações de contrato, papel e visibilidade dos campos.
 
@@ -68,15 +69,27 @@ Somente os perfis `ANALISTA_BH`, `OPERADOR_FORN` e `GESTOR_FORN` entram no prime
 
 `web/scripts/smoke.cjs` continua validando a demonstração (quatro perfis).
 
-`web/scripts/integration-smoke.cjs` simula respostas HTTP de uma API F1 no navegador Chromium e verifica: token inválido, papel derivado de `/api/me`, contratos autorizados, troca de contrato, lotes, documentos, ausência de dados sintéticos no modo API, isolamento do acesso de fornecedora e desconexão.
+`web/scripts/integration-smoke.cjs` simula respostas HTTP de uma API F1 no navegador Chromium e verifica: token inválido, papel derivado de `/api/me`, contratos autorizados, troca de contrato, lotes, documentos, ausência de dados sintéticos no modo API, isolamento do acesso de fornecedora, desconexão, recusa de AEJ, resposta 422 em upload inválido e criação/consulta de lote via multipart.
 
-O GitHub Actions faz `npm ci`, TypeScript, build e exportação, além dos dois testes de navegação. **A simulação testa o cliente e a UI**. Há também um terceiro teste, `web/scripts/live-api-smoke.cjs`, que inicia o FastAPI real em loopback com `DOCRISK_DEMO_MODE=1`, usa banco SQLite efêmero, gera e processa um PDF inteiramente sintético com `AI_PROVIDER=textlayer` e confirma a consulta no navegador via CORS permitido (`http://localhost:3000`). Esse teste não usa Gemini nem dados pessoais e **não valida ainda as regras F3, AEJ ou produção**.
+O GitHub Actions faz `npm ci`, TypeScript, build e exportação, além dos dois testes de navegação. **A simulação testa o cliente e a UI**. Há também um terceiro teste, `web/scripts/live-api-smoke.cjs`, que inicia o FastAPI real em loopback com `DOCRISK_DEMO_MODE=1`, usa banco SQLite efêmero, gera e processa um PDF inteiramente sintético com `AI_PROVIDER=textlayer` e confirma a consulta no navegador via CORS permitido (`http://localhost:3000`). Esse teste foi ampliado para também realizar **POST multipart pelo navegador de um PDF e de uma imagem PNG totalmente fictícios**, confirmar os lotes na API, aguardar a F2 concluir a leitura e verificar ambos os registros no histórico. Com `AI_PROVIDER=textlayer`, o teste de imagem verifica aceitação e processamento do arquivo, **não** qualidade de OCR ou IA multimodal. Ele não usa Gemini nem dados pessoais e **não valida ainda as regras F3, AEJ ou produção**.
 
 ## 5. Próximas integrações
 
 1. Reproduzir manualmente o teste Web + FastAPI local com um lote sintético e verificar o comportamento nos navegadores da equipe (o smoke do CI já cobre este fluxo no Chromium).
-2. Integrar upload PDF/imagem e acompanhamento do processamento, com consentimento explícito e sem dados pessoais.
+2. Validar a nova tela de envio e o acompanhamento do processamento em outras máquinas da equipe; limitar testes a arquivos inteiramente fictícios.
 3. Corrigir a ligação da API de revisão F1 com `pipeline/revisao.py` da F2.
 4. Integrar revisão, AEJ e F3 depois de seus contratos de dados estarem estáveis.
 
 **Segurança:** antes de disponibilizar o site ou a API em ambiente público, substituir tokens demonstrativos por autenticação adequada; nunca usar `DOCRISK_DEMO_MODE=1` numa API acessível externamente.
+
+## 6. Envio real de arquivos sintéticos
+
+1. Inicie FastAPI e Next.js localmente conforme as seções anteriores.
+2. Conecte-se em `/acesso` com o token de `u-oper-beta` ou de outro usuário da fornecedora autorizado no contrato.
+3. Abra **Enviar documentos** no menu (ou pelo atalho do painel/histórico), selecione **um** PDF, PNG, JPEG ou TIFF fictício de até 20 MB e confirme que não contém dados pessoais reais.
+4. Clique em **Enviar arquivo ao backend**. O frontend envia um `FormData` com `contract_id` e `file` para `POST /api/supplier/batches` usando o Bearer da sessão em memória. Não atribua manualmente `Content-Type`, pois o navegador gera o limite multipart.
+5. Se receber `202`, o identificador do lote é exibido e o painel consulta `/api/batches/{id}` automaticamente a cada 2,5 segundos (por no máximo 60 verificações). Status de sucesso de recebimento **não equivale** à conclusão da F2; `CONCLUIDO` significa que a leitura terminou e não que o parecer trabalhista foi aprovado.
+6. Caso a conexão falhe ou expire durante o envio, **consulte a lista de lotes antes de repetir**: o backend pode ter persistido o arquivo sem que o navegador receba a resposta.
+7. Abra **Consultar histórico de lotes**, atualize a lista e inspecione os documentos consolidados.
+
+**Limites de segurança:** esse protótipo usa tokens demonstrativos e SQLite local. Não é seguro para documentos trabalhistas reais, dados sensíveis, uso público ou ambiente de produção. A aplicação não faz inspeção antivírus nem política de retenção de produção. Arquivos AEJ exigem uma rota/normalização estruturada adicional e não devem ser enviados por esse formulário.

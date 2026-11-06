@@ -168,3 +168,86 @@ export function formatApiDate(value: string | null): string {
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
   return match ? match[3] + "/" + match[2] + "/" + match[1] + " " + match[4] + ":" + match[5] : "Não informado";
 }
+
+
+export type ApiUploadReceipt = {
+  batch_id: number;
+  status: "RECEBIDO";
+};
+
+// A API F1 aceita um arquivo por lote, em multipart/form-data.
+// Não definir Content-Type manualmente: o navegador precisa inserir o boundary.
+export const MAX_API_UPLOAD_BYTES = 20 * 1024 * 1024;
+export const API_UPLOAD_EXTENSIONS = [".pdf", ".png", ".jpg", ".jpeg", ".tif", ".tiff"] as const;
+
+export function validateApiUploadFile(file: File): string | null {
+  const name = file.name.toLocaleLowerCase("en-US");
+  if (!API_UPLOAD_EXTENSIONS.some((ext) => name.endsWith(ext))) {
+    return "Formato não aceito pela integração: envie PDF, PNG, JPEG ou TIFF. AEJ ainda está pendente.";
+  }
+  if (!file.size || file.size > MAX_API_UPLOAD_BYTES) {
+    return "O arquivo deve ter conteúdo e no máximo 20 MB neste ambiente de testes.";
+  }
+  return null;
+}
+
+export async function uploadApiBatch(
+  token: string,
+  contractId: string,
+  file: File,
+): Promise<ApiUploadReceipt> {
+  const validation = validateApiUploadFile(file);
+  if (validation) throw new ApiRequestError(validation);
+  if (!token.trim() || !contractId.trim()) {
+    throw new ApiRequestError("Conecte-se à API e selecione um contrato autorizado.");
+  }
+
+  const data = new FormData();
+  data.set("contract_id", contractId);
+  data.set("file", file, file.name);
+
+  const controller = new AbortController();
+  // No modo síncrono da F2, a requisição pode levar mais tempo.
+  const timer = setTimeout(() => controller.abort(), 120000);
+  try {
+    const response = await fetch(apiOrigin() + "/api/supplier/batches", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token.trim(),
+        Accept: "application/json",
+      },
+      body: data,
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      if (response.status === 401) throw new ApiRequestError("Token inválido ou sessão encerrada.", 401);
+      if (response.status === 403) throw new ApiRequestError("Este usuário não pode enviar arquivos neste contrato.", 403);
+      if (response.status === 404) throw new ApiRequestError("Contrato não encontrado ou não autorizado.", 404);
+      if (response.status === 413) throw new ApiRequestError("O servidor recusou o tamanho do arquivo.", 413);
+      if (response.status === 422) {
+        // A rota F1 devolve mensagens objetivas; ignorar detalhes não textuais.
+        const payload: unknown = await response.json().catch(() => null);
+        const detail = payload && typeof payload === "object" && "detail" in payload
+          ? (payload as { detail?: unknown }).detail : null;
+        throw new ApiRequestError(typeof detail === "string" ? detail.slice(0, 280) : "A API rejeitou o arquivo ou seus dados.", 422);
+      }
+      throw new ApiRequestError("A API não aceitou o envio (HTTP " + response.status + ").", response.status);
+    }
+    const receipt: unknown = await response.json();
+    if (!receipt || typeof receipt !== "object" || !("batch_id" in receipt) ||
+        !Number.isSafeInteger(receipt.batch_id) || (receipt.batch_id as number) <= 0 ||
+        !("status" in receipt) || receipt.status !== "RECEBIDO") {
+      throw new ApiRequestError("A resposta de recebimento da API veio em formato inesperado. Confira a lista de lotes antes de tentar reenviar.");
+    }
+    return receipt as ApiUploadReceipt;
+  } catch (error) {
+    if (error instanceof ApiRequestError) throw error;
+    if (controller.signal.aborted) {
+      throw new ApiRequestError("O tempo de envio terminou sem confirmação. Consulte a lista de lotes antes de reenviar, pois o servidor pode ter recebido o arquivo.");
+    }
+    throw new ApiRequestError("Não foi possível confirmar o envio. Verifique a conexão e a lista de lotes antes de tentar novamente.");
+  } finally {
+    clearTimeout(timer);
+  }
+}

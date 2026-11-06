@@ -135,7 +135,8 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           {navigation
             .filter((item) =>
               apiSession
-                ? item.href === "/painel" || item.href === "/painel/lotes"
+                ? (item.href === "/painel" || item.href === "/painel/lotes" ||
+                    (item.href === "/painel/envio" && apiSession.user.org_tipo === "FORNECEDORA"))
                 : role === "ANALISTA_BH"
                 ? item.href !== "/painel/envio"
                 : item.href !== "/painel/revisao" &&
@@ -156,7 +157,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                 onClick={() => setOpen(false)}
               >
                 <Icon size={19} />
-                {label}
+                {apiSession && href === "/painel/envio" ? "Enviar documentos" : label}
               </Link>
             ))}
         </nav>
@@ -254,7 +255,8 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
               </label>}
             </div>
           </div>
-          {apiSession && path !== "/painel" && path !== "/painel/lotes" ? (
+          {apiSession && path !== "/painel" && path !== "/painel/lotes" &&
+            !(path === "/painel/envio" && apiSession.user.org_tipo === "FORNECEDORA") ? (
             <div className="workspace-card api-unavailable">
               <h2>Esta área ainda não está integrada à API.</h2>
               <p>Para evitar misturar informações do backend com exemplos sintéticos, consulte por enquanto a visão geral ou a lista de lotes.</p>
