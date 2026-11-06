@@ -11,15 +11,18 @@ A URL da API vem de `NEXT_PUBLIC_API_URL` (ou `NEXT_PUBLIC_DOCRISK_API_URL`, ver
 
 Validação: `npm run typecheck`, `npm run build` (exportação estática em `out/`, com `trailingSlash`) e os smokes `node scripts/smoke.cjs` (fluxo completo com o lote sintético) e `node scripts/live-api-smoke.cjs` (login por token e upload de PDF/PNG), ambos contra a API real (ver README da raiz e `docs/INTEGRACAO_F1_FRONTEND.md`).
 
-## Sessão e permissões
+## Acesso e dois modos separados
 
-`/acesso` lista os perfis de demonstração de `GET /api/demo/users` (só existe com `DOCRISK_DEMO_MODE=1`) e também aceita um token de teste colado (integração F1). Ao entrar, o token fica em `sessionStorage` e o perfil é lido de `GET /api/me`. Cada área (`/painel`, `/contratante`, `/administracao`) só monta para os papéis correspondentes e redireciona os demais. **A autorização real é da API**: a interface apenas esconde o que a API já recusa (401/403/404).
+- **Demonstração offline** (`/acesso`): seleção local dos cinco papéis, sem API, sem credencial e sem necessidade de FastAPI. Os dados de `web/lib/offline-demo.ts` são exemplos fictícios; ficam na sessão desta aba. Uploads, reenvios, revisão e publicação são **desativados**, jamais enviados ao servidor. É adequado para navegar pela interface pública hospedada na Vercel.
+- **Integração com API de testes**: em ambiente local, inicie FastAPI e conecte um token de teste pelo formulário independente. Neste modo, `GET /api/me` determina papel, `GET /api/contracts` limita contratos, e a API autoriza todas as operações. Tokens demonstrativos devem permanecer no ambiente local e nunca ser expostos em uma implantação pública.
+
+Para verificar a navegação pública sem iniciar a API, gere `npm run build`, sirva `out/` via HTTP e execute `node scripts/offline-smoke.cjs` com Playwright instalado. A CI verifica esta navegação antes de iniciar o backend e também executa o teste de integração real com arquivos sintéticos.
 
 ## Páginas
 
 | Rota | Perfis | API |
 | --- | --- | --- |
-| `/acesso` | todos | `/api/demo/users`, `/api/me`, `/api/contracts` |
+| `/acesso` | todos | nenhuma (offline); `/api/me` e `/api/contracts` apenas com token de teste |
 | `/painel` | analista, fornecedora | `/api/bernhoeft/metrics` ou `/api/batches` + `/api/supplier/issues` |
 | `/painel/envio` | fornecedora | `POST /api/supplier/batches` com confirmação de arquivo fictício e acompanhamento (componente `api-upload` da integração F1) |
 | `/painel/lotes`, `/painel/lotes/detalhe?id=` | analista, fornecedora | `/api/batches`, `/api/batches/{id}`, `/documents`, `POST /reprocess`; atualiza sozinho durante o processamento |
