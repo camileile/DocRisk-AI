@@ -286,3 +286,46 @@ def test_platform_invitation_failure_rolls_back_new_auditor(identity, monkeypatc
     with db.tx() as conn:
         assert conn.execute("SELECT COUNT(*) FROM organizations WHERE nome='Auditora Sem Convite'").fetchone()[0] == 0
         assert conn.execute("SELECT COUNT(*) FROM identity_invitations WHERE nome='Admin Sem Convite'").fetchone()[0] == 0
+
+
+def test_authenticated_admin_provisions_companies_and_contracts_but_never_demo_tokens(identity, monkeypatch):
+    monkeypatch.setattr(config, 'DEMO_MODE', False)
+    with TestClient(app) as client:
+        h = identity['headers']('u-admin')
+        customer = client.post('/api/admin/companies', headers=h, json={
+            'tipo': 'CONTRATANTE', 'nome': 'Cliente Sintético MVP'})
+        assert customer.status_code == 201, customer.text
+        client_id = customer.json()['id']
+        supplier = client.post('/api/admin/companies', headers=h, json={
+            'tipo': 'FORNECEDORA', 'nome': 'Fornecedora Sintética MVP',
+            'contratante_id': client_id, 'contrato_nome': 'Contrato de apresentação'})
+        assert supplier.status_code == 201, supplier.text
+        supplier_id = supplier.json()['id']
+        contract_id = supplier.json()['contract_id']
+        assert contract_id.startswith('CT-')
+        assert client.post('/api/admin/contracts', headers=h, json={
+            'nome': 'Segundo contrato sintético', 'contratante_id': client_id,
+            'fornecedora_id': supplier_id}).status_code == 201
+
+        registry = client.get('/api/admin/registry', headers=h)
+        assert registry.status_code == 200
+        assert any(row['id'] == supplier_id for row in registry.json()['empresas'])
+        assert any(row['id'] == contract_id for row in registry.json()['contratos'])
+        # Em modo real, contas só podem ser ativadas por convites Clerk.
+        assert client.post('/api/admin/users', headers=h, json={
+            'nome': 'Conta demonstrativa', 'org_id': 'ORG-BH', 'papel': 'ANALISTA_BH'
+        }).status_code == 403
+        assert client.patch('/api/admin/users/u-oper-beta/status', headers=h,
+                            json={'ativo': False}).status_code == 403
+        assert client.post('/api/admin/companies', headers=identity['headers']('u-gestor-beta'), json={
+            'tipo': 'CONTRATANTE', 'nome': 'Tentativa proibida'
+        }).status_code == 403
+        assert client.post('/api/admin/contracts', headers=identity['headers']('platform'), json={
+            'nome': 'Sem permissão', 'contratante_id': client_id,
+            'fornecedora_id': supplier_id,
+        }).status_code == 403
+
+    with db.tx() as conn:
+        assert conn.execute('SELECT bernhoeft_id FROM contracts WHERE id=?', (contract_id,)).fetchone()[0] == 'ORG-BH'
+        assert conn.execute("SELECT COUNT(*) FROM users WHERE nome='Conta demonstrativa'").fetchone()[0] == 0
+
