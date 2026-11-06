@@ -78,7 +78,7 @@ npm ci
 npm run dev        # http://127.0.0.1:3000 (usa NEXT_PUBLIC_API_URL, padrão http://127.0.0.1:8000)
 ```
 
-Roteiro de demonstração: em `/acesso`, entre como **Operador da fornecedora** e envie
+Roteiro de demonstração com API local: em `/operacao`, entre como **Operador da fornecedora** e envie
 `api/scripts/lote_demo/lote_demo.pdf`; em *Pendências*, reenvie
 `reenvio_holerite_T002.pdf` na pendência do holerite ilegível; entre como **Analista
 Bernhoeft** e veja *Conciliações* (T001: 4 h a conferir; T003 bloqueado; T004 dados

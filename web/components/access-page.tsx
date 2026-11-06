@@ -88,7 +88,7 @@ export default function Access({ operational = false }: { operational?: boolean 
             <br />
             <em>Pessoas no controle.</em>
           </h1>
-          <p>Na demonstração, cada perfil visualiza apenas dados ilustrativos; o modo operacional tem permissões verificadas pela API.</p>
+          <p>{operational ? "Acesso ao ambiente operacional, com perfil e permissões verificados pela API." : "A demonstração apresenta dados ilustrativos; o ambiente operacional utiliza permissões verificadas pela API."}</p>
           <div className="access-principle">
             <Layers3 size={28} />
             <span>
@@ -182,7 +182,6 @@ export default function Access({ operational = false }: { operational?: boolean 
             </form>
             <small>Não utilize tokens de produção. O token fica só nesta aba (sessionStorage) e é apagado ao sair.</small>
           </section>}
-          {operational && <Link className="text-link" href="/acesso">Explorar demonstração sem conexão</Link>}
         </div>
       </div>
     </main>

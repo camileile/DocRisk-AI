@@ -44,6 +44,5 @@ export function ClerkAccess() {
       <button type="button" className="button secondary" onClick={() => void clerk.signOut()}>Sair da conta</button>
     </>}
     {(error || feedback) && <p role="alert">{error || feedback}</p>}
-    <Link href="/acesso">Explorar a demonstração fictícia</Link>
   </main>;
 }

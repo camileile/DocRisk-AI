@@ -19,6 +19,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { Header } from "@/components/header";
+import { authEntry } from "@/lib/auth-mode";
 import { Footer } from "@/components/footer";
 const futureModules = [
   {
@@ -61,8 +62,8 @@ export default function Home() {
               pessoas para decidir.
             </p>
             <div className="actions">
-              <Link href="/acesso" className="button">
-                Explorar demonstração <ArrowUpRight size={18} />
+              <Link href={authEntry()} className="button">
+                Acessar plataforma <ArrowUpRight size={18} />
               </Link>
               <Link href="#modulos" className="button secondary">
                 Explorar módulos <ArrowRight size={18} />
@@ -88,7 +89,7 @@ export default function Home() {
                   <i />
                 </div>
                 <span>DocRisk AI · Visão documental</span>
-                <span className="demo-tag">DEMONSTRAÇÃO</span>
+                <span className="demo-tag">PRÉVIA</span>
               </div>
               <div className="window-body">
                 <div className="demo-heading">

@@ -7,7 +7,7 @@ Provedor escolhido pelo usuário: **Clerk**. Implementação em branch própria,
 - `/entrar`: identificação e recuperação nativas do Clerk; depois da identificação, exibe os vínculos ativos e os convites do e-mail principal verificado. A pessoa escolhe o vínculo, sem atribuir papel no navegador.
 - `/cadastro`: ativação da identificação do destinatário. Criar conta no Clerk, isoladamente, não concede acesso a organizações ou documentos.
 - `/vinculos`: troca entre vínculos autorizados; emissão/revogação de convites e ativação/revogação de acessos conforme o papel do emissor. O atalho aparece na barra de sessão produtiva.
-- `/acesso`: mantém os seis perfis fictícios offline. `/operacao` continua com token apenas no build de testes; no build Clerk, encaminha para o login produtivo.
+- `/demo`: mantém os seis perfis fictícios offline, sem botões de entrada na landing page; o ambiente é acessado diretamente pela URL. `/operacao` continua com token apenas no build de testes; no build Clerk, encaminha para o login produtivo. `/acesso` é compatibilidade legada e não abre a demo.
 - No modo Clerk, a API recusa tokens demonstrativos, não expõe `/api/demo/users` e não cria organizações/contas do seed na inicialização.
 - O SDK fornece um Bearer atualizado a cada requisição. O DocRisk não grava esse JWT em sessionStorage. O cabeçalho `X-DocRisk-Link` identifica o vínculo escolhido; a API confirma que pertence ao subject autenticado.
 - JWT validado com PyJWT/criptografia, algoritmo RS256, emissor, assinatura JWKS, expiração, emissão, subject/session e `azp` permitido. Audience é validada quando configurada no token. JWKS usa cache temporário com atualização para nova chave.

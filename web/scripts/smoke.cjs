@@ -46,6 +46,9 @@ async function run() {
     console.log("[1/7] Institucional e bloqueio sem sessão");
     await go(page, "/");
     await page.getByRole("heading", { name: /Documentos complexos/ }).waitFor();
+    await page.getByRole("link", { name: /Acessar plataforma/ }).click();
+    await page.getByLabel("Token Bearer de teste").waitFor();
+    await go(page, "/");
     await go(page, "/painel/");
     await page.getByText("Entre com um perfil para continuar.").waitFor();
 
