@@ -254,9 +254,10 @@ def test_platform_creation_invites_initial_admin_without_demo_token(identity, mo
         accepted = client.post('/api/auth/invitations/' + invite + '/accept', headers=new_headers)
         assert accepted.status_code == 200, accepted.text
         link = accepted.json()['link_id']
-        assert client.get('/api/me', headers={**new_headers, 'X-DocRisk-Link': link}).json() == {
-            'id': client.get('/api/me', headers={**new_headers, 'X-DocRisk-Link': link}).json()['id'],
-            'nome': 'Admin Inicial', 'org_id': org, 'org_tipo': 'BERNHOEFT', 'papel': 'ADMIN_BH'}
+        me = client.get('/api/me', headers={**new_headers, 'X-DocRisk-Link': link})
+        assert me.status_code == 200
+        assert me.json()['nome'] == 'Admin Inicial' and me.json()['org_id'] == org
+        assert me.json()['papel'] == 'ADMIN_BH' and me.json()['org_tipo'] == 'BERNHOEFT'
         admin = client.get('/api/admin/registry', headers={**new_headers, 'X-DocRisk-Link': link})
         assert admin.status_code == 200 and admin.json()['empresas'] == []
         registry = client.get('/api/platform/registry', headers=headers).json()
