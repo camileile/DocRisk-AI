@@ -89,7 +89,7 @@ function AuditorForm({ disabled, clerkMode, onSave }: { disabled: boolean; clerk
     <p>{clerkMode ? "O administrador receberá um convite no e-mail e terá acesso somente após aceitar e verificar sua identidade." : "O cadastro de teste cria um administrador com token demonstrativo."}</p>
     <form className="inline-form" onSubmit={(e) => void submit(e)}>
       <label className="filter-label">Nome da auditora<input required minLength={2} maxLength={160} disabled={disabled} value={name} onChange={(e) => setName(e.target.value)} /></label>
-      <label className="filter-label">Nome do administrador inicial<input required minLength={2} maxLength={140} disabled={disabled} value={admin} onChange={(e) => setAdmin(e.target.value)} /></label>
+      <label className="filter-label">Administrador inicial<input required minLength={2} maxLength={140} disabled={disabled} value={admin} onChange={(e) => setAdmin(e.target.value)} /></label>
       {clerkMode && <label className="filter-label">E-mail do administrador<input type="email" required maxLength={254} autoComplete="email" disabled={disabled} value={email} onChange={(e) => setEmail(e.target.value)} /></label>}
       <button className="button" disabled={disabled || name.trim().length < 2 || admin.trim().length < 2 || (clerkMode && !email.trim())}>Cadastrar auditora</button>
     </form>
