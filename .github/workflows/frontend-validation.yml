@@ -115,6 +115,13 @@ jobs:
               document.close()
               from pathlib import Path
               Path("/tmp/docrisk-browser-upload.pdf").write_bytes(payload)
+              from PIL import Image, ImageDraw
+              from io import BytesIO
+              image = Image.new("RGB", (640, 400), "white")
+              ImageDraw.Draw(image).text((30, 50), "DOCUMENTO FICTICIO - TESTE DE IMAGEM", fill="black")
+              stream = BytesIO()
+              image.save(stream, format="PNG")
+              Path("/tmp/docrisk-browser-upload.png").write_bytes(stream.getvalue())
               response = api.post("/api/supplier/batches", headers=header,
                   data={"contract_id": "CT-001"},
                   files={"file": ("integracao-f1-sintetico.pdf", payload, "application/pdf")})
