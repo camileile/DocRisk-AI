@@ -29,6 +29,10 @@ def main() -> None:
         config.DB_PATH = config.DATA_DIR / "docrisk.sqlite"
         config.UPLOAD_DIR = config.DATA_DIR / "uploads"
         config.PAGES_DIR = config.DATA_DIR / "pages"
+        # O benchmark usa um banco temporário e descartável com os dados fictícios do seed
+        # (CT-001, Operador Beta). Desde o D2-01 o seed só existe no modo demo; ligá-lo aqui
+        # não afeta a API nem o banco da aplicação, e o comando funciona num clone sem .env.
+        config.DEMO_MODE = True
         db.init_db()
         with db.tx() as conn:
             conn.executemany(

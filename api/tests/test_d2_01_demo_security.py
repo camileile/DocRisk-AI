@@ -42,3 +42,29 @@ def test_startup_demo_expone_perfis_com_token_somente_no_modo_demo(
     perfis = response.json()
     assert len([perfil for perfil in perfis if perfil["org_tipo"] != "PLATAFORMA"]) == 6
     assert all(perfil["token"] for perfil in perfis)
+
+
+def _script(nome: str):
+    import importlib.util
+    from pathlib import Path
+
+    caminho = Path(__file__).resolve().parents[1] / "scripts" / f"{nome}.py"
+    spec = importlib.util.spec_from_file_location(nome, caminho)
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return modulo
+
+
+def test_seed_100_recusa_fora_do_modo_demo_sem_tocar_no_banco(monkeypatch, tmp_path):
+    import pytest
+
+    _usar_ambiente(monkeypatch, tmp_path, demo=False)
+    with pytest.raises(SystemExit, match="DOCRISK_DEMO_MODE=1"):
+        _script("seed_100").main()
+    assert not (tmp_path / "docrisk.sqlite").exists()
+
+
+def test_seed_100_no_modo_demo_completa_100_trabalhadores(monkeypatch, tmp_path, capsys):
+    _usar_ambiente(monkeypatch, tmp_path, demo=True)
+    _script("seed_100").main()
+    assert "100 trabalhadores" in capsys.readouterr().out

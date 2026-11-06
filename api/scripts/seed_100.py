@@ -12,10 +12,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from docrisk_core import db
+from docrisk_core import config, db
 
 
 def main() -> None:
+    if not config.DEMO_MODE:
+        # Sem modo demo o banco não tem o contrato CT-001 (seed fictício desligado no D2-01).
+        sys.exit("seed_100 só roda com DOCRISK_DEMO_MODE=1: os trabalhadores fictícios pertencem "
+                 "ao contrato de demonstração CT-001. Use uma pasta de dados separada da demo.")
     db.init_db()
     with db.tx() as conn:
         conn.executemany(
