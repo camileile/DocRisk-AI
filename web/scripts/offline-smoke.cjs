@@ -88,6 +88,17 @@ async function run() {
         await page.getByRole("link", { name: /Conferir/ }).first().waitFor();
         await page.getByText("Diferença fictícia de 4 h", { exact: false }).waitFor();
         await page.getByText("Página ilegível no arquivo de demonstração.", { exact: false }).waitFor();
+        // O documento de demonstração #203 tem pendência da fornecedora:
+        // o acesso à revisão deve ser visível mesmo fora da fila automática.
+        await page.goto(base + "/painel/documentos/", { waitUntil: "domcontentloaded" });
+        const pending = page.getByRole("row", { name: /#203/ });
+        await pending.getByRole("link", { name: "Revisar" }).click();
+        await page.getByRole("heading", { name: /Conferir:/ }).waitFor();
+        assert.equal(await page.getByRole("button", { name: /Aprovar classificação/ }).isDisabled(), true);
+        await page.goto(base + "/painel/documentos/detalhe/?id=203");
+        await page.getByRole("link", { name: /Revisar documento/ }).waitFor();
+        await page.goto(base + "/painel/documentos/detalhe/?id=201");
+        assert.equal(await page.getByRole("button", { name: /Iniciar revisão manual/ }).isDisabled(), true);
         await page.goto(base + "/painel/pareceres/", { waitUntil: "domcontentloaded" });
         await page.getByText("Exemplo fictício:", { exact: false }).first().waitFor();
         assert.equal(await page.getByRole("button", { name: "Criar rascunho" }).isDisabled(), true);
