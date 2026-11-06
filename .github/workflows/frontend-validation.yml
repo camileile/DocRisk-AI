@@ -38,6 +38,8 @@ jobs:
       - name: TypeScript
         run: npm run typecheck
       - name: Build e exportação estática
+        env:
+          NEXT_PUBLIC_DOCRISK_API_URL: http://127.0.0.1:8000
         run: npm run build
       - name: Validar rotas geradas
         run: |
@@ -64,3 +66,5 @@ jobs:
           exit 1
       - name: Teste de navegação por perfil
         run: node scripts/smoke.cjs
+      - name: Teste de integração F1 com respostas controladas
+        run: node scripts/integration-smoke.cjs
