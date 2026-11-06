@@ -83,3 +83,5 @@ backup no host nem deploy. Licença do projeto/PyMuPDF exige decisão responsáv
 DOCRISK_SINGLE_INSTANCE/LOG_JSON dependem das branches D4-04/D4-07, não empilhadas.
 Status: BLOQUEADA para abertura do piloto; preparação documental PARCIAL.
 Validação local: pytest api/tests -q, 370 aprovados, 1 ignorado (97,20s), Windows/Python 3.13.14; diff --check aprovado.
+
+Base final f085df4: 387 aprovados, 1 ignorado (160,16s), Pillow12.3; diff --check aprovado. Status BLOQUEADA para piloto real pelos requisitos externos documentados; nenhuma infraestrutura alterada.
