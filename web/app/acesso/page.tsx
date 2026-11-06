@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Building2,
+  FileCheck2,
   ShieldCheck,
   Check,
   Layers3,
@@ -76,6 +77,12 @@ export default function Access() {
                 name: "Operador da fornecedora",
                 text: "Conferir envios e correções do Contrato Alfa.",
               },
+              {
+                value: "GESTOR_CONTR" as const,
+                icon: FileCheck2,
+                name: "Gestor da contratante",
+                text: "Consultar os pareceres publicados do Contrato Alfa.",
+              },
             ].map(({ value, icon: Icon, name, text }) => (
               <label
                 key={value}
@@ -103,15 +110,17 @@ export default function Access() {
             className="button access-enter"
             onClick={() => {
               setRole(selected);
-              router.push("/painel");
+              router.push(
+                selected === "GESTOR_CONTR" ? "/contratante" : "/painel",
+              );
             }}
           >
             Explorar demonstração <ArrowRight size={18} />
           </button>
           <p className="demo-disclosure">
             Esta é uma navegação demonstrativa, sem autenticação. Nenhum
-            documento real é enviado. Os perfis de contratante e administrador
-            serão desenvolvidos nas próximas etapas.
+            documento real é enviado. O perfil de administrador será
+            desenvolvido em uma próxima etapa.
           </p>
         </div>
       </div>
