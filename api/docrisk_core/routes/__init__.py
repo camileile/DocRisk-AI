@@ -510,6 +510,22 @@ def list_reports(user: Usuario = Depends(usuario_atual),
     return [_report_result(row) for row in rows]
 
 
+@router.get("/api/reports/{report_id}/preview")
+def preview_report(report_id: int, user: Usuario = Depends(usuario_atual),
+                   conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
+    """Prévia do parecer com as análises ATUAIS (nada é gravado). Só Bernhoeft."""
+    _require_ber_user(user)
+    report = conn.execute("SELECT * FROM reports WHERE id=?", (report_id,)).fetchone()
+    if report is None:
+        raise HTTPException(404, "Parecer não encontrado")
+    _contract_or_404(conn, user, report["contract_id"])
+    if report["status"] != StatusParecer.RASCUNHO.value:
+        return _report_result(report)
+    result = _report_result(report)
+    result["conteudo_json"] = parecer.snapshot_parecer(conn, report["contract_id"], report["competencia"])
+    return result
+
+
 @router.post("/api/reports/{report_id}/publish")
 def publish_report(report_id: int, user: Usuario = Depends(usuario_atual),
                    conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:

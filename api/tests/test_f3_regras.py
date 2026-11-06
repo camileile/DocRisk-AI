@@ -159,6 +159,10 @@ def test_lote_demo_confere_com_gabarito_e_fluxo_completo(banco, lote):  # noqa: 
         rascunho = client.post("/api/reports", headers=_h("u-analista"),
                                json={"contract_id": "CT-001", "competencia": "10/2026"}).json()
         assert client.get("/api/client/reports", headers=_h("u-gestor-alfa")).json() == []
+        previa = client.get(f"/api/reports/{rascunho['id']}/preview", headers=_h("u-analista"))
+        assert previa.status_code == 200 and previa.json()["conteudo_json"]["resumo"]["trabalhadores"] == 5
+        assert client.get(f"/api/reports/{rascunho['id']}/preview",
+                          headers=_h("u-gestor-alfa")).status_code == 403
         assert client.post(f"/api/reports/{rascunho['id']}/publish", headers=_h("u-gestor-alfa")).status_code == 403
         pub = client.post(f"/api/reports/{rascunho['id']}/publish", headers=_h("u-analista"))
         assert pub.status_code == 200
