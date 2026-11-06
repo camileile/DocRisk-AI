@@ -4,6 +4,7 @@ import { Search, FileText, X, ArrowUpRight, Fingerprint } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { documents } from "@/lib/demo";
+import { documentFieldRows } from "@/lib/document-fields";
 import { useDemo } from "@/components/demo-provider";
 import {
   DocumentBadge,
@@ -215,6 +216,26 @@ function DocumentsContent() {
                   </dd>
                 </div>
               </dl>
+              {documentFieldRows(selected.id).length > 0 && (
+                <section
+                  className="document-example-fields"
+                  aria-label="Campos sintéticos do documento"
+                >
+                  <h3>Campos de exemplo</h3>
+                  <p>
+                    Valores sintéticos para conferir a interface; sem extração
+                    de IA. Campos em revisão ainda dependem de conferência.
+                  </p>
+                  <dl className="detail-list">
+                    {documentFieldRows(selected.id).map((field) => (
+                      <div key={field.label}>
+                        <dt>{field.label}</dt>
+                        <dd>{field.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+              )}
               <div className="evidence-note">
                 <Fingerprint size={18} />
                 <p>

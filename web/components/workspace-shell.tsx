@@ -3,6 +3,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  FileCheck2,
+  GitCompareArrows,
   ClipboardCheck,
   Package,
   Files,
@@ -23,6 +25,12 @@ const navigation = [
   { href: "/painel/lotes", label: "Lotes enviados", icon: Package },
   { href: "/painel/documentos", label: "Documentos", icon: Files },
   { href: "/painel/revisao", label: "Fila de revisão", icon: ClipboardCheck },
+  {
+    href: "/painel/conciliacoes",
+    label: "Conciliações",
+    icon: GitCompareArrows,
+  },
+  { href: "/painel/pareceres", label: "Pareceres", icon: FileCheck2 },
   { href: "/painel/pendencias", label: "Pendências", icon: CircleAlert },
   { href: "/painel/envio", label: "Prévia de envio", icon: Upload },
 ];
@@ -51,12 +59,38 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
         </Link>
       </main>
     );
+  if (role === "GESTOR_CONTR")
+    return (
+      <main className="demo-gate">
+        <img
+          src="/brand/logo-horizontal-claro.svg"
+          alt="DocRisk AI"
+          width="200"
+          height="52"
+        />
+        <h1>Continue no portal da contratante.</h1>
+        <p>
+          Esta perspectiva consulta somente os exemplos de pareceres publicados
+          do seu contrato.
+        </p>
+        <Link href="/contratante" className="button">
+          Abrir portal da contratante <ArrowUpRight size={17} />
+        </Link>
+        <Link href="/acesso" className="text-link">
+          Trocar perspectiva
+        </Link>
+      </main>
+    );
   const title =
     (path.startsWith("/painel/lotes/")
       ? "Detalhes do lote"
       : path.startsWith("/painel/revisao/")
         ? "Conferência documental"
-        : navigation.find((item) => item.href === path)?.label) ??
+        : path.startsWith("/painel/conciliacoes/")
+          ? "Detalhes da análise"
+          : path.startsWith("/painel/pareceres/")
+            ? "Detalhes do parecer"
+            : navigation.find((item) => item.href === path)?.label) ??
     "Visão geral";
   return (
     <div className="workspace">
@@ -90,7 +124,8 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
             .filter((item) =>
               role === "ANALISTA_BH"
                 ? item.href !== "/painel/envio"
-                : item.href !== "/painel/revisao",
+                : item.href !== "/painel/revisao" &&
+                  item.href !== "/painel/conciliacoes",
             )
             .map(({ href, label, icon: Icon }) => (
               <Link

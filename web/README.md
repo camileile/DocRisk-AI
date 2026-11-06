@@ -22,13 +22,19 @@ Validação: `npm run build` e `npm run typecheck`. A exportação estática fic
 | `/painel/documentos` | Busca, situação e detalhes de referência documental |
 | `/painel/revisao` | Fila de revisão documental do analista |
 | `/painel/revisao/[id]` | Conferência das páginas e preparação da decisão |
+| `/painel/conciliacoes` | Situação e resultado por trabalhador e competência |
+| `/painel/conciliacoes/[id]` | Comparação de horas, insumos e limitações da análise |
+| `/painel/pareceres` | Versões e situação dos pareceres na visão Bernhoeft |
+| `/painel/pareceres/[id]` | Conteúdo, revisão e preparação local de encaminhamento |
+| `/contratante` | Pareceres publicados do contrato da contratante |
+| `/contratante/[id]` | Consulta da versão publicada com conteúdo específico |
 | `/painel/pendencias` | Busca, filtros e orientações de correção |
 | `/painel/envio` | Prévia local de seleção de arquivos sintéticos |
 
 ## Explorar
 
 1. Abra `/acesso` ou use “Acessar demonstração” na landing.
-2. Selecione Analista Bernhoeft ou Operador da fornecedora.
+2. Selecione Analista Bernhoeft, Operador da fornecedora ou Gestor da contratante.
 3. No painel, altere contrato/competência e navegue entre documentos e pendências.
 4. Busque `DOC-002` nos documentos e abra os detalhes para ver a referência de evidência.
 5. Consulte a orientação de `PEN-001` nas pendências.
@@ -45,7 +51,7 @@ Os exemplos sintéticos estão em `lib/demo.ts`; os estados seguem os nomes de `
 - Detalhes de evidência usam referências sintéticas; não exibem um PDF original inexistente.
 - Busca e filtros funcionam localmente. Revisão, aprovação, notificações e publicação não são simuladas como ações concluídas.
 - Perfil, arquivos selecionados e filtros não são persistidos.
-- Contratante, administrador, conciliações e pareceres ficam para as próximas etapas. A fila e a conferência documental estão disponíveis como demonstração.
+- Administrador e auditoria ficam para a próxima etapa. Pareceres e portal da contratante estão disponíveis como demonstração. A fila e a conferência documental estão disponíveis como demonstração.
 - Os três módulos futuros continuam apenas como visão de expansão na landing.
 
 Rotas de backend planejadas estão em `api/docrisk_core/routes/__init__.py`. Autenticação e rotas operacionais ainda precisam ser implementadas antes de integrar dados reais. O formulário de contato continua sem canal comercial fictício e sem envio.
@@ -56,7 +62,7 @@ Build e TypeScript aprovados. Conferência de desktop no navegador: escolha de a
 
 ## Lotes — etapa atual
 
-`lib/batches.ts` contém oito lotes sintéticos com os quatro estados oficiais: RECEBIDO, PROCESSANDO, CONCLUIDO e FALHA_PROCESSAMENTO. Os exemplos incluem PDF, imagem e AEJ. AEJ não tem páginas nem OCR; os estados são retratos fixos, sem atualização em tempo real.
+`lib/batches.ts` contém nove lotes sintéticos com os quatro estados oficiais: RECEBIDO, PROCESSANDO, CONCLUIDO e FALHA_PROCESSAMENTO. Os exemplos incluem PDF, imagem e AEJ. AEJ não tem páginas nem OCR; os estados são retratos fixos, sem atualização em tempo real.
 
 Documentos dos lotes reutilizam `lib/demo.ts`. As pendências exibidas no detalhe são somente aquelas cujo documento de referência pertence ao lote; solicitações sem documento associado continuam no acompanhamento geral. Os links de conferência abrem a biblioteca filtrada por `?lote=...`, com detalhe em `?documento=...`; orientações abrem por `?pendencia=...`. Contrato e competência continuam limitando os resultados.
 
@@ -75,3 +81,36 @@ Uma justificativa e a confirmação de conferência são obrigatórias para prep
 As páginas exibidas são reconstruções HTML explicitamente sintéticas, não arquivos originais, OCR ou resultados do Gemini. Horas e reais aparecem separados. Na integração, usar a imagem privada por rota autenticada e respeitar os motivos internos exclusivos da Bernhoeft. A ocultação na interface não é uma barreira de segurança.
 
 Verificação: build estático e TypeScript; integridade das páginas e dos vínculos com documentos/lotes; conferência desktop da fila, paginação, zoom, prévias de divisão/união e permanência do documento na fila. A visualização móvel ainda não foi verificada.
+
+## Conciliações — etapa atual
+
+`/painel/conciliacoes` e `/painel/conciliacoes/[id]` pertencem à perspectiva ANALISTA_BH. Busca, filtros de situação/resultado e contexto usam dez retratos sintéticos fixos em `lib/analyses.ts`, com os nomes de estados e resultados do contrato Python. Não há implementação do motor de conciliação no frontend nem chamada operacional à API.
+
+Exemplos principais:
+
+- `ANA-001`: documento em revisão, horas disponíveis como campos sintéticos, sem comparação liberada.
+- `ANA-002`: página de ponto ausente, bloqueio seletivo, vínculo com `PEN-001`.
+- `ANA-007`: 12 h no ponto e 8 h na folha, indício de diferença de 4 h a conferir.
+- `ANA-008`: 10 h em ambos os documentos e diferença de 0 h, sem atestar regularidade integral.
+- `ANA-009`: ponto com 6 h e folha somente com valor em reais; referência em horas ausente, diferença não comparada.
+- `ANA-010`: acompanhamento inicial antes de receber os documentos, sem execução de comparação.
+
+`LOTE-009` e os documentos `DOC-010` a `DOC-017` fornecem os exemplos documentais dos três resultados analisados. `lib/document-fields.ts` disponibiliza campos sintéticos nos detalhes do documento, sem representar OCR ou extração. A integridade entre valores da análise e esses campos foi conferida. Os valores em reais aparecem em seção própria, separados da comparação de horas. Ausências ficam como não informadas; diferença zero continua visível. Ausência de comprovante não é apresentada como prova de atraso e presença não atesta quitação integral.
+
+Os detalhes incluem fonte por documento/lote/página/versão, registro demonstrativo em Recife, regra de referência HE-CMP-v1, solicitações do par e próximos passos de conferência. Uma pendência resolvida ou reenviada não libera automaticamente uma análise. Uma ausência documental pode estar demonstrada sem uma solicitação já cadastrada; a criação de pendências depende do backend. Nenhuma análise é aprovada, recalculada ou publicada pela interface.
+
+Verificação desta etapa: build e TypeScript; integridade dos pares e dos insumos, diferenças em horas, zero versus ausência e valores em reais; conferência desktop da listagem, filtro de divergências, detalhe do indício, documento de origem e cenário de dados insuficientes. Visualização móvel ainda não verificada.
+
+## Pareceres e contratante — etapa atual
+
+O perfil GESTOR_CONTR foi incluído em `/acesso` e direciona para `/contratante`. O portal demonstra somente o Contrato Alfa e as versões aprovadas/publicadas da competência selecionada. Uma navegação interna em `/painel` com essa perspectiva apresenta um redirecionamento orientado ao portal, sem montar suas telas internas. Isso é organização de demonstração, não autenticação ou autorização de produção.
+
+`lib/reports.ts` contém seis versões internas com os quatro estados oficiais. A série PAR-001 possui versão 1 substituída, versão 2 publicada e versão 3 em rascunho. O rascunho não substitui a versão publicada. A versão antiga não é reconstruída com dados atuais: o detalhe preserva a referência histórica e aponta para a versão publicada.
+
+`lib/published-reports.ts` contém somente dois retratos sintéticos de consulta da contratante, com campos explícitos e sem dependência dos módulos internos. O portal e seus componentes de conteúdo não importam análises financeiras, documentos internos ou dados dos rascunhos. Apenas os identificadores publicados têm páginas estáticas no portal. Não há links para documentos internos, valores financeiros, texto de OCR ou notas internas no conteúdo de consulta. Referências de documento/lote/página/versão aparecem como texto.
+
+Os pareceres incluem contratante, fornecedora, contrato, competência, regra, versão, aprovação demonstrativa, escopo, limitações, resumo e itens por trabalhador. Totais incluem bloqueados, revisões e aguardando documentos. Dados insuficientes fazem parte dos avaliados, mas não são tratados como sem divergência.
+
+A preparação do encaminhamento exige três conferências e observação interna. Uma prévia de publicação só pode ser preparada no exemplo EM_REVISAO. Nenhuma ação altera o status, publica, cria versão ou registra auditoria. A publicação real deve ser implementada na API com autorização do analista, snapshot imutável e nova versão para correções posteriores.
+
+Verificação: build e TypeScript; integridade das versões, referências documentais e denominadores; exclusão de rascunhos, campos financeiros e texto de OCR do retrato de consulta; conferência desktop da listagem interna, rascunho, preparação de encaminhamento, troca de perspectiva e consulta da versão 2 após preparar a versão 3. Visualização móvel ainda não verificada.
