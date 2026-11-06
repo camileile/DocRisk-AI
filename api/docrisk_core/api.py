@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 def _configured_cors_origins() -> list[str]:
-    raw = os.getenv("CORS_ORIGINS", "http://localhost:3000")
+    # Padrão local: o `npm run dev` sobe em 127.0.0.1:3000 (ver README); localhost:3000 também.
+    raw = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
     origins = [origin.strip() for origin in raw.split(",") if origin.strip()]
     if not origins or "*" in origins:
         raise RuntimeError("CORS_ORIGINS deve conter uma allowlist explícita, sem wildcard.")
