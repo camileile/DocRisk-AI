@@ -25,6 +25,34 @@ async function run() {
   try {
     await page.goto(base + "/", { waitUntil: "domcontentloaded" });
     assert.equal(await page.locator('a[href="/demo"]').count(), 0, "A landing não deve divulgar a demo fictícia.");
+    // Páginas institucionais: cada item do menu é uma rota, não uma âncora.
+    const pages = [
+      { label: "A plataforma", route: "/solucao/", heading: /Uma base documental/ },
+      { label: "Como funciona", route: "/como-funciona/", heading: /Um fluxo conectado/ },
+      { label: "Módulos", route: "/modulos/", heading: /Uma plataforma/ },
+      { label: "Contato", route: "/contato/", heading: /Boas conexões/ },
+    ];
+    for (const item of pages) {
+      await page.goto(base + "/", { waitUntil: "domcontentloaded" });
+      await page.getByRole("navigation", { name: "Navegação principal" })
+        .getByRole("link", { name: item.label, exact: true }).click();
+      await page.waitForURL((url) => url.pathname === item.route);
+      await page.getByRole("heading", { level: 1, name: item.heading }).waitFor();
+    }
+    await page.goto(base + "/modulos/", { waitUntil: "domcontentloaded" });
+    assert.equal(await page.locator(".future-module .planned").count(), 3,
+      "Os três módulos futuros devem continuar identificados como planejados.");
+    await page.getByRole("link", { name: /Entender o fluxo/ }).click();
+    await page.waitForURL((url) => url.pathname === "/como-funciona/");
+    await page.getByRole("heading", { name: /O resultado determina/ }).waitFor();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.getByRole("button", { name: "Abrir menu" }).click();
+    await page.getByRole("navigation", { name: "Navegação principal" })
+      .getByRole("link", { name: "A plataforma", exact: true }).click();
+    await page.waitForURL((url) => url.pathname === "/solucao/");
+    await page.getByRole("heading", { level: 1, name: /Uma base documental/ }).waitFor();
+    await page.setViewportSize({ width: 1280, height: 900 });
+
     await page.getByRole("navigation", { name: "Navegação principal" }).getByRole("link", { name: "Acesso", exact: true }).click();
     await page.waitForURL((url) => url.pathname === "/operacao/");
     assert.equal(await page.getByRole("radio").count(), 0, "Acesso institucional não deve abrir os perfis fictícios.");

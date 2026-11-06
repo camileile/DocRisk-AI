@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./marketing-pages.css";
 import "./workspace.css";
 import "./api-integration.css";
 import { AuthRoot } from "@/components/auth-root";

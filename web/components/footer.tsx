@@ -21,9 +21,9 @@ export function Footer() {
         </div>
         <div>
           <span>Explore</span>
-          <Link href="/#plataforma">A plataforma</Link>
-          <Link href="/#modulos">Nossos módulos</Link>
-          <Link href="/#como-funciona">Como funciona</Link>
+          <Link href="/solucao">A plataforma</Link>
+          <Link href="/modulos">Nossos módulos</Link>
+          <Link href="/como-funciona">Como funciona</Link>
         </div>
         <div>
           <span>Vamos conversar</span>
