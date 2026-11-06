@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "test:p0": "node scripts/p0-regression.cjs",
     "test:transport": "node scripts/transport-regression.cjs",
-    "test:clerk": "node scripts/clerk-session-regression.cjs"
+    "test:clerk": "node scripts/clerk-session-regression.cjs",
+    "test:login-hydration": "node scripts/login-hydration-smoke.cjs"
   },
   "dependencies": {
     "@clerk/nextjs": "7.9.25",
