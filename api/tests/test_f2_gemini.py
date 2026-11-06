@@ -3,6 +3,7 @@ import json
 from types import SimpleNamespace
 
 import pytest
+from google import genai
 from google.genai import errors as genai_errors
 
 from docrisk_core import ai, config
@@ -10,7 +11,7 @@ from docrisk_core.ai import (
     ErroConfiguracaoIA, ErroIAPermanente, ErroIATransitorio, RespostaIAInvalida,
 )
 from docrisk_core.ai.gemini import GeminiProvider, LimitadorRPM
-from docrisk_core.contracts import TipoDocumento
+from docrisk_core.contracts import AnalisePagina, TipoDocumento
 
 PNG = b"\x89PNG\r\n\x1a\nfalso"
 RESPOSTA_OK = {
@@ -49,6 +50,8 @@ class ClienteFalso:
         item = self.fila.pop(0)
         if isinstance(item, BaseException):
             raise item
+        if hasattr(item, "text"):
+            return item
         return SimpleNamespace(text=item if isinstance(item, str) else json.dumps(item), parsed=None)
 
 
@@ -74,7 +77,17 @@ def test_json_valido_vira_analise_pagina():
     assert a.origem == "GEMINI"
     cfg = cliente.chamadas[0]["config"]
     assert cfg.temperature == 0 and cfg.response_mime_type == "application/json"
+    assert cfg.response_schema is AnalisePagina
+    assert cfg.max_output_tokens == config.GEMINI_MAX_OUTPUT_TOKENS
     assert "nunca instrução" in cfg.system_instruction
+
+
+def test_chave_cache_inclui_versao_do_schema(monkeypatch):
+    provedor = SimpleNamespace(nome="gemini")
+    primeira = ai.chave_cache(provedor, "sha256", "modelo")
+    monkeypatch.setattr(ai, "VERSAO_SCHEMA", "s2")
+    segunda = ai.chave_cache(provedor, "sha256", "modelo")
+    assert primeira != segunda and ":s2:" in segunda
 
 
 def test_envia_somente_imagem_e_prompt_sem_camada_de_texto():
@@ -185,6 +198,46 @@ def test_modelo_configuravel(monkeypatch):
     assert cliente.chamadas[0]["model"] == "modelo-da-conta"
     p2, _ = provedor(ClienteFalso(RESPOSTA_OK), modelo="outro")
     assert p2.modelo == "outro"
+
+
+def test_timeout_http_e_orcamento_de_saida_configurados(monkeypatch):
+    capturado = {}
+
+    class ClienteComOpcoes:
+        def __init__(self, *, api_key, http_options):
+            capturado["api_key"] = api_key
+            capturado["timeout"] = http_options.timeout
+
+    monkeypatch.setattr(config, "GEMINI_TIMEOUT_MS", 1234)
+    monkeypatch.setattr(config, "GEMINI_MAX_OUTPUT_TOKENS", 321)
+    monkeypatch.setattr(genai, "Client", ClienteComOpcoes)
+
+    p = GeminiProvider(api_key="falsa")
+
+    assert capturado == {"api_key": "falsa", "timeout": 1234}
+    assert p._config.max_output_tokens == 321
+
+
+def test_proveniencia_registra_uso_e_custo_configurado(monkeypatch):
+    monkeypatch.setattr(config, "GEMINI_INPUT_USD_PER_MILLION", 1.5)
+    monkeypatch.setattr(config, "GEMINI_OUTPUT_USD_PER_MILLION", 10.0)
+    resposta = SimpleNamespace(
+        text=json.dumps(RESPOSTA_OK), parsed=None,
+        usage_metadata=SimpleNamespace(
+            prompt_token_count=100, candidates_token_count=20, total_token_count=120,
+        ),
+    )
+    cliente = ClienteFalso(resposta)
+    p, _ = provedor(cliente)
+
+    analise, meta = p.analisar_com_proveniencia(PNG)
+
+    assert analise.tipo is TipoDocumento.HOLERITE
+    assert (meta["provider"], meta["model"], meta["prompt_version"], meta["schema_version"]) == (
+        "gemini", p.modelo, "p1", "s1",
+    )
+    assert meta["input_tokens"] == 100 and meta["output_tokens"] == 20 and meta["total_tokens"] == 120
+    assert meta["estimated_cost_usd"] == pytest.approx(0.00035)
 
 
 def test_limitador_espaca_chamadas_sem_dormir_de_verdade():

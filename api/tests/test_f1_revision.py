@@ -1,4 +1,5 @@
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 from fastapi.testclient import TestClient
 
@@ -6,7 +7,7 @@ from docrisk_core import config, db
 from docrisk_core.ai.textlayer import TextLayerProvider
 from docrisk_core.api import app
 from docrisk_core.pipeline import worker
-from test_f2_worker import BETA, LOTE, banco, documentos, pdf, q
+from test_f2_worker import BETA, HOLERITE, LOTE, banco, documentos, pdf, q
 
 
 def _token(user_id):
@@ -16,6 +17,15 @@ def _token(user_id):
 
 def _headers(user_id="u-analista"):
     return {"Authorization": f"Bearer {_token(user_id)}"}
+
+
+def _publish(client, report_id, user_id="u-analista", conteudo_sha256=None):
+    headers = _headers(user_id)
+    if conteudo_sha256 is None:
+        preview = client.get(f"/api/reports/{report_id}/preview", headers=headers)
+        conteudo_sha256 = preview.json()["conteudo_sha256"]
+    return client.post(f"/api/reports/{report_id}/publish", headers=headers,
+                       json={"conteudo_sha256": conteudo_sha256})
 
 
 def _api_lote():
@@ -96,6 +106,92 @@ def test_approve_validates_worker_and_competencia(banco):
                   "competencia": "2026-10"},
         )
     assert worker_result.status_code == competence_result.status_code == 422
+
+
+def test_structured_field_review_preserves_history_and_reconciles(banco, monkeypatch):
+    from docrisk_core.rules import conciliacao
+
+    batch_id = _api_lote()
+    doc = _doc_with_pages(batch_id, [3, 4])
+    original = json.loads(doc["campos_json"])
+    with db.tx() as conn:
+        conn.execute("UPDATE documents SET status='REVISAO_HUMANA' WHERE id=?", (doc["id"],))
+        pages = [int(row[0]) for row in conn.execute(
+            "SELECT page_id FROM doc_pages WHERE document_id=? ORDER BY posicao", (doc["id"],))]
+    calls = []
+    monkeypatch.setattr(conciliacao, "conciliar",
+                        lambda conn, contract_id, worker_id, competencia:
+                        calls.append((contract_id, worker_id, competencia)))
+    url = f"/api/documents/{doc['id']}/review"
+    with TestClient(app) as client:
+        first = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos",
+            "campos": {"horas_extras_h": 10, "horas_extras_valor": 150.5},
+            "motivo": "Conferido no comprovante",
+            "fontes": {"horas_extras_h": pages[0], "horas_extras_valor": pages[1]},
+            "esperado_em": doc["updated_at"],
+        })
+        assert first.status_code == 200, first.text
+        first_version = client.get(f"/api/documents/{doc['id']}", headers=_headers()).json()
+        second = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"horas_extras_h": 11},
+            "motivo": "Segunda conferência", "fontes": {"horas_extras_h": pages[1]},
+            "esperado_em": first_version["updated_at"],
+        })
+        detail = client.get(f"/api/documents/{doc['id']}", headers=_headers())
+    assert second.status_code == detail.status_code == 200
+    assert calls == [("CT-001", "T001", "10/2026")] * 2
+    reviews = detail.json()["revisoes_campos"]
+    assert [r["revision_number"] for r in reviews] == [1, 2, 3]
+    assert all(r["author_id"] == "u-analista" and r["document_version"] == doc["versao"]
+               for r in reviews)
+    assert reviews[0]["valor_original"] == original["horas_extras_h"]
+    assert reviews[0]["valor_corrigido"] == 10
+    assert reviews[1]["valor_original"] == original["horas_extras_valor"]
+    assert reviews[1]["valor_corrigido"] == 150.5
+    assert reviews[2]["valor_original"] == 10 and reviews[2]["valor_corrigido"] == 11
+    assert reviews[0]["reason"] == "Conferido no comprovante"
+    assert reviews[0]["source"] == f"Página #{pages[0]}"
+    assert detail.json()["campos"]["horas_extras_h"] == 11
+    assert detail.json()["campos"]["horas_extras_valor"] == 150.5
+
+
+def test_structured_field_review_validates_and_hides_history_from_supplier(banco):
+    batch_id = _api_lote()
+    doc = _doc_with_pages(batch_id, [3, 4])
+    before = json.loads(doc["campos_json"])
+    with db.tx() as conn:
+        conn.execute("UPDATE documents SET status='REVISAO_HUMANA' WHERE id=?", (doc["id"],))
+        page = int(conn.execute("SELECT page_id FROM doc_pages WHERE document_id=? ORDER BY posicao",
+                                (doc["id"],)).fetchone()[0])
+    url = f"/api/documents/{doc['id']}/review"
+    with TestClient(app) as client:
+        missing_reason = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"horas_extras_h": 9},
+            "fontes": {"horas_extras_h": page}, "esperado_em": doc["updated_at"]})
+        legacy = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"horas_extras_h": 9},
+            "motivo": "Conferência", "fonte": "página 2"})
+        unknown_field = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"cpf": "123"},
+            "motivo": "Conferência", "fontes": {"cpf": page},
+            "esperado_em": doc["updated_at"]})
+        negative_value = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"horas_extras_h": -2},
+            "motivo": "Conferência", "fontes": {"horas_extras_h": page},
+            "esperado_em": doc["updated_at"]})
+        corrected = client.patch(url, headers=_headers(), json={
+            "acao": "corrigir_campos", "campos": {"horas_extras_h": 9},
+            "motivo": "Conferência", "fontes": {"horas_extras_h": page},
+            "esperado_em": doc["updated_at"]})
+        supplier_detail = client.get(f"/api/documents/{doc['id']}", headers=_headers("u-oper-beta"))
+
+    assert all(item.status_code == 422 for item in (missing_reason, legacy, unknown_field, negative_value))
+    assert corrected.status_code == supplier_detail.status_code == 200
+    assert "revisoes_campos" not in supplier_detail.json()
+    assert q("SELECT COUNT(*) AS n FROM document_field_reviews WHERE document_id=?", doc["id"])[0]["n"] == 1
+    assert json.loads(q("SELECT campos_json FROM documents WHERE id=?", doc["id"])[0]["campos_json"])[
+        "horas_extras_valor"] == before["horas_extras_valor"]
 
 
 def test_approve_and_request_correction_reconcile_affected_pair(banco, monkeypatch):
@@ -255,6 +351,41 @@ def test_resubmit_does_not_overwrite_f3_resolution(banco, monkeypatch):
     assert json.loads(issue["historico_json"]) == [{"status": "RESOLVIDA"}]
 
 
+def test_resubmit_does_not_reset_issue_changed_before_enqueue(banco, monkeypatch):
+    with db.tx() as conn:
+        issue_id = conn.execute(
+            "INSERT INTO issues (contract_id, categoria, motivo, acao, status, created_at, updated_at, "
+            "historico_json) VALUES ('CT-001', 'ILEGIVEL', 'ilegível', 'reenviar', 'NOTIFICADA', ?, ?, ?)",
+            (db.agora(), db.agora(), '[{"status":"NOTIFICADA"}]'),
+        ).lastrowid
+
+    enfileirados = []
+
+    def criar_lote(*args, **kwargs):
+        batch_id = _insert_batch()
+        with db.tx() as conn:
+            conn.execute(
+                "UPDATE issues SET status='RESOLVIDA', updated_at=?, historico_json=? WHERE id=?",
+                (db.agora(), '[{"status":"NOTIFICADA"},{"status":"RESOLVIDA"}]', issue_id),
+            )
+        return batch_id
+
+    monkeypatch.setattr(worker, "criar_lote", criar_lote)
+    monkeypatch.setattr(worker, "enfileirar", enfileirados.append)
+    with TestClient(app) as client:
+        response = client.post(f"/api/issues/{issue_id}/resubmit", headers=_headers("u-oper-beta"),
+                               files={"file": ("reenviado.pdf", b"fake")})
+
+    assert response.status_code == 409
+    assert enfileirados == []
+    with db.tx() as conn:
+        issue = conn.execute("SELECT status, historico_json FROM issues WHERE id=?", (issue_id,)).fetchone()
+        batch_count = conn.execute("SELECT COUNT(*) FROM batches WHERE filename='reprocess.pdf'").fetchone()[0]
+    assert issue["status"] == "RESOLVIDA"
+    assert json.loads(issue["historico_json"])[-1]["status"] == "RESOLVIDA"
+    assert batch_count == 0
+
+
 def test_reports_are_restricted_and_json_is_decoded(banco):
     with db.tx() as conn:
         report_id = conn.execute(
@@ -321,10 +452,7 @@ def test_publish_new_report_version_replaces_previous(banco, monkeypatch):
         assert new_report["versao"] == 2
         assert new_report["status"] == "RASCUNHO"
 
-        publish_response = client.post(
-            f"/api/reports/{new_report['id']}/publish",
-            headers=_headers(),
-        )
+        publish_response = _publish(client, new_report["id"])
 
     assert publish_response.status_code == 200, publish_response.text
 
@@ -340,7 +468,70 @@ def test_publish_new_report_version_replaces_previous(banco, monkeypatch):
     assert previous["status"] == "SUBSTITUIDO_POR_VERSAO"
     assert current["status"] == "APROVADO_PUBLICADO"
     assert current["versao"] == 2
-    assert json.loads(current["conteudo_json"]) == {"versao": 2}
+    assert json.loads(current["conteudo_json"])["versao"] == 2
+    assert json.loads(current["conteudo_json"])["parecer"]["versao"] == 2
+
+
+def test_publish_rejects_changed_preview_and_an_older_draft(banco, monkeypatch):
+    from docrisk_core.routes import parecer
+
+    snapshots = iter((
+        {"estado": "prévia"}, {"estado": "prévia antes da mudança"}, {"estado": "mudou"},
+        {"estado": "atualizado"}, {"estado": "atualizado"},
+    ))
+    monkeypatch.setattr(
+        parecer,
+        "snapshot_parecer",
+        lambda conn, contract_id, competencia: next(snapshots),
+    )
+    with TestClient(app) as client:
+        older = client.post("/api/reports", headers=_headers(),
+                            json={"contract_id": "CT-001", "competencia": "10/2026"}).json()
+        preview = client.get(f"/api/reports/{older['id']}/preview", headers=_headers())
+        with db.tx() as conn:
+            assert conn.execute("SELECT conteudo_json FROM reports WHERE id=?", (older["id"],)).fetchone()[0] is None
+
+        newer = client.post("/api/reports", headers=_headers(),
+                            json={"contract_id": "CT-001", "competencia": "10/2026"}).json()
+        stale_preview = client.get(f"/api/reports/{newer['id']}/preview", headers=_headers())
+        stale_publish = client.post(f"/api/reports/{newer['id']}/publish", headers=_headers(),
+                                    json={"conteudo_sha256": stale_preview.json()["conteudo_sha256"]})
+        current_preview = client.get(f"/api/reports/{newer['id']}/preview", headers=_headers())
+        publish_newer = client.post(f"/api/reports/{newer['id']}/publish", headers=_headers(),
+                                    json={"conteudo_sha256": current_preview.json()["conteudo_sha256"]})
+        publish_older = _publish(client, older["id"], conteudo_sha256="0" * 64)
+
+    assert preview.status_code == stale_preview.status_code == 200
+    assert stale_publish.status_code == 409
+    assert current_preview.status_code == publish_newer.status_code == 200
+    assert preview.json()["conteudo_json"]["estado"] == "prévia"
+    assert publish_newer.json()["conteudo_json"]["estado"] == "atualizado"
+    assert publish_older.status_code == 409
+    with db.tx() as conn:
+        old = conn.execute("SELECT status, conteudo_json FROM reports WHERE id=?", (older["id"],)).fetchone()
+        current = conn.execute("SELECT status FROM reports WHERE id=?", (newer["id"],)).fetchone()
+    assert old["status"] == "RASCUNHO" and old["conteudo_json"] is None
+    assert current["status"] == "APROVADO_PUBLICADO"
+
+
+def test_concurrent_publication_accepts_only_one_request(banco, monkeypatch):
+    from docrisk_core.routes import parecer
+
+    monkeypatch.setattr(parecer, "snapshot_parecer",
+                        lambda conn, contract_id, competencia: {"fixo": True})
+    with TestClient(app) as client:
+        draft = client.post("/api/reports", headers=_headers(),
+                            json={"contract_id": "CT-001", "competencia": "10/2026"}).json()
+        preview = client.get(f"/api/reports/{draft['id']}/preview", headers=_headers()).json()
+        payload = {"conteudo_sha256": preview["conteudo_sha256"]}
+
+        def publish_once():
+            return client.post(f"/api/reports/{draft['id']}/publish", headers=_headers(), json=payload)
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            responses = list(pool.map(lambda _: publish_once(), range(2)))
+
+    assert sorted(response.status_code for response in responses) == [200, 409]
 
 def test_search_snippet_uses_neutral_markers(banco):
     batch_id = _insert_batch(status="CONCLUIDO")
@@ -462,3 +653,34 @@ def test_resubmit_repetido_nao_cria_lote_duplicado(banco, monkeypatch):
 
     assert issue["status"] == "REENVIADA"
     assert len(json.loads(issue["historico_json"])) == 1
+
+
+def test_aprovar_duplicidade_deixa_uma_unica_versao_vigente(banco):
+    primeiro = worker.criar_lote(BETA, "CT-001", "h1.pdf", pdf(HOLERITE.format(t="T001", h="6,00")))
+    worker.processar_lote(primeiro, provedor=TextLayerProvider())
+    segundo = worker.criar_lote(BETA, "CT-001", "h2.pdf", pdf(HOLERITE.format(t="T001", h="7,00")))
+    worker.processar_lote(segundo, provedor=TextLayerProvider())
+    [antigo] = documentos(primeiro)
+    [duplicado] = documentos(segundo)
+    assert duplicado["status"] == "REVISAO_HUMANA"
+    with TestClient(app) as client:
+        r = client.patch(f"/api/documents/{duplicado['id']}/review", headers=_headers(), json={"acao": "aprovar"})
+    assert r.status_code == 200, r.text
+    vigentes = q("SELECT id, versao, substitui_id FROM documents WHERE worker_id='T001' AND tipo='HOLERITE' "
+                 "AND competencia='10/2026' AND status<>'SUBSTITUIDO'")
+    assert [(v["id"], v["versao"], v["substitui_id"]) for v in vigentes] == [(duplicado["id"], 2, antigo["id"])]
+
+
+def test_publicar_depois_da_previa_ignora_horario_de_geracao(banco, monkeypatch):
+    # O analista lê a prévia e publica minutos depois: só o horário de geração mudou.
+    horarios = iter(["2026-11-06T10:00:00", "2026-11-06T10:03:00", "2026-11-06T10:03:01", "2026-11-06T10:03:02"])
+    with TestClient(app) as client:
+        rid = client.post("/api/reports", headers=_headers(),
+                          json={"contract_id": "CT-001", "competencia": "10/2026"}).json()["id"]
+        monkeypatch.setattr(db, "agora", lambda: next(horarios, "2026-11-06T10:05:00"))
+        previa = client.get(f"/api/reports/{rid}/preview", headers=_headers()).json()
+        publicado = client.post(f"/api/reports/{rid}/publish", headers=_headers(),
+                                json={"conteudo_sha256": previa["conteudo_sha256"]})
+    assert publicado.status_code == 200, publicado.text
+    # D3-08 preserva inclusive o horário da cópia conferida, sem invalidar o hash por tempo.
+    assert publicado.json()["conteudo_json"] == previa["conteudo_json"]

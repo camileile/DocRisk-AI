@@ -90,6 +90,24 @@ CREATE TABLE IF NOT EXISTS doc_pages (
   posicao      INTEGER NOT NULL      -- 1..n dentro do documento
 );
 
+-- Histórico imutável de correções manuais de campos extraídos.
+CREATE TABLE IF NOT EXISTS document_field_reviews (
+  id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+  document_id          INTEGER NOT NULL REFERENCES documents(id),
+  field_name           TEXT NOT NULL,
+  original_value_json  TEXT NOT NULL,
+  corrected_value_json TEXT NOT NULL,
+  author_id            TEXT NOT NULL REFERENCES users(id),
+  reason               TEXT NOT NULL,
+  source               TEXT NOT NULL,
+  document_version     INTEGER NOT NULL,
+  revision_number      INTEGER NOT NULL,
+  created_at           TEXT NOT NULL,
+  UNIQUE (document_id, revision_number)
+);
+CREATE INDEX IF NOT EXISTS ix_document_field_reviews_document
+  ON document_field_reviews (document_id, revision_number);
+
 CREATE TABLE IF NOT EXISTS issues (
   id              INTEGER PRIMARY KEY AUTOINCREMENT,
   contract_id     TEXT NOT NULL REFERENCES contracts(id),
@@ -148,8 +166,72 @@ CREATE TABLE IF NOT EXISTS audit (
 );
 
 CREATE TABLE IF NOT EXISTS ai_cache (
-  chave           TEXT PRIMARY KEY,  -- provedor:modelo:versao_prompt:sha256_png
+  chave           TEXT PRIMARY KEY,  -- provedor:modelo:versao_prompt:versao_schema:sha256_png
   resultado_json  TEXT NOT NULL,
+  created_at      TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ai_telemetry (
+  page_id                       INTEGER PRIMARY KEY REFERENCES pages(id),
+  provider                      TEXT NOT NULL,
+  model                         TEXT NOT NULL,
+  prompt_version                TEXT NOT NULL,
+  schema_version                TEXT NOT NULL,
+  input_tokens                  INTEGER,
+  output_tokens                 INTEGER,
+  total_tokens                  INTEGER,
+  input_price_usd_per_million   REAL,
+  output_price_usd_per_million  REAL,
+  estimated_cost_usd            REAL,
+  timeout_ms                    INTEGER,
+  max_output_tokens             INTEGER,
+  cache_hit                     INTEGER NOT NULL DEFAULT 0,
+  status                        TEXT NOT NULL CHECK (status IN ('OK', 'ERRO')),
+  duration_ms                   INTEGER NOT NULL,
+  error_type                    TEXT,
+  created_at                    TEXT NOT NULL
+);
+
+-- AEJ: fonte original permanece em batches.arquivo, com hash em batches.sha256.
+-- Estas tabelas guardam linhas sem perda e a derivação usada pelo ESPELHO_PONTO.
+CREATE TABLE IF NOT EXISTS aej_worker_mappings (
+  contract_id     TEXT NOT NULL REFERENCES contracts(id),
+  worker_link_id  TEXT NOT NULL,
+  worker_id       TEXT NOT NULL REFERENCES workers(id),
+  created_by      TEXT REFERENCES users(id),
+  created_at      TEXT NOT NULL,
+  PRIMARY KEY (contract_id, worker_link_id),
+  UNIQUE (contract_id, worker_id)
+);
+
+CREATE TABLE IF NOT EXISTS aej_imports (
+  batch_id       INTEGER PRIMARY KEY REFERENCES batches(id),
+  schema_version TEXT NOT NULL,
+  period_start   TEXT NOT NULL,
+  period_end     TEXT NOT NULL,
+  validation_json TEXT NOT NULL,
+  p7s_present    INTEGER NOT NULL DEFAULT 0,
+  parser_version TEXT NOT NULL,
+  created_at     TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS aej_records (
+  batch_id       INTEGER NOT NULL REFERENCES batches(id),
+  line_number    INTEGER NOT NULL,
+  record_type    TEXT NOT NULL,
+  worker_link_id TEXT,
+  raw_line       TEXT NOT NULL,
+  PRIMARY KEY (batch_id, line_number)
+);
+CREATE INDEX IF NOT EXISTS ix_aej_records_worker
+  ON aej_records (batch_id, worker_link_id, record_type);
+
+CREATE TABLE IF NOT EXISTS aej_documents (
+  document_id     INTEGER PRIMARY KEY REFERENCES documents(id),
+  batch_id        INTEGER NOT NULL REFERENCES batches(id),
+  worker_link_id  TEXT NOT NULL,
+  competencia     TEXT NOT NULL,
+  calculation_json TEXT NOT NULL,
   created_at      TEXT NOT NULL
 );
 
@@ -157,4 +239,91 @@ CREATE TABLE IF NOT EXISTS ai_cache (
 CREATE VIRTUAL TABLE IF NOT EXISTS page_fts USING fts5(
   texto, page_id UNINDEXED, contract_id UNINDEXED,
   tokenize = 'unicode61 remove_diacritics 2'
+);
+
+
+-- Cadastro administrativo gradual: entidades globais, escopo por organização auditora.
+-- Tabelas novas, compatíveis com bancos de MVP já inicializados.
+CREATE TABLE IF NOT EXISTS organization_profiles (
+  org_id TEXT PRIMARY KEY REFERENCES organizations(id),
+  cnpj TEXT UNIQUE,
+  criado_em TEXT
+);
+
+CREATE TABLE IF NOT EXISTS organization_auditors (
+  org_id TEXT NOT NULL REFERENCES organizations(id),
+  auditor_id TEXT NOT NULL REFERENCES organizations(id),
+  PRIMARY KEY (org_id, auditor_id)
+);
+
+CREATE TABLE IF NOT EXISTS contract_metadata (
+  contract_id TEXT PRIMARY KEY REFERENCES contracts(id),
+  inicio TEXT,
+  fim TEXT,
+  status TEXT NOT NULL DEFAULT 'ATIVO'
+    CHECK(status IN ('ATIVO', 'ENCERRADO'))
+);
+
+-- Identidade institucional independente das empresas operacionais.
+-- Tabelas aditivas: não altera nem recria organizations ou seus vínculos.
+CREATE TABLE IF NOT EXISTS platform_accounts (
+  id TEXT PRIMARY KEY,
+  nome TEXT NOT NULL,
+  token TEXT NOT NULL UNIQUE,
+  ativo INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS platform_settings (
+  id INTEGER PRIMARY KEY CHECK (id=1),
+  nome TEXT NOT NULL,
+  contato TEXT NOT NULL DEFAULT ''
+);
+INSERT OR IGNORE INTO platform_settings (id,nome) VALUES (1,'DocRisk AI');
+
+-- Identidades produtivas são independentes dos tokens demonstrativos.
+CREATE TABLE IF NOT EXISTS identity_links (
+  id TEXT PRIMARY KEY,
+  issuer TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  user_id TEXT UNIQUE REFERENCES users(id),
+  platform_account_id TEXT UNIQUE REFERENCES platform_accounts(id),
+  ativo INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL,
+  CHECK ((user_id IS NULL) != (platform_account_id IS NULL))
+);
+CREATE INDEX IF NOT EXISTS ix_identity_subject ON identity_links(issuer,subject,ativo);
+CREATE TABLE IF NOT EXISTS identity_invitations (
+  id TEXT PRIMARY KEY,
+  email TEXT NOT NULL,
+  nome TEXT NOT NULL,
+  org_id TEXT NOT NULL REFERENCES organizations(id),
+  role TEXT NOT NULL,
+  invited_by TEXT NOT NULL,
+  invited_link_id TEXT NOT NULL REFERENCES identity_links(id),
+  provider_id TEXT,
+  status TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  accepted_by TEXT,
+  accepted_at TEXT
+);
+CREATE INDEX IF NOT EXISTS ix_identity_invite_email ON identity_invitations(email,status);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ix_pending_identity_invite
+  ON identity_invitations(email,org_id,role) WHERE status IN ('CREATING','PENDING');
+CREATE TRIGGER IF NOT EXISTS identity_kind_exclusive BEFORE INSERT ON identity_links
+WHEN EXISTS (SELECT 1 FROM identity_links WHERE issuer=NEW.issuer AND subject=NEW.subject
+             AND (platform_account_id IS NULL) != (NEW.platform_account_id IS NULL))
+BEGIN SELECT RAISE(ABORT,'Identidade institucional independente'); END;
+-- Texto público do rascunho e prévias conferíveis, separados das observações internas.
+CREATE TABLE IF NOT EXISTS report_editorial (
+  report_id INTEGER PRIMARY KEY REFERENCES reports(id),
+  recomendacoes TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS report_previews (
+  report_id INTEGER NOT NULL REFERENCES reports(id),
+  user_id TEXT NOT NULL REFERENCES users(id),
+  conteudo_sha256 TEXT NOT NULL,
+  conteudo_json TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (report_id,user_id,conteudo_sha256)
 );

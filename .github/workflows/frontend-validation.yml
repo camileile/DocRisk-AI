@@ -46,17 +46,29 @@ jobs:
       - name: Validar rotas geradas
         run: |
           test -f out/index.html
+          test -f out/solucao/index.html
+          test -f out/como-funciona/index.html
+          test -f out/modulos/index.html
           test -f out/acesso/index.html
           test -f out/contato/index.html
           test -f out/painel/index.html
           test -f out/painel/conciliacoes/index.html
           test -f out/painel/pareceres/index.html
           test -f out/contratante/index.html
+          test -f out/contratante/pareceres/index.html
+          test -f out/plataforma/index.html
+          test -f out/plataforma/auditoras/index.html
+          test -f out/plataforma/configuracoes/index.html
+          test -f out/painel/operadores/index.html
           test -f out/administracao/index.html
+          test -f out/administracao/empresas/index.html
+          test -f out/administracao/usuarios/index.html
+          test -f out/administracao/auditoria/index.html
       - name: Playwright e Chromium (somente testes)
+        timeout-minutes: 3
         run: |
           npm install --no-save --package-lock=false playwright@1.58.2
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
       - name: Servidor da exportação estática
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 --directory out > /tmp/docrisk-static.log 2>&1 &
@@ -66,8 +78,10 @@ jobs:
           done
           cat /tmp/docrisk-static.log
           exit 1
-      - name: Demonstracao offline (5 perfis sem backend)
-        run: node scripts/offline-smoke.cjs
+      - name: Demonstracao offline (6 perfis sem backend)
+        run: |
+          node scripts/offline-smoke.cjs
+          node scripts/contractor-smoke.cjs
       - name: Python 3.12
         uses: actions/setup-python@v5
         with:
@@ -87,7 +101,9 @@ jobs:
           cat /tmp/docrisk-api.log
           exit 1
       - name: Teste ponta a ponta por perfil (front + API, lote sintético completo)
-        run: node scripts/smoke.cjs
+        run: |
+          node scripts/smoke.cjs
+          DOCRISK_CONNECTED=1 node scripts/contractor-smoke.cjs
       - name: Criar lote PDF inteiramente sintético via API F1 + F2
         run: |
           python - <<'PY'

@@ -16,6 +16,8 @@ dependencies = [
   "Pillow>=10,<13",
   "pytesseract>=0.3.10,<1",
   "google-genai>=1.0,<2",
+  "PyJWT[crypto]>=2.10,<3",
+  "httpx>=0.27,<1",
 ]
 
 [project.optional-dependencies]
@@ -32,4 +34,4 @@ pythonpath = ["."]
 include = ["docrisk_core*"]
 
 [tool.setuptools.package-data]
-docrisk_core = ["db/schema.sql"]
+docrisk_core = ["db/schema.sql", "db/migrations/*.sql", "assets/*.svg", "assets/*.png", "assets/fonts/*.ttf", "assets/fonts/*.txt", "assets/fonts/*.md"]

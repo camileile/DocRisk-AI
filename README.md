@@ -14,7 +14,7 @@ revisão humana na Bernhoeft e parecer publicado só depois de aprovado.
 | Parte | Estado | Evidência |
 |---|---|---|
 | API, autenticação por token, isolamento por organização/contrato | Pronto e testado | `tests/test_f1_*.py` |
-| Motor documental: render PDF/imagem/TIFF, Gemini, segmentação, roteamento, worker com retomada e cache | Pronto e testado (Gemini real validado pela equipe em 05/11; testes usam o leitor offline) | `tests/test_f2_*.py` |
+| Motor documental: render PDF/imagem/TIFF, Gemini, segmentação, roteamento, worker com retomada e cache | Integração implementada; a equipe relata teste real do Gemini em 05/11, sem relatório reproduzível versionado. Os testes automatizados usam o leitor offline. | `tests/test_f2_*.py` |
 | Regras (F3): conciliação de horas extras, pendências, parecer, métricas | Pronto e testado | `tests/test_f3_regras.py` |
 | Lote sintético (16 páginas, 14 documentos) + reenvio + PDF corrompido + gabarito | Pronto e versionado | `api/scripts/lote_demo/` |
 | Front-end Next.js integrado à API (todos os perfis) | Pronto; smoke ponta a ponta com Playwright | `web/scripts/smoke.cjs` |
@@ -78,7 +78,7 @@ npm ci
 npm run dev        # http://127.0.0.1:3000 (usa NEXT_PUBLIC_API_URL, padrão http://127.0.0.1:8000)
 ```
 
-Roteiro de demonstração: em `/acesso`, entre como **Operador da fornecedora** e envie
+Roteiro de demonstração com API local: em `/operacao`, entre como **Operador da fornecedora** e envie
 `api/scripts/lote_demo/lote_demo.pdf`; em *Pendências*, reenvie
 `reenvio_holerite_T002.pdf` na pendência do holerite ilegível; entre como **Analista
 Bernhoeft** e veja *Conciliações* (T001: 4 h a conferir; T003 bloqueado; T004 dados
@@ -100,7 +100,7 @@ pulado automaticamente se o Tesseract não estiver instalado.
 
 - Autenticação por token fixo de demonstração (`/api/demo/users` só com `DOCRISK_DEMO_MODE=1`); produção = SSO/OIDC.
 - SQLite + fila em thread única por processo: rode **um** processo da API. Produção: PostgreSQL, fila externa (Celery/Redis) e armazenamento de objetos.
-- O teste automatizado usa o leitor offline; a qualidade com o Gemini depende do modelo/cota e não é medida no CI. O holerite "ilegível" do lote é um corpo borrado: confirme com o Gemini real antes da banca.
+- Os testes automatizados usam o leitor offline. A qualidade visual do Gemini não é medida no CI nem pelo benchmark TextLayer; falta um relatório versionado da validação real relatada pela equipe. O holerite "ilegível" do lote é um corpo borrado.
 - AEJ, anonimização e a base de 100 trabalhadores ainda não foram implementados.
 - Pendência de `DOCUMENTO_AUSENTE` nasce `ABERTA` (aguarda o analista); não há notificação por e-mail.
 

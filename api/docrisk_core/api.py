@@ -3,23 +3,43 @@ from __future__ import annotations
 import logging
 import os
 from contextlib import asynccontextmanager
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import db
+from . import config, db
+from .clerk_identity import validate_configuration
+from .routes.identity import router as identity_router
 from .aej import AEJError
 from .documents import DocumentError
+from .routes.platform_management import router as platform_router
 from .importer import UnsupportedFile, import_bytes
 from .pipeline import worker
 from .routes import router
+from .routes.supplier_management import router as supplier_management_router
 
 logger = logging.getLogger(__name__)
 
 
+def _configured_cors_origins() -> list[str]:
+    # Padrão local: o `npm run dev` sobe em 127.0.0.1:3000 (ver README); localhost:3000 também.
+    raw = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
+    origins = [origin.strip() for origin in raw.split(",") if origin.strip()]
+    if not origins or "*" in origins:
+        raise RuntimeError("CORS_ORIGINS deve conter uma allowlist explícita, sem wildcard.")
+    for origin in origins:
+        parsed = urlsplit(origin)
+        if (parsed.scheme not in {"http", "https"} or not parsed.netloc or parsed.path or
+                parsed.query or parsed.fragment or parsed.username or parsed.password):
+            raise RuntimeError(f"Origem inválida em CORS_ORIGINS: {origin}")
+    return origins
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    db.init_db()
+    validate_configuration()
+    db.init_db(seed=config.AUTH_MODE == "token" and config.DEMO_MODE)
     worker_started = False
     try:
         worker_started = worker.iniciar_worker()
@@ -35,13 +55,15 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="DocRisk AI", version="0.2.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in os.getenv(
-        "CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",") if o.strip()],
+    allow_origins=_configured_cors_origins(),
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type"],
+    allow_methods=["GET", "POST", "PUT", "PATCH"],
+    allow_headers=["Authorization", "Content-Type", "X-DocRisk-Link"],
+    expose_headers=["X-DocRisk-Link-Invalid"],
 )
 app.include_router(router)
+app.include_router(identity_router)
+app.include_router(supplier_management_router)
 
 
 @app.get("/health")
@@ -58,3 +80,6 @@ async def inspect(file: UploadFile = File(...)) -> dict:
         return import_bytes(file.filename or "arquivo", data)
     except (UnsupportedFile, DocumentError, AEJError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+app.include_router(platform_router)

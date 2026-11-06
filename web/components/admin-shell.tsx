@@ -1,11 +1,23 @@
 "use client";
+
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowUpRight, ChevronRight, ClipboardList, FlaskConical, LockKeyhole, LogOut, Menu, ShieldCheck, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  ArrowUpRight, Building2, ChevronRight, ClipboardList, FlaskConical,
+  LayoutDashboard, LockKeyhole, LogOut, Menu, ShieldCheck, Users, X,
+} from "lucide-react";
+import { authEntry } from "@/lib/auth-mode";
 import { useSession } from "./demo-provider";
 import { SessionGate } from "./workspace-shell";
 import { roleLabels } from "@/lib/api";
+
+const bhNavigation = [
+  { href: "/administracao", title: "Visão Geral", Icon: LayoutDashboard },
+  { href: "/administracao/empresas", title: "Empresas e Contratos", Icon: Building2 },
+  { href: "/administracao/usuarios", title: "Gestão de Usuários", Icon: Users },
+  { href: "/administracao/auditoria", title: "Auditoria", Icon: ClipboardList },
+];
 
 export function AdminShell({ children }: { children: ReactNode }) {
   return (
@@ -15,11 +27,23 @@ export function AdminShell({ children }: { children: ReactNode }) {
   );
 }
 
-function Admin({ children }: { children: ReactNode }) {
+export function PlatformShell({ children }: { children: ReactNode }) {
+  return <SessionGate allowed={["ADMIN_PLATAFORMA"]}><Admin platform>{children}</Admin></SessionGate>;
+}
+
+function Admin({ children, platform = false }: { children: ReactNode; platform?: boolean }) {
+  const navigation = platform ? [
+    { href: "/plataforma", title: "Visão Geral", Icon: LayoutDashboard },
+    { href: "/plataforma/auditoras", title: "Organizações Auditoras", Icon: Building2 },
+    { href: "/plataforma/configuracoes", title: "Dados da Plataforma", Icon: LockKeyhole },
+  ] : bhNavigation;
   const { me, logout, isDemo } = useSession();
   const router = useRouter();
+  const path = usePathname().replace(/\/$/, "") || "/";
   const [open, setOpen] = useState(false);
   if (!me) return null;
+  const current = navigation.find((item) => item.href === path) ?? navigation[0];
+
   return (
     <div className="workspace admin-workspace">
       <aside className={open ? "workspace-sidebar visible" : "workspace-sidebar"}>
@@ -31,36 +55,42 @@ function Admin({ children }: { children: ReactNode }) {
             <X size={20} />
           </button>
         </div>
-        <span className="sidebar-caption">ADMINISTRAÇÃO BERNHOEFT</span>
+        <span className="sidebar-caption">{platform ? "ADMINISTRAÇÃO GERAL" : "ADMINISTRAÇÃO BERNHOEFT"}</span>
         <div className="workspace-module">
-          <span>Governança e rastreabilidade</span>
-          <small>Somente consulta</small>
+          <span>{platform ? "Estrutura da plataforma" : "Gestão da operação"}</span>
+          <small>{platform ? "Auditoras, catálogo e dados institucionais" : "Empresas, contratos, usuários e indicadores"}</small>
         </div>
         <nav aria-label="Navegação administrativa">
-          <Link href="/administracao" className="active" aria-current="page" onClick={() => setOpen(false)}>
-            <ClipboardList size={19} /> Auditoria de ações
-          </Link>
+          {navigation.map(({ href, title, Icon }) => (
+            <Link
+              href={href}
+              key={href}
+              className={current.href === href ? "active" : ""}
+              aria-current={current.href === href ? "page" : undefined}
+              onClick={() => setOpen(false)}
+            >
+              <Icon size={19} /> {title}
+            </Link>
+          ))}
         </nav>
         <div className="sidebar-bottom">
           <div className="sidebar-demo">
             <FlaskConical size={18} />
             <p>
               <strong>{isDemo ? "Demonstração offline" : "Ambiente conectado"}</strong>
-              <span>{isDemo ? "Dados fictícios · somente consulta" : "API de testes"}</span>
+              <span>{isDemo ? "Dados fictícios · somente consulta" : "API de testes · autenticação demo"}</span>
             </p>
           </div>
           <button
             className="sidebar-link"
             onClick={() => {
               logout();
-              router.push("/acesso");
+              router.push(authEntry());
             }}
           >
             <LogOut size={17} /> Sair
           </button>
-          <Link href="/">
-            Voltar ao site <ArrowUpRight size={15} />
-          </Link>
+          <Link href="/">Voltar ao site <ArrowUpRight size={15} /></Link>
         </div>
       </aside>
       {open && <button className="sidebar-backdrop" aria-label="Fechar navegação" onClick={() => setOpen(false)} />}
@@ -70,14 +100,12 @@ function Admin({ children }: { children: ReactNode }) {
             <button className="workspace-menu" aria-label="Abrir navegação" onClick={() => setOpen(true)}>
               <Menu size={22} />
             </button>
-            <span>Administração</span>
+            <span>{platform ? "Plataforma" : "Administração Bernhoeft"}</span>
             <ChevronRight size={14} />
-            <strong>Auditoria</strong>
+            <strong>{current.title}</strong>
           </div>
           <div className="workspace-person">
-            <span className="avatar">
-              <LockKeyhole size={17} />
-            </span>
+            <span className="avatar"><LockKeyhole size={17} /></span>
             <div>
               <strong>{me.nome}</strong>
               <small>{roleLabels[me.papel]}</small>
@@ -85,13 +113,14 @@ function Admin({ children }: { children: ReactNode }) {
           </div>
         </header>
         <main className="workspace-body" id="conteudo-admin">
-          {isDemo && <div className="api-notice" role="status"><strong>Demonstração offline:</strong> eventos fictícios, sem acesso à API real.</div>}
-          <div className="admin-context">
-            <div>
-              <ShieldCheck size={21} aria-hidden="true" />
-              <span>Visão interna Bernhoeft</span>
+          {isDemo && (
+            <div className="api-notice" role="status">
+              <strong>Demonstração offline:</strong> dados fictícios e sem cadastros reais.
             </div>
-            <span className="admin-readonly">Somente consulta</span>
+          )}
+          <div className="admin-context">
+            <div><ShieldCheck size={21} aria-hidden="true" /><span>{platform ? "Gestão institucional do DocRisk AI" : "Gestão interna da organização auditora"}</span></div>
+            <span className="admin-readonly">{isDemo ? "Somente consulta" : "API de testes"}</span>
           </div>
           {children}
         </main>

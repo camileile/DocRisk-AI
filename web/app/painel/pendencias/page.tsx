@@ -12,6 +12,7 @@ import {
   PageIntro,
 } from "@/components/workspace-parts";
 import { api, formatDate, issueCategoryLabels, issueStatusLabels, typeLabels, type Issue } from "@/lib/api";
+import { validateApiUploadFile } from "@/lib/api-upload";
 import { useApi } from "@/lib/use-api";
 
 const OPEN = ["ABERTA", "NOTIFICADA", "REABERTA"];
@@ -41,8 +42,8 @@ export default function IssuesPage() {
       </div>
       {sent && (
         <Notice tone="success">
-          Reenvio da pendência #{sent.issue} recebido (lote #{sent.batch}). A nova versão é processada e a pendência é
-          resolvida ou reaberta automaticamente.{" "}
+          Reenvio da pendência #{sent.issue} recebido (lote #{sent.batch}). A versão corrigida será processada e
+          poderá ser aprovada, precisar de nova correção ou aguardar conferência da auditora.{" "}
           <Link href={`/painel/lotes/detalhe?id=${sent.batch}`}>Acompanhar <ArrowUpRight size={13} /></Link>
         </Notice>
       )}
@@ -75,14 +76,22 @@ function IssueCard({ issue: i, canResubmit, onSent }: { issue: Issue; canResubmi
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  // "REENVIADA" pode significar processamento em curso ou conferência humana.
+  // O histórico permite diferenciar o segundo caso sem inventar status da API.
+  const latestEvent = i.historico[i.historico.length - 1];
+  const awaitingAuditor = latestEvent?.status === "REENVIADA" &&
+    latestEvent.motivo?.includes("conferência pela Bernhoeft");
+  const resentBatch = [...i.historico].reverse().find((h) => h.lote)?.lote;
   async function resubmit() {
-    if (!file) return;
+    if (!file || busy) return;
+    const invalid = validateApiUploadFile(file);
+    if (invalid) { setFeedback(invalid); return; }
     setBusy(true);
     setFeedback(null);
     const form = new FormData();
     form.append("file", file);
     try {
-      const r = await api<{ batch_id: number }>(`/api/issues/${i.id}/resubmit`, { method: "POST", body: form });
+      const r = await api<{ batch_id: number }>(`/api/issues/${i.id}/resubmit`, { method: "POST", body: form, timeoutMs: 120000 });
       setFile(null);
       onSent(r.batch_id);
     } catch (err) {
@@ -127,11 +136,22 @@ function IssueCard({ issue: i, canResubmit, onSent }: { issue: Issue; canResubmi
           </ol>
         </details>
       )}
+      {i.status === "REENVIADA" && (
+        <div className="issue-awaiting" role="status">
+          <strong>{awaitingAuditor ? "Aguardando análise da auditora" : "Reenvio recebido — aguardando resultado"}</strong>
+          <p>{awaitingAuditor
+            ? "A nova versão precisa de conferência humana. A fornecedora não precisa reenviar novamente neste momento."
+            : "O reenvio está em processamento ou em validação. Nenhuma nova correção é solicitada enquanto a pendência não for reaberta."}</p>
+          {resentBatch && <Link href={`/painel/lotes/detalhe?id=${resentBatch}`} className="text-link">
+            Acompanhar lote #{resentBatch} <ArrowUpRight size={14} />
+          </Link>}
+        </div>
+      )}
       {canResubmit && (
         <div className="inline-form">
           <label className="filter-label">
             Documento corrigido
-            <input type="file" accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+            <input type="file" accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.aej,.txt" disabled={busy} onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
           </label>
           <button className="button" disabled={!file || busy} onClick={resubmit}>
             <FileUp size={16} /> {busy ? "Enviando…" : "Reenviar"}

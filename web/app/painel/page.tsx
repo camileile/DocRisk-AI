@@ -1,12 +1,10 @@
 "use client";
 import Link from "next/link";
+import { AnalystOverview } from "@/components/analyst-overview";
 import {
   ArrowUpRight,
   CircleAlert,
-  ClipboardCheck,
   FileCheck2,
-  Files,
-  GitCompareArrows,
   Package,
   Timer,
   Upload,
@@ -14,7 +12,7 @@ import {
 } from "lucide-react";
 import { useSession } from "@/components/demo-provider";
 import { EmptyState, ErrorState, LoadingState, PageIntro } from "@/components/workspace-parts";
-import { formatHours, type Batch, type Issue, type Metrics } from "@/lib/api";
+import { type Batch, type Issue } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 
 function Stat({ icon: Icon, label, value, hint, tone = "purple" }: {
@@ -39,88 +37,18 @@ function Stat({ icon: Icon, label, value, hint, tone = "purple" }: {
 export default function Overview() {
   const { me } = useSession();
   if (!me) return null;
-  return me.org_tipo === "BERNHOEFT" ? <BernhoeftOverview /> : <SupplierOverview />;
-}
-
-function BernhoeftOverview() {
-  const { data: m, error, loading, reload } = useApi<Metrics>("/api/bernhoeft/metrics");
-  if (loading) return <LoadingState />;
-  if (error || !m) return <ErrorState message={error ?? "Sem dados"} onRetry={reload} />;
-  const pct = (v: number | null) => (v === null ? "—" : `${Math.round(v * 100)}%`);
-  return (
-    <>
-      <PageIntro
-        eyebrow="INDICADORES DA OPERAÇÃO"
-        title="Visão geral dos contratos."
-        description="Números calculados a partir dos documentos e análises efetivamente processados. Divergência é indício a conferir, não passivo."
-        action={
-          <Link className="button" href="/painel/revisao">
-            <ClipboardCheck size={17} /> Abrir fila de revisão
-          </Link>
-        }
-      />
-      <div className="stat-grid">
-        <Stat icon={Files} label="Documentos lógicos" value={m.documentos.logicos} hint={`${m.documentos.versoes} versões · ${m.documentos.substituidos} substituídas`} />
-        <Stat icon={ClipboardCheck} label="Aguardando revisão humana" value={m.documentos.por_status.REVISAO_HUMANA ?? 0} hint={`Taxa de revisão: ${pct(m.documentos.taxa_revisao_humana)}`} tone="purple" />
-        <Stat icon={CircleAlert} label="Pendências em aberto" value={m.pendencias.em_aberto} hint={`${m.pendencias.resolvidas} resolvidas · ${m.lotes.reenvios} reenvios`} tone="amber" />
-        <Stat icon={Timer} label="Páginas processadas" value={m.paginas.lidas} hint={m.paginas.tempo_medio_ms !== null ? `${m.paginas.tempo_medio_ms} ms por página (média)` : undefined} tone="green" />
-      </div>
-      <div className="dashboard-grid">
-        <section className="workspace-card">
-          <div className="card-title">
-            <h2>Conciliação por trabalhador e competência</h2>
-            <Link href="/painel/conciliacoes" className="text-link">Ver análises <ArrowUpRight size={14} /></Link>
-          </div>
-          <table className="data-table compact">
-            <tbody>
-              <tr><th scope="row">Pares avaliados</th><td>{m.conciliacao.aptos}</td></tr>
-              <tr><th scope="row">Bloqueados por pendência</th><td>{m.conciliacao.bloqueados}</td></tr>
-              <tr><th scope="row">Em revisão humana</th><td>{m.conciliacao.em_revisao}</td></tr>
-              <tr><th scope="row">Divergências a verificar</th><td>{m.conciliacao.divergencias_a_verificar}</td></tr>
-              <tr><th scope="row">Dados insuficientes</th><td>{m.conciliacao.por_resultado.DADOS_INSUFICIENTES ?? 0}</td></tr>
-              <tr><th scope="row">Sem divergência nos campos comparados</th><td>{m.conciliacao.por_resultado.SEM_DIVERGENCIA_NOS_CAMPOS_COMPARADOS ?? 0}</td></tr>
-            </tbody>
-          </table>
-          <p className="card-footnote">{m.conciliacao.observacao}</p>
-        </section>
-        <section className="workspace-card">
-          <div className="card-title">
-            <h2>Documentos por tipo</h2>
-            <Link href="/painel/documentos" className="text-link">Ver documentos <ArrowUpRight size={14} /></Link>
-          </div>
-          {Object.keys(m.documentos.por_tipo).length === 0 ? (
-            <EmptyState title="Nenhum documento processado." text="Envie um lote pela área da fornecedora." />
-          ) : (
-            <table className="data-table compact">
-              <tbody>
-                {Object.entries(m.documentos.por_tipo).map(([tipo, n]) => (
-                  <tr key={tipo}><th scope="row">{tipo.replaceAll("_", " ").toLowerCase()}</th><td>{n}</td></tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          <p className="card-footnote">
-            Lotes: {m.lotes.total} · Pareceres publicados: {m.pareceres_publicados} · Tempo médio de regularização:{" "}
-            {formatHours(m.pendencias.tempo_medio_regularizacao_h)}
-          </p>
-        </section>
-      </div>
-      <div className="next-step-card">
-        <GitCompareArrows size={20} />
-        <p>Com a fila de revisão e as pendências tratadas, gere o rascunho do parecer em <Link href="/painel/pareceres">Pareceres</Link> <FileCheck2 size={14} />.</p>
-      </div>
-    </>
-  );
+  return me.papel === "ANALISTA_BH" ? <AnalystOverview /> : <SupplierOverview />;
 }
 
 function SupplierOverview() {
+  const { contract } = useSession();
   const batches = useApi<Batch[]>("/api/batches");
   const issues = useApi<Issue[]>("/api/supplier/issues");
   if (batches.loading || issues.loading) return <LoadingState />;
   const error = batches.error ?? issues.error;
   if (error) return <ErrorState message={error} onRetry={() => { void batches.reload(); void issues.reload(); }} />;
-  const lotes = batches.data ?? [];
-  const pend = issues.data ?? [];
+  const lotes = (batches.data ?? []).filter((b) => !contract || b.contract_id === contract);
+  const pend = (issues.data ?? []).filter((i) => !contract || i.contract_id === contract);
   const abertas = pend.filter((i) => i.status !== "RESOLVIDA");
   return (
     <>

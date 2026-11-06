@@ -166,16 +166,15 @@ def test_supplier_operator_cannot_publish_report():
     ("endpoint", "permitidos"),
     [
         ("/api/review-queue", {"u-analista"}),
-        ("/api/issues", {"u-admin", "u-analista"}),
-        ("/api/analyses", {"u-admin", "u-analista"}),
-        ("/api/reports", {"u-admin", "u-analista"}),
+        ("/api/issues", {"u-analista"}),
+        ("/api/analyses", {"u-analista"}),
+        ("/api/reports", {"u-analista"}),
         ("/api/audit", {"u-admin"}),
         ("/api/client/reports", {"u-gestor-alfa"}),
         ("/api/supplier/issues", {"u-gestor-beta", "u-oper-beta", "u-oper-gama"}),
                 (
             "/api/batches",
             {
-                "u-admin",
                 "u-analista",
                 "u-gestor-beta",
                 "u-oper-beta",
@@ -197,7 +196,6 @@ def test_supplier_operator_cannot_publish_report():
         (
             "/api/search?q=teste",
             {
-                "u-admin",
                 "u-analista",
                 "u-gestor-beta",
                 "u-oper-beta",

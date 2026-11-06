@@ -5,31 +5,12 @@ import type {
   Metrics, Papel, Report, ReportContent, SearchHit,
 } from "./api";
 
-export const DEMO_ROLES: Papel[] = [
-  "ADMIN_BH", "ANALISTA_BH", "GESTOR_FORN", "OPERADOR_FORN", "GESTOR_CONTR",
-];
+import { demoClientPortal } from "./client-portal";
 
-const KEY = "docrisk.offline-demo-role";
-
-export function getDemoRole(): Papel | null {
-  try {
-    const value = sessionStorage.getItem(KEY);
-    return DEMO_ROLES.find((role) => role === value) ?? null;
-  } catch {
-    return null;
-  }
-}
-
-export function setDemoRole(role: Papel | null): void {
-  try {
-    if (role) sessionStorage.setItem(KEY, role);
-    else sessionStorage.removeItem(KEY);
-  } catch {
-    /* A demonstração ainda funciona na aba atual sem persistência. */
-  }
-}
+export { DEMO_ROLES, getDemoRole, setDemoRole } from "./api-session";
 
 const USERS: Record<Papel, Me> = {
+  ADMIN_PLATAFORMA: { id: "demo-plataforma", nome: "Admin Geral (fictício)", org_id: "DOCRISK", org_tipo: "PLATAFORMA", papel: "ADMIN_PLATAFORMA" },
   ADMIN_BH: { id: "demo-admin", nome: "Administrador (fictício)", org_id: "demo-bh", org_tipo: "BERNHOEFT", papel: "ADMIN_BH" },
   ANALISTA_BH: { id: "demo-analista", nome: "Analista (fictício)", org_id: "demo-bh", org_tipo: "BERNHOEFT", papel: "ANALISTA_BH" },
   GESTOR_FORN: { id: "demo-gestor-forn", nome: "Gestor (fictício)", org_id: "demo-forn", org_tipo: "FORNECEDORA", papel: "GESTOR_FORN" },
@@ -90,6 +71,8 @@ const REPORT_CONTENT: ReportContent = {
   contrato: { id: "demo-001", nome: DEMO_CONTRACTS[0].nome },
   contratante: "Contratante Fictícia Alfa", fornecedora: "Fornecedora Fictícia Beta",
   competencia: "10/2026", gerado_em: date, regra: "demo-1",
+  parecer: { id: 601, versao: 1, autor: { id: "demo-analista", nome: "Analista Bernhoeft (fictício)" }, responsavel: { id: "demo-analista", nome: "Analista Bernhoeft (fictício)" }, emissor: "Bernhoeft (demonstração)" },
+  recomendacoes: ["Conferir a divergência ilustrativa com a fornecedora.", "Completar os documentos pendentes e concluir a revisão humana antes de avaliar os demais casos."],
   escopo: "EXEMPLO FICTÍCIO — comparação ilustrativa de horas extras em ponto e holerite.",
   limitacoes: ["Documento inteiramente fictício; não constitui parecer profissional nem atesta conformidade.", "Comprovantes e documentos de suporte não integram esta amostra."],
   resumo: { trabalhadores: 4, avaliados: 2, com_divergencia: 1, dados_insuficientes: 0, sem_divergencia: 1, bloqueados: 1, em_revisao: 1, aguardando_documentos: 0 },
@@ -105,6 +88,14 @@ const REPORT_CONTENT: ReportContent = {
 const REPORTS: Report[] = [
   { id: 601, contract_id: "demo-001", competencia: "10/2026", versao: 1, status: "APROVADO_PUBLICADO", conteudo_json: REPORT_CONTENT, observacoes: "Parecer de exemplo fictício.", autor_id: "demo-analista", created_at: date, publicado_em: "2026-11-01T15:00:00Z" },
 ];
+
+const CLIENT_REPORTS: Report[] = [...REPORTS, {
+  ...REPORTS[0], id: 602, competencia: "09/2026", publicado_em: "2026-10-01T15:00:00Z",
+  conteudo_json: { ...REPORT_CONTENT, parecer: { ...REPORT_CONTENT.parecer!, id: 602 }, recomendacoes: ["Solicitar a documentação da competência antes de realizar qualquer comparação."], competencia: "09/2026", gerado_em: "2026-09-30T13:00:00Z",
+    resumo: { trabalhadores: 4, avaliados: 0, com_divergencia: 0, dados_insuficientes: 0, sem_divergencia: 0, bloqueados: 0, em_revisao: 0, aguardando_documentos: 4 },
+    itens: REPORT_CONTENT.itens.map((i) => ({ ...i, situacao: "AGUARDANDO_DOCUMENTOS", resultado: "NAO_AVALIADO", detalhe: "Documentação não recebida nesta competência fictícia.", horas_ponto: null, horas_folha: null, diferenca_h: null, comprovante_presente: false, evidencias: [] })),
+  },
+}];
 
 const METRICS: Metrics = {
   documentos: { logicos: 6, versoes: 6, por_status: { APTO: 4, PENDENTE_CORRECAO: 1, REVISAO_HUMANA: 1 }, por_tipo: { ESPELHO_PONTO: 2, HOLERITE: 3, DESCONHECIDO: 1 }, substituidos: 0, taxa_revisao_humana: 1 / 6 },
@@ -130,30 +121,150 @@ function visibleDoc(doc: Doc, role: Papel): Doc {
   };
 }
 
+function demoAnalystDashboard(url: URL) {
+  const contratante = url.searchParams.get("contratante_id");
+  const fornecedora = url.searchParams.get("fornecedora_id");
+  const contrato = url.searchParams.get("contract_id");
+  const mes = url.searchParams.get("competencia");
+  const todos = DEMO_CONTRACTS.filter((c) =>
+    (!contratante || contratante === c.contratante_id) &&
+    (!fornecedora || fornecedora === c.fornecedora_id) &&
+    (!contrato || contrato === c.id)
+  );
+  const existe = todos.length > 0;
+  const competencias = existe ? ["10/2026"] : [];
+  const selecionada = mes || competencias[0] || null;
+  const analises = existe && selecionada === "10/2026" ? ANALYSES : [];
+  const avaliadas = analises.filter((a) =>
+    a.status === "ANALISADA" &&
+    ["DIVERGENCIA_A_VERIFICAR", "SEM_DIVERGENCIA_NOS_CAMPOS_COMPARADOS"].includes(a.resultado.tipo)
+  );
+  const divergencias = avaliadas.filter((a) => a.resultado.tipo === "DIVERGENCIA_A_VERIFICAR");
+  const critical = analises.filter((a) =>
+    ["BLOQUEADA_PENDENCIA", "REVISAO_HUMANA"].includes(a.status)
+  ).length;
+  const total = existe ? 4 : 0;
+  const taxa = avaliadas.length ? divergencias.length / avaliadas.length : null;
+  const cobertura = total ? avaliadas.length / total : null;
+  const horas = divergencias.reduce((v, a) => v + Math.abs(a.resultado.diferenca_h ?? 0), 0);
+  const resumo = {
+    cadastrados: total, avaliados: avaliadas.length, divergencias: divergencias.length,
+    taxa_divergencias: taxa, cobertura,
+    horas_divergentes: horas, divergencias_sem_horas: divergencias.filter((a) => a.resultado.diferenca_h == null).length,
+    pendencias_criticas: critical,
+    pendencias_abertas: existe && selecionada === "10/2026"
+      ? ISSUES.filter((i) => i.competencia === selecionada && i.status !== "RESOLVIDA").length : 0,
+  };
+  return {
+    filtros: {
+      contratantes: [{ id: "demo-contr", nome: "Contratante Fictícia Alfa" }],
+      fornecedoras: !contratante || contratante === "demo-contr"
+        ? [{ id: "demo-forn", nome: "Fornecedora Fictícia Beta" }] : [],
+      contratos: todos.map((c) => ({ id: c.id, nome: c.nome })),
+      competencias,
+      competencia_selecionada: selecionada,
+    },
+    resumo,
+    evolucao: existe ? [{
+      competencia: "10/2026",
+      avaliados: selecionada === "10/2026" ? avaliadas.length : 2,
+      divergencias: 1, taxa_divergencias: 0.5, cobertura: 0.5,
+    }] : [],
+    comparacao: existe ? [{
+      id: "demo-forn", nome: "Fornecedora Fictícia Beta",
+      avaliados: avaliadas.length, divergencias: divergencias.length,
+      taxa_divergencias: taxa, cobertura,
+    }] : [],
+    observacao: "Taxa: divergências entre análises válidas. Cobertura: análises válidas entre trabalhadores cadastrados. Pendências críticas: bloqueios ou revisões. Todos os dados são fictícios e divergência não comprova irregularidade.",
+  };
+}
+
 export function demoRead(path: string, role: Papel): unknown {
   const url = new URL(path, "https://demo.invalid");
   const route = url.pathname;
   if (route === "/api/me") return USERS[role];
-  if (route === "/api/contracts") return DEMO_CONTRACTS;
+  const pageRoute = route.match(/^\/api\/documents\/(\d+)\/pages\/(\d+)$/);
+  if (pageRoute) {
+    // Reutiliza a autorização e o conteúdo fictício da rota do documento.
+    const detail = demoRead(`/api/documents/${pageRoute[1]}`, role) as DocDetail;
+    const page = detail.paginas_detalhe.find(p => p.page_id === Number(pageRoute[2]));
+    if (!page) throw new Error("Página não pertence ao documento.");
+    return page;
+  }
+  if (route === "/api/contracts") return role === "ADMIN_PLATAFORMA" ? [] : DEMO_CONTRACTS;
+  if (role === "ADMIN_PLATAFORMA") {
+    if (route === "/api/platform/registry") return {
+      auditoras: [{ id: "demo-bh", nome: "Bernhoeft (demonstração)", contratos: 1 }],
+      administradores: [{ id: "demo-admin", nome: "Admin Bernhoeft (fictício)", org_id: "demo-bh", ativo: 1 }],
+      configuracoes: { nome: "DocRisk AI", contato: "" }, auditoria: [],
+      modulos: [
+        { id: "trabalhista", nome: "Trabalhista", status: "MVP" },
+        { id: "homologacao", nome: "Homologação de Fornecedores", status: "PLANEJADO" },
+        { id: "sso", nome: "Saúde e Segurança Ocupacional", status: "PLANEJADO" },
+        { id: "ambiental", nome: "Conformidade Ambiental", status: "PLANEJADO" },
+      ],
+    };
+    throw new Error("Administração geral restrita à estrutura da plataforma.");
+  }
+  if (route === "/api/analyst/overview" && role === "ANALISTA_BH") return demoAnalystDashboard(url);
   if (route === "/api/bernhoeft/metrics" && (role === "ADMIN_BH" || role === "ANALISTA_BH")) return METRICS;
   if (route === "/api/audit" && role === "ADMIN_BH") return AUDIT;
+  if (role === "ADMIN_BH" && route === "/api/admin/registry") return {
+    empresas: [
+      { id: "demo-contr", nome: "Contratante Fictícia Alfa", tipo: "CONTRATANTE", cnpj: null },
+      { id: "demo-forn", nome: "Fornecedora Fictícia Beta", tipo: "FORNECEDORA", cnpj: null },
+    ],
+    contratos: DEMO_CONTRACTS.map((c) => ({
+      ...c, contratante_nome: "Contratante Fictícia Alfa",
+      fornecedora_nome: "Fornecedora Fictícia Beta",
+      inicio: null, fim: null, status: "ATIVO",
+    })),
+    usuarios: [
+      { id: "demo-admin", nome: "Administrador (fictício)", org_id: "demo-bh",
+        org_nome: "Bernhoeft (demonstração)", papel: "ADMIN_BH", ativo: 1 },
+      { id: "demo-analista", nome: "Analista (fictício)", org_id: "demo-bh",
+        org_nome: "Bernhoeft (demonstração)", papel: "ANALISTA_BH", ativo: 1 },
+      { id: "demo-gestor-contr", nome: "Gestor (fictício)", org_id: "demo-contr",
+        org_nome: "Contratante Fictícia Alfa", papel: "GESTOR_CONTR", ativo: 1 },
+      { id: "demo-gestor-forn", nome: "Gestor (fictício)", org_id: "demo-forn",
+        org_nome: "Fornecedora Fictícia Beta", papel: "GESTOR_FORN", ativo: 1 },
+    ],
+  };
+  if (role === "ADMIN_BH" && route === "/api/admin/overview") {
+    const c = url.searchParams.get("contratante_id");
+    return {
+      contratantes: c && c !== "demo-contr" ? 0 : 1,
+      fornecedoras: c && c !== "demo-contr" ? 0 : 1,
+      contratos_ativos: c && c !== "demo-contr" ? 0 : 1,
+      contratos_vencendo_30d: 0,
+      contratos_sem_prazo: c && c !== "demo-contr" ? 0 : 1,
+      operacao: METRICS,
+    };
+  }
+
   if (role === "GESTOR_CONTR") {
-    if (route === "/api/client/reports") return REPORTS;
+    if (route === "/api/client/overview") return demoClientPortal(url, CLIENT_REPORTS, "overview");
+    if (route === "/api/client/reports") return demoClientPortal(url, CLIENT_REPORTS, "reports");
     throw new Error("A contratante acessa apenas pareceres publicados.");
   }
   if (role === "ADMIN_BH") throw new Error("O administrador acessa somente a área administrativa nesta demonstração.");
+  if (route === "/api/supplier/operators") {
+    if (role !== "GESTOR_FORN") throw new Error("Gestão de operadores restrita ao gestor da fornecedora.");
+    return [{ id: "demo-operador-forn", nome: "Operador fictício", org_id: "demo-forn", papel: "OPERADOR_FORN", ativo: 1 }];
+  }
   if (route === "/api/batches") return BATCHES;
   if (route === "/api/supplier/issues" && (role === "GESTOR_FORN" || role === "OPERADOR_FORN")) return ISSUES;
   if (route === "/api/issues" && role === "ANALISTA_BH") return ISSUES;
   if (route === "/api/documents") {
     return DOCS.filter((d) =>
+      (!url.searchParams.get("contract_id") || d.contract_id === url.searchParams.get("contract_id")) &&
       (!url.searchParams.get("tipo") || d.tipo === url.searchParams.get("tipo")) &&
-      (!url.searchParams.get("status") || d.status === url.searchParams.get("status"))
+      (!url.searchParams.get("status") || visibleDoc(d, role).status === url.searchParams.get("status"))
     ).map((d) => visibleDoc(d, role));
   }
   if (route === "/api/search") {
     const q = (url.searchParams.get("q") ?? "").toLowerCase();
-    const hits: SearchHit[] = DOCS.filter((d) => q && (
+    const hits: SearchHit[] = DOCS.filter((d) => (!url.searchParams.get("contract_id") || d.contract_id === url.searchParams.get("contract_id")) && q && (
       d.worker_id?.toLowerCase().includes(q) ||
       d.tipo.toLowerCase().includes(q) ||
       "horas extras fictícias documento".includes(q)
@@ -177,8 +288,9 @@ export function demoRead(path: string, role: Papel): unknown {
     if (d) {
       const detail: DocDetail = {
         ...visibleDoc(d, role),
+        aej: undefined, // a demonstração offline não tem documentos derivados de AEJ
         paginas_detalhe: d.paginas.map((p) => ({ ...p, texto: "EXEMPLO FICTÍCIO — " + d.tipo + ", trabalhador " + (d.worker_id ?? "não identificado") + ", competência " + (d.competencia ?? "não informada") })),
-        versoes: [{ id: d.id, versao: d.versao, status: d.status, batch_id: d.batch_id, created_at: d.created_at }],
+        versoes: [{ id: d.id, versao: d.versao, status: visibleDoc(d, role).status, batch_id: d.batch_id, created_at: d.created_at }],
       };
       return detail;
     }

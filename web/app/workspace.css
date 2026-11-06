@@ -3089,3 +3089,110 @@ button.table-action { cursor: pointer; font-family: inherit; }
   .hours-comparison { grid-template-columns: minmax(0, 1fr); }
   .detail-list { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Analista Bernhoeft — filtros hierárquicos e evolução documental */
+.analyst-filters h2 { margin-bottom: 14px; }
+.analyst-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.analyst-filter-grid .filter-label {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 7px;
+}
+.analyst-filter-grid .filter-label select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.analyst-filters .card-footnote { margin-top: 18px; }
+.analyst-period {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: #72627c;
+  margin: 8px 0 20px;
+}
+.analyst-stat-grid { margin-bottom: 24px; }
+.analyst-stat-grid .stat-card { min-width: 0; }
+.analyst-stat-grid .stat-card > span:not(.stat-icon) {
+  font-size: 12px;
+  font-weight: 600;
+  color: #675775;
+}
+.analyst-stat-grid .stat-hint {
+  display: block;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #82718f;
+  margin-top: 9px;
+}
+.analyst-evolution { display: flex; flex-direction: column; gap: 16px; }
+.analyst-evolution-row {
+  display: grid;
+  grid-template-columns: 85px minmax(70px, 1fr) 55px 115px;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+.analyst-evolution-row > strong { font-weight: 600; color: #685576; }
+.analyst-evolution-row > span { font-weight: 600; color: #7954a3; }
+.analyst-evolution-row > small { font-size: 10px; color: #806e8e; }
+.analyst-meter { height: 11px; background: #f1edf6; border-radius: 999px; overflow: hidden; }
+.analyst-meter > span { display: block; height: 100%; background: #986cc8; border-radius: 999px; }
+.analyst-next { padding: 19px 24px; }
+.analyst-next p { max-width: 950px; margin-bottom: 10px; }
+@media (max-width: 1100px) {
+  .analyst-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .analyst-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .analyst-filter-grid, .analyst-stat-grid { grid-template-columns: 1fr; }
+  .analyst-evolution-row { grid-template-columns: 70px minmax(40px, 1fr) 45px; gap: 8px; }
+  .analyst-evolution-row > small { grid-column: 2 / -1; margin-top: -8px; }
+  .analyst-period { font-size: 11px; }
+}
+
+/* Contexto permanente da apresentação, inclusive fora dos shells e no celular. */
+.session-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 112px;
+  padding: 12px 20px;
+  background: #eef2ff;
+  color: #25205a;
+  border-bottom: 2px solid #6366f1;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.session-toolbar-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+.session-toolbar label { display: flex; align-items: center; gap: 8px; }
+.session-toolbar select, .session-toolbar button { font: inherit; color: #25205a; background: white; border: 1px solid #7772a1; border-radius: 6px; padding: 8px; }
+.session-toolbar select { max-width: min(320px, 70vw); }
+.session-toolbar small { font-size: 13px; line-height: 1.45; }
+body:has(.session-toolbar) .workspace-sidebar { top: 112px; height: calc(100dvh - 112px); }
+body:has(.session-toolbar) .header { top: 112px; }
+@media (max-width: 850px) {
+  .workspace-person > div { display: block; }
+  .workspace-person strong { display: none; }
+  .workspace-person small { max-width: 140px; font-size: 12px; }
+  .session-toolbar { height: 192px; padding: 10px 14px; }
+  .session-toolbar-controls { gap: 6px 10px; }
+  .session-toolbar-controls > strong { width: 100%; }
+  body:has(.session-toolbar) .workspace-sidebar { top: 192px; height: calc(100dvh - 192px); }
+  body:has(.session-toolbar) .header { top: 192px; }
+}
+/* Leitura das evidências durante a demonstração, sem reforma do layout. */
+.workspace .data-table td, .workspace .data-table th { font-size: 14px; line-height: 1.55; }
+.workspace .data-table small, .workspace .table-action, .workspace .muted { font-size: 13px; }
+.workspace .page-intro > p { font-size: 15px; line-height: 1.65; color: #5b526d; }

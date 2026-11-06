@@ -334,6 +334,110 @@
   background: #f0fbf5;
   border: 1px solid #d1ecde;
 }
+.api-upload-summary {
+  border: 1px solid #e8dfef;
+  border-radius: 11px;
+  background: #fcfaff;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.api-upload-summary h3 {
+  font-size: 16px;
+  color: #34264b;
+}
+.api-upload-summary-lead {
+  color: #6b5b80;
+  font-size: 12px;
+}
+.api-upload-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.api-upload-summary-grid > div {
+  background: white;
+  border: 1px solid #e9e3f3;
+  padding: 18px 14px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.api-upload-summary-grid strong {
+  color: #49376a;
+  font-family: var(--heading);
+  font-size: 25px;
+  line-height: 1;
+}
+.api-upload-summary-grid span {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #6f637d;
+}
+.api-upload-summary-grid .needs-correction {
+  background: #fff9ed;
+  border-color: #f3dfb5;
+}
+.api-upload-summary-grid .needs-review {
+  background: #f7f2ff;
+  border-color: #e5d8fa;
+}
+.api-upload-next-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px;
+  align-items: center;
+  border: 1px solid #e8daf8;
+  border-radius: 9px;
+  background: white;
+  padding: 17px;
+}
+.api-upload-next-action > svg {
+  color: #7c3aed;
+  flex-shrink: 0;
+}
+.api-upload-next-action p {
+  font-size: 12px;
+  flex: 1 1 230px;
+}
+.api-upload-next-action .button {
+  font-size: 11px;
+  padding: 12px 14px;
+}
+.api-upload-summary-error p {
+  color: #a33b43;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.issue-awaiting {
+  background: #f8f5ff;
+  border: 1px solid #e6def4;
+  border-radius: 9px;
+  padding: 16px;
+  margin-top: 16px;
+}
+.issue-awaiting strong {
+  font-size: 13px;
+  color: #503879;
+}
+.issue-awaiting p {
+  font-size: 12px;
+  margin: 7px 0;
+}
+.issue-awaiting .text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+}
+@media (max-width: 700px) {
+  .api-upload-summary { padding: 16px; }
+  .api-upload-summary-grid { grid-template-columns: 1fr; }
+  .api-upload-next-action { flex-direction: column; align-items: flex-start; }
+  .api-upload-next-action .button { width: 100%; white-space: normal; }
+}
 .api-upload-result-actions {
   display: flex;
   flex-wrap: wrap;
@@ -355,3 +459,22 @@
   .api-upload-progress > div { align-items: flex-start; flex-direction: column; }
   .api-upload-selected { align-items: flex-start; }
 }
+.access-management { display: block; max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+.access-management .workspace-card { margin: 20px 0; }
+.access-management .filter-label { display: flex; flex-direction: column; align-items: stretch; gap: 6px; margin: 12px 0; }
+.access-management fieldset { border: 0; padding: 0; min-width: 0; }
+.access-management input, .access-management select { padding: 10px; border: 1px solid #bcb4ce; border-radius: 8px; font: inherit; }
+.access-management article { border-bottom: 1px solid #e9e2f0; padding: 12px 0; }
+.access-management .button { margin: 4px; }
+.report-brand { width: 180px; height: auto; margin-bottom: 14px; }
+.report-responsibility { display: grid; grid-template-columns: minmax(130px, 220px) minmax(0, 1fr); gap: 8px 16px; margin: 20px 0 0; font-size: 13px; }
+.report-responsibility dt { color: #5c506b; }
+.report-responsibility dd { margin: 0; overflow-wrap: anywhere; }
+.report-editorial { margin: 18px 0; padding: 16px; border: 1px solid #ddd6fe; border-radius: 10px; }
+.report-editorial .filter-label { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+.report-editorial textarea { width: 100%; padding: 10px; font: inherit; border: 1px solid #bcb4ce; border-radius: 8px; margin-bottom: 12px; }
+.report-publish-check { display: flex; flex-direction: column; gap: 14px; border-top: 1px solid #ddd6fe; padding-top: 20px; }
+.report-publish-check label { display: flex; align-items: flex-start; gap: 10px; line-height: 1.6; }
+.report-publish-check input { margin-top: 5px; }
+.report-publish-check .button { align-self: flex-start; }
+@media (max-width: 600px) { .report-responsibility { grid-template-columns: 1fr; gap: 4px; } .report-responsibility dd { margin-bottom: 8px; } }

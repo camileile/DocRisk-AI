@@ -1,45 +1,8 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  Check,
-  CheckCheck,
-  FileText,
-  ScanLine,
-  Layers3,
-  ShieldCheck,
-  Clock3,
-  Building2,
-  Leaf,
-  HeartPulse,
-  GitMerge,
-  Fingerprint,
-  Search,
-  Upload,
-  UserCheck,
-} from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, CheckCheck, FileText, ScanLine, Layers3, ShieldCheck, GitMerge, UserCheck, Clock3, Search } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-const futureModules = [
-  {
-    icon: Building2,
-    name: "Homologação de Fornecedores",
-    description:
-      "Certidões, requisitos de contratação e evidências de regularidade em um só lugar.",
-  },
-  {
-    icon: HeartPulse,
-    name: "Saúde e Segurança Ocupacional",
-    description:
-      "Organização de ASOs, treinamentos obrigatórios e documentos de conformidade.",
-  },
-  {
-    icon: Leaf,
-    name: "Conformidade Ambiental",
-    description:
-      "Acompanhamento documental de licenças, autorizações, validades e pendências.",
-  },
-];
+import { authEntry } from "@/lib/auth-mode";
 export default function Home() {
   return (
     <>
@@ -61,10 +24,10 @@ export default function Home() {
               pessoas para decidir.
             </p>
             <div className="actions">
-              <Link href="/acesso" className="button">
-                Explorar demonstração <ArrowUpRight size={18} />
+              <Link href={authEntry()} className="button">
+                Acessar plataforma <ArrowUpRight size={18} />
               </Link>
-              <Link href="#modulos" className="button secondary">
+              <Link href="/modulos" className="button secondary">
                 Explorar módulos <ArrowRight size={18} />
               </Link>
             </div>
@@ -88,7 +51,7 @@ export default function Home() {
                   <i />
                 </div>
                 <span>DocRisk AI · Visão documental</span>
-                <span className="demo-tag">DEMONSTRAÇÃO</span>
+                <span className="demo-tag">PRÉVIA</span>
               </div>
               <div className="window-body">
                 <div className="demo-heading">
@@ -178,249 +141,37 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <section id="plataforma" className="section container platform">
-          <div className="section-intro">
-            <span className="eyebrow">A PLATAFORMA</span>
-            <h2>
-              Menos esforço para organizar.
-              <br />
-              Mais contexto para analisar.
-            </h2>
-          </div>
-          <div className="platform-description">
-            <p>
-              Documentos chegam em formatos diferentes, misturados e com
-              informações que precisam ser cruzadas. O DocRisk AI nasce para
-              conectar essas etapas em um fluxo de análise mais claro.
-            </p>
-            <p>
-              Uma base comum de inteligência documental, com módulos
-              especializados para cada contexto de risco.
-            </p>
-          </div>
-          <div className="benefit-grid">
-            {[
-              {
-                icon: Layers3,
-                title: "Documentos organizados",
-                text: "Uma proposta de fluxo para separar, classificar e conectar documentos de um mesmo lote.",
-              },
-              {
-                icon: Search,
-                title: "Evidências acessíveis",
-                text: "Informações vinculadas ao documento e à página de origem para facilitar a conferência.",
-              },
-              {
-                icon: ShieldCheck,
-                title: "Pessoas no controle",
-                text: "Indícios seguem para revisão. O parecer só é publicado depois da aprovação humana.",
-              },
-            ].map(({ icon: Icon, title, text }) => (
-              <article className="benefit" key={title}>
-                <Icon size={25} />
-                <h3>{title}</h3>
-                <p>{text}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-        <section id="modulos" className="module-section">
-          <div className="container section">
-            <div className="section-heading">
-              <div>
-                <span className="eyebrow">ECOSSISTEMA DOCRISK AI</span>
-                <h2>
-                  Uma plataforma que cresce
-                  <br />
-                  com cada desafio.
-                </h2>
-              </div>
-              <p>
-                O mesmo núcleo de inteligência.
-                <br />
-                Diferentes perspectivas de análise.
-              </p>
-            </div>
-            <div className="core-strip">
-              <div className="icon-square">
-                <Layers3 size={25} />
-              </div>
-              <div>
-                <strong>DocRisk AI Core</strong>
-                <span>
-                  A base que conecta entrada, organização e evidências
-                  documentais.
-                </span>
-              </div>
-              <span className="core-label">NÚCLEO DA PLATAFORMA</span>
-            </div>
-            <article className="featured-module">
-              <div className="module-main">
-                <span className="pill">
-                  <span className="status-dot" /> FOCO DO MVP · EM
-                  DESENVOLVIMENTO
-                </span>
-                <div className="module-title">
-                  <Clock3 size={32} />
-                  <h3>Trabalhista</h3>
-                </div>
-                <p>
-                  Ponto, horas extras e pagamentos conectados por trabalhador e
-                  competência. Uma visão organizada para conferir divergências e
-                  acompanhar pendências.
-                </p>
-                <div className="module-chips">
-                  <span>Ponto & AEJ</span>
-                  <span>Folha de pagamento</span>
-                  <span>Conciliação</span>
-                </div>
-                <Link href="/contato?assunto=trabalhista" className="text-link">
-                  Conhecer o módulo <ArrowUpRight size={18} />
-                </Link>
-              </div>
-              <div className="module-detail">
-                <span className="overline">UM FLUXO COM CONTEXTO</span>
-                <div>
-                  <Check size={17} />
-                  <span>Conectar jornada e pagamento</span>
-                </div>
-                <div>
-                  <Check size={17} />
-                  <span>Apontar indícios com evidências</span>
-                </div>
-                <div>
-                  <Check size={17} />
-                  <span>Encaminhar pendências para conferência</span>
-                </div>
-                <div>
-                  <Check size={17} />
-                  <span>Apoiar a revisão e o parecer humano</span>
-                </div>
-                <small>
-                  Escopo planejado do MVP. Funcionalidades em implementação.
-                </small>
-              </div>
-            </article>
-            <div className="future-grid">
-              {futureModules.map(({ icon: Icon, name, description }) => (
-                <article className="future-module" key={name}>
-                  <div className="future-top">
-                    <Icon size={25} />
-                    <span className="planned">PLANEJADO</span>
-                  </div>
-                  <h3>{name}</h3>
-                  <p>{description}</p>
-                  <span className="future-caption">
-                    Visão de expansão <ArrowUpRight size={16} />
-                  </span>
-                </article>
-              ))}
-            </div>
-            <p className="module-disclaimer">
-              Os três módulos planejados representam a visão de expansão do
-              produto e não integram o desenvolvimento do MVP.
-            </p>
-          </div>
-        </section>
-        <section id="como-funciona" className="section container">
+
+        <section className="section container marketing-preview" aria-labelledby="explorar-plataforma">
           <div className="section-heading">
             <div>
-              <span className="eyebrow">COMO FUNCIONA</span>
-              <h2>
-                Do primeiro arquivo
-                <br />à decisão fundamentada.
-              </h2>
+              <span className="eyebrow">CONHEÇA O DOCRISK AI</span>
+              <h2 id="explorar-plataforma">Uma visão clara. Caminhos para aprofundar.</h2>
             </div>
-            <p>
-              Um fluxo proposto para transformar
-              <br />
-              volume documental em clareza.
-            </p>
+            <p>Conheça a proposta, acompanhe o fluxo e veja como os módulos se conectam à base documental.</p>
           </div>
-          <div className="steps">
-            {[
-              {
-                icon: Upload,
-                title: "Receba os documentos",
-                text: "O fluxo começa com o envio de lotes em PDF, imagens ou dados de jornada em AEJ.",
-              },
-              {
-                icon: ScanLine,
-                title: "Organize com inteligência",
-                text: "A IA apoia a leitura; o processamento organiza e conecta as informações relevantes.",
-              },
-              {
-                icon: Fingerprint,
-                title: "Confira as evidências",
-                text: "Indícios e pendências são apresentados com referência à origem documental.",
-              },
-              {
-                icon: UserCheck,
-                title: "Revise e decida",
-                text: "A equipe responsável confere a análise e aprova o parecer antes da publicação.",
-              },
-            ].map(({ icon: Icon, title, text }, i) => (
-              <article className="step" key={title}>
-                <div className="step-top">
-                  <span>0{i + 1}</span>
-                  <Icon size={23} />
-                </div>
-                <h3>{title}</h3>
-                <p>{text}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-        <section className="trust-section">
-          <div className="container trust-inner">
-            <div>
-              <span className="eyebrow">INTELIGÊNCIA COM RESPONSABILIDADE</span>
-              <h2>
-                A IA ajuda a encontrar.
-                <br />
-                Você tem contexto para decidir.
-              </h2>
-              <p>
-                Uma divergência é um indício para conferir. O DocRisk AI foi
-                pensado para apoiar a análise com rastreabilidade, transparência
-                e revisão humana.
-              </p>
-              <Link href="/contato" className="text-link">
-                Vamos conversar <ArrowRight size={18} />
-              </Link>
-            </div>
-            <div className="trust-list">
-              <article>
-                <Fingerprint />
-                <div>
-                  <h3>Origem verificável</h3>
-                  <p>
-                    Documento, versão e página como referência de cada
-                    evidência.
-                  </p>
-                </div>
-              </article>
-              <article>
-                <UserCheck />
-                <div>
-                  <h3>Revisão antes da publicação</h3>
-                  <p>
-                    A análise passa pelas pessoas responsáveis por aprovar o
-                    parecer.
-                  </p>
-                </div>
-              </article>
-              <article>
-                <ShieldCheck />
-                <div>
-                  <h3>Acesso conforme o papel</h3>
-                  <p>
-                    Separação de responsabilidades prevista para cada
-                    organização e perfil.
-                  </p>
-                </div>
-              </article>
-            </div>
+          <div className="marketing-preview-grid">
+            <Link className="marketing-preview-card" href="/solucao">
+              <span className="marketing-card-number">01 / PLATAFORMA</span>
+              <Layers3 size={30} aria-hidden="true" />
+              <h3>Inteligência que conecta documentos</h3>
+              <p>Uma base para organizar evidências, apoiar a conferência e separar responsabilidades.</p>
+              <span className="marketing-card-link">Conhecer a plataforma <ArrowUpRight size={16} /></span>
+            </Link>
+            <Link className="marketing-preview-card" href="/como-funciona">
+              <span className="marketing-card-number">02 / FLUXO</span>
+              <ScanLine size={30} aria-hidden="true" />
+              <h3>Do envio à decisão humana</h3>
+              <p>Entenda os caminhos de processamento, correção de arquivos e revisão de divergências.</p>
+              <span className="marketing-card-link">Ver como funciona <ArrowUpRight size={16} /></span>
+            </Link>
+            <Link className="marketing-preview-card" href="/modulos">
+              <span className="marketing-card-number">03 / ECOSSISTEMA</span>
+              <Clock3 size={30} aria-hidden="true" />
+              <h3>Um núcleo, diferentes especialidades</h3>
+              <p>Trabalhista é o foco do MVP. Outros contextos mostram a capacidade de expansão.</p>
+              <span className="marketing-card-link">Explorar módulos <ArrowUpRight size={16} /></span>
+            </Link>
           </div>
         </section>
         <section className="container cta">
@@ -431,7 +182,7 @@ export default function Home() {
             com uma conversa.
           </h2>
           <p>
-            Conheça a proposta do DocRisk AI e acompanhe os próximos passos do
+            Conheça o fluxo do DocRisk AI e acompanhe os próximos passos do
             projeto.
           </p>
           <Link href="/contato" className="button">
@@ -441,6 +192,7 @@ export default function Home() {
             Em desenvolvimento no Hack Garanhuns Tech 2026
           </span>
         </section>
+
       </main>
       <Footer />
     </>

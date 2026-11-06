@@ -10,8 +10,11 @@ import { PageIntro } from "@/components/workspace-parts";
 import { BatchBadge } from "@/components/batch-badge";
 import {
   fetchApiBatch, uploadApiBatch, validateApiUploadFile,
-  type ApiBatch, type ApiUploadReceipt,
-} from "@/lib/api-client";
+  type ApiUploadReceipt,
+} from "@/lib/api-upload";
+
+import { ApiError, type Batch, type Doc } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
 
 const TERMINAL = new Set(["CONCLUIDO", "FALHA_PROCESSAMENTO"]);
 const MAX_STATUS_CHECKS = 60;
@@ -22,7 +25,7 @@ function ProcessingStatus({ receipt, token, submittedContract, filename }: {
   submittedContract: string;
   filename: string;
 }) {
-  const [batch, setBatch] = useState<ApiBatch | null>(null);
+  const [batch, setBatch] = useState<Batch | null>(null);
   const [error, setError] = useState("");
   const [finishedChecking, setFinishedChecking] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -55,8 +58,10 @@ function ProcessingStatus({ receipt, token, submittedContract, filename }: {
       } catch (reason) {
         if (!active) return;
         setError(reason instanceof Error ? reason.message : "Não foi possível atualizar o status.");
-        setFinishedChecking(true);
-        return;
+        if (reason instanceof ApiError && !reason.retryable) {
+          setFinishedChecking(true);
+          return;
+        }
       }
       checkCount += 1;
       if (checkCount >= MAX_STATUS_CHECKS) {
@@ -76,6 +81,14 @@ function ProcessingStatus({ receipt, token, submittedContract, filename }: {
 
   const completed = batch?.status === "CONCLUIDO";
   const failed = batch?.status === "FALHA_PROCESSAMENTO";
+  // Contagem somente do lote enviado, consultando a API autorizada. Não inferir
+  // aptidão a partir do status CONCLUIDO (concluiu leitura, não conciliação).
+  const documents = useApi<Doc[]>(completed ? `/api/batches/${receipt.batch_id}/documents` : null);
+  const classified = documents.data ?? [];
+  const aptCount = classified.filter((d) => d.status === "APTO").length;
+  const correctionCount = classified.filter((d) => d.status === "PENDENTE_CORRECAO").length;
+  const reviewCount = classified.filter((d) => d.status === "EM_ANALISE" || d.status === "REVISAO_HUMANA").length;
+  const otherCount = classified.length - aptCount - correctionCount - reviewCount;
 
   return (
     <section className="workspace-card api-upload-result" aria-label="Acompanhamento do envio" aria-live="polite">
@@ -91,12 +104,67 @@ function ProcessingStatus({ receipt, token, submittedContract, filename }: {
           <span>Status consultado na API</span>
           {batch ? <BatchBadge status={batch.status} /> : <span className="api-status">Consultando…</span>}
         </div>
-        {batch && <small>{batch.total_pages} página(s) identificada(s) pelo backend</small>}
+        {batch && <small>{batch.tipo_arquivo === "AEJ"
+          ? "AEJ estruturado identificado pelo backend; processamento sem IA"
+          : `${batch.total_pages} página(s) identificada(s) pelo backend`}</small>}
       </div>
       {completed && (
         <p className="api-upload-notice api-upload-success">
           <CheckCircle2 size={17} /> Processamento documental concluído. Isso não significa conciliação trabalhista concluída.
         </p>
+      )}
+      {completed && (
+        <div className="api-upload-summary" aria-label="Resumo dos documentos do lote">
+          <h3>Resumo do processamento</h3>
+          {documents.loading ? (
+            <p className="api-status" role="status">Conferindo os documentos classificados neste lote…</p>
+          ) : documents.error ? (
+            <div className="api-upload-summary-error">
+              <p>Não foi possível consultar os resultados dos documentos: {documents.error}</p>
+              <button type="button" className="button secondary" onClick={() => void documents.reload()}>
+                <RefreshCw size={16} /> Consultar resumo novamente
+              </button>
+            </div>
+          ) : (
+            <>
+              <p className="api-upload-summary-lead">
+                {classified.length > 0
+                  ? `${classified.length} documento(s) identificado(s) neste lote. Verifique as ações abaixo.`
+                  : "Nenhum documento classificado neste lote. Confira os detalhes do processamento."}
+              </p>
+              <div className="api-upload-summary-grid">
+                <div><strong>{aptCount}</strong><span>Aptos para a próxima etapa</span></div>
+                <div className={correctionCount ? "needs-correction" : ""}><strong>{correctionCount}</strong><span>Pendentes de correção</span></div>
+                <div className={reviewCount ? "needs-review" : ""}><strong>{reviewCount}</strong><span>Em análise pela auditora</span></div>
+                {otherCount > 0 && <div><strong>{otherCount}</strong><span>Outros estados</span></div>}
+              </div>
+              {correctionCount > 0 ? (
+                <div className="api-upload-next-action">
+                  <CircleAlert size={18} />
+                  <p>Há documento(s) que exigem correção da fornecedora. Consulte o motivo e envie a versão corrigida na área de Pendências.</p>
+                  <Link href="/painel/pendencias" className="button">
+                    Ver documentos para correção
+                  </Link>
+                </div>
+              ) : reviewCount > 0 ? (
+                <div className="api-upload-next-action">
+                  <CircleAlert size={18} />
+                  <p>Não há correção identificada neste lote, mas alguns documentos ainda aguardam conferência da auditora.</p>
+                  <Link href="/painel/documentos" className="button secondary">Ver documentos em análise</Link>
+                </div>
+              ) : (
+                <p className="api-upload-summary-lead">
+                  {classified.length > 0
+                    ? "Nenhuma correção ou revisão documental pendente foi identificada neste lote. A conciliação e o parecer seguem etapas próprias."
+                    : "Consulte os detalhes do lote para verificar o resultado da identificação."}
+                </p>
+              )}
+              <Link className="text-link" href={`/painel/lotes/detalhe?id=${receipt.batch_id}`}>
+                Ver detalhes deste lote
+              </Link>
+            </>
+          )}
+        </div>
       )}
       {failed && (
         <p className="api-error" role="alert">
@@ -218,9 +286,9 @@ export function ApiUpload() {
             <label className="upload-area">
               <Upload size={30} />
               <strong>Selecione um arquivo sintético</strong>
-              <span>PDF, PNG, JPG, JPEG ou TIFF · até 20 MB</span>
+              <span>PDF, imagem ou AEJ · até 20 MB (AEJ até 10 MB)</span>
               <input ref={inputRef} type="file" aria-label="Selecionar arquivo para envio real"
-                accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff"
+                accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.aej,.txt"
                 disabled={busy || Boolean(uploaded)}
                 onChange={(event) => pickFile(event.target.files)} />
             </label>
@@ -262,7 +330,8 @@ export function ApiUpload() {
             <li>Um arquivo gera um lote independente na API.</li>
             <li>O servidor valida o conteúdo, o tamanho, o contrato e a permissão do usuário.</li>
             <li>A F2 registra e classifica páginas; alguns documentos podem seguir para revisão humana.</li>
-            <li>Arquivos AEJ ainda não estão integrados ao envio operacional.</li>
+            <li>AEJ é processado como dado estruturado, sem envio à IA; o original e as linhas de origem são preservados.</li>
+            <li>O sistema não valida assinatura P7S. Vínculos sem mapeamento ou cálculos com alertas precisam de conferência da Bernhoeft.</li>
             <li>O status CONCLUÍDO não representa parecer ou conciliação da F3.</li>
           </ul>
           <div className="evidence-note"><CircleAlert size={19} />

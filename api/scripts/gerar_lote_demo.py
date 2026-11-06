@@ -34,6 +34,8 @@ from __future__ import annotations
 
 import io
 import json
+import argparse
+import random
 import sys
 from pathlib import Path
 
@@ -46,6 +48,10 @@ AVISO = "DOCUMENTO FICTÍCIO — dados sintéticos para demonstração (Hack Gar
 EMPRESA = "Fornecedora Beta Serviços (fictícia) — CNPJ 00.000.000/0001-00 (fictício)"
 NOMES = {"T001": "Ana Fictícia Souza", "T002": "Bruno Fictício Lima", "T003": "Carla Fictícia Rocha",
          "T004": "Diego Fictício Alves", "T005": "Elisa Fictícia Melo"}
+# CPF/RG FICTÍCIOS (inválidos de propósito) só para exercitar a anonimização; ficam no cabeçalho do
+# holerite, em campo que a classificação e as regras não leem.
+CPFS = {t: f"000.000.00{i}-00" for i, t in enumerate(NOMES, 1)}
+RGS = {t: f"00.000.00{i}-0" for i, t in enumerate(NOMES, 1)}
 
 
 # ---------------------------------------------------------------------------
@@ -89,9 +95,14 @@ class Pagina:
             self.p.insert_text((LARGURA - 120, ALTURA - 30), pagina, fontsize=9)
 
 
+def _nome(trabalhador: str) -> str:
+    """Nome fictício: os 5 do lote de demonstração ou um nome genérico (T006 em diante)."""
+    return NOMES.get(trabalhador, f"Trabalhador Fictício {trabalhador[1:]}")
+
+
 def _cabecalho(pg: Pagina, trabalhador: str) -> Pagina:
     return (pg.linha(EMPRESA, 9)
-              .linha(f"Trabalhador: {NOMES[trabalhador]}    Matrícula: {trabalhador}", 10)
+              .linha(f"Trabalhador: {_nome(trabalhador)}    Matrícula: {trabalhador}", 10)
               .linha(f"Competência: {COMPETENCIA}", 10).linha())
 
 
@@ -152,6 +163,7 @@ def _corpo_holerite(horas: int | None, valor_he: str, base: str, liquido: str) -
 def holerite(doc: fitz.Document, t: str, horas: int | None, valor_he: str, liquido: str,
              ilegivel: bool = False, base: str = "1.800,00") -> None:
     pg = _cabecalho(Pagina(doc).titulo("DEMONSTRATIVO DE PAGAMENTO DE SALÁRIO"), t)
+    pg.linha(f"CPF: {CPFS.get(t, '000.000.000-00')}    RG: {RGS.get(t, '00.000.000-0')}", 9)
     linhas = _corpo_holerite(horas, valor_he, base, liquido)
     if ilegivel:
         pg.imagem(_corpo_borrado(linhas + [("", "Líquido a receber", "", f"R$ {liquido}", "")]), 220)
@@ -182,7 +194,7 @@ def _corpo_borrado(linhas: list[tuple[str, ...]]) -> bytes:
 def comprovante(doc: fitz.Document, t: str, valor: str, data: str) -> None:
     pg = Pagina(doc).titulo("COMPROVANTE DE PAGAMENTO")
     pg.linha("Banco Fictício S.A. — transferência eletrônica", 9).linha()
-    pg.linha(f"Favorecido: {NOMES[t]}    Matrícula: {t}", 10)
+    pg.linha(f"Favorecido: {_nome(t)}    Matrícula: {t}", 10)
     pg.linha(f"Competência: {COMPETENCIA}", 10)
     pg.linha(f"Valor pago: R$ {valor}", 11, negrito=True)
     pg.linha(f"Data do pagamento: {data}", 10)
@@ -303,7 +315,85 @@ def gerar(saida: Path) -> dict[str, Path]:
     return caminhos
 
 
+def gerar_parametrizado(trabalhadores: int, saida: Path, semente: int = 2026) -> dict[str, Path]:
+    """Gera três páginas por trabalhador, em cenários balanceados e reprodutíveis."""
+    if trabalhadores != 100:
+        raise ValueError("O gabarito de cenários está definido para exatamente 100 trabalhadores.")
+    rng = random.Random(semente)
+    cenarios = (["normal"] * 70 + ["divergencia"] * 15 + ["ilegivel"] * 5 +
+                ["faltante"] * 5 + ["reais"] * 5)
+    rng.shuffle(cenarios)
+    saida.mkdir(parents=True, exist_ok=True)
+    doc = fitz.open()
+    documentos = []
+    conciliacao = {}
+    for numero, cenario in enumerate(cenarios, start=1):
+        t = f"T{numero:03d}"
+        ponto_h = rng.randint(2, 12)
+        folha_h = ponto_h if cenario in ("normal", "ilegivel", "faltante", "reais") else max(0, ponto_h - rng.choice((2, 4)))
+        inicio = doc.page_count + 1
+        ponto(doc, t, ponto_h, paginas=2 if cenario == "faltante" else 1,
+              so_primeira=cenario == "faltante")
+        paginas_ponto = [inicio] if cenario == "faltante" else [inicio]
+        ponto_doc = _doc(paginas_ponto, "ESPELHO_PONTO", t,
+                         "PENDENTE_CORRECAO" if cenario == "faltante" else "APTO",
+                         horas=ponto_h, obs="página 2 de 2 faltante" if cenario == "faltante" else "")
+        ponto_doc["campos_esperados"] = {
+            "horas_extras_h": float(ponto_h), "horas_extras_valor": None,
+            "valor_liquido": None, "valor_pago": None,
+        }
+        documentos.append(ponto_doc)
+        inicio = doc.page_count + 1
+        holerite(doc, t, None if cenario == "reais" else folha_h,
+                 f"{folha_h * 20},00", "1.800,00", ilegivel=cenario == "ilegivel")
+        folha_doc = _doc([inicio], "HOLERITE", t,
+                         "PENDENTE_CORRECAO" if cenario == "ilegivel" else "APTO",
+                         horas=None if cenario == "reais" else folha_h,
+                         horas_valor=cenario == "reais", obs="corpo ilegível" if cenario == "ilegivel" else "")
+        folha_doc["campos_esperados"] = {
+            "horas_extras_h": None if cenario == "reais" else float(folha_h),
+            "horas_extras_valor": float(folha_h * 20), "valor_liquido": 1800.0, "valor_pago": None,
+        }
+        documentos.append(folha_doc)
+        inicio = doc.page_count + 1
+        comprovante(doc, t, "1.800,00", "05/11/2026")
+        comprovante_doc = _doc([inicio], "COMPROVANTE_PAGAMENTO", t)
+        comprovante_doc["campos_esperados"] = {
+            "horas_extras_h": None, "horas_extras_valor": None,
+            "valor_liquido": None, "valor_pago": 1800.0,
+        }
+        documentos.append(comprovante_doc)
+        if cenario in ("faltante", "ilegivel"):
+            conciliacao[t] = {"status": "BLOQUEADA_PENDENCIA", "resultado": "NAO_AVALIADO"}
+        elif cenario == "reais":
+            conciliacao[t] = {"status": "ANALISADA", "resultado": "DADOS_INSUFICIENTES"}
+        elif cenario == "divergencia":
+            conciliacao[t] = {"status": "ANALISADA", "resultado": "DIVERGENCIA_A_VERIFICAR",
+                              "diferenca_h": ponto_h - folha_h}
+        else:
+            conciliacao[t] = {"status": "ANALISADA", "resultado": "SEM_DIVERGENCIA_NOS_CAMPOS_COMPARADOS",
+                              "diferenca_h": 0}
+    assert doc.page_count == trabalhadores * 3, doc.page_count
+    pdf = saida / "lote_100.pdf"
+    doc.save(pdf)
+    doc.close()
+    gabarito = {"competencia": COMPETENCIA, "contrato": "CT-001", "paginas": trabalhadores * 3,
+                "semente": semente, "distribuicao": {x: cenarios.count(x) for x in
+                ("normal", "divergencia", "ilegivel", "faltante", "reais")},
+                "documentos": documentos, "conciliacao": conciliacao}
+    gab = saida / "gabarito.json"
+    gab.write_text(json.dumps(gabarito, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {pdf.name: pdf, gab.name: gab}
+
+
 if __name__ == "__main__":
-    destino = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).with_name("lote_demo")
-    for nome, caminho in gerar(destino).items():
+    parser = argparse.ArgumentParser(description="Gera lote sintético de demonstração.")
+    parser.add_argument("saida_posicional", nargs="?", help="Pasta (compatibilidade com o modo legado)")
+    parser.add_argument("--trabalhadores", type=int)
+    parser.add_argument("--saida")
+    parser.add_argument("--semente", type=int, default=2026)
+    args = parser.parse_args()
+    destino = Path(args.saida or args.saida_posicional) if (args.saida or args.saida_posicional) else Path(__file__).with_name("lote_demo")
+    arquivos = gerar_parametrizado(args.trabalhadores, destino, args.semente) if args.trabalhadores else gerar(destino)
+    for nome, caminho in arquivos.items():
         print(f"{nome}: {caminho}")

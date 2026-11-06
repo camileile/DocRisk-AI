@@ -255,3 +255,32 @@
     padding-right: 14px;
   }
 }
+
+/* Admin Bernhoeft — implementação funcional (refino visual posterior) */
+.admin-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.admin-actions .button { display: inline-flex; align-items: center; gap: 7px; }
+.admin-form { display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
+.admin-form label { color: #6c5d7a; font-size: 11px; font-weight: 600; display: flex; flex-direction: column; gap: 7px; }
+.admin-form select, .admin-form input {
+  width: 100%; height: 42px; min-width: 0;
+  border: 1px solid #e6dded; border-radius: 7px; background: white;
+  padding: 9px 12px; color: #554466; font-size: 12px;
+}
+.admin-form button { align-self: flex-start; }
+.admin-forms-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.admin-forms-grid .workspace-card { min-width: 0; }
+.admin-date-row { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.admin-form-intro { font-size: 11px; margin-top: 7px; line-height: 1.6; }
+.admin-user-form { max-width: 720px; }
+.admin-issued-token { border: 1px solid #ded3f0; background: #faf7fd; border-radius: 9px; margin-top: 22px; padding: 18px; }
+.admin-issued-token > strong { font-size: 12px; }
+.admin-issued-token p { margin: 10px 0; color: #6d5b7d; font-size: 11px; }
+.admin-issued-token code { display: block; white-space: pre-wrap; word-break: break-all; padding: 12px; background: white; border-radius: 6px; margin-bottom: 10px; font-size: 11px; }
+.admin-issued-token .button { margin-right: 8px; margin-bottom: 8px; font-size: 11px; }
+@media (max-width: 850px) {
+  .admin-forms-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .admin-date-row { grid-template-columns: 1fr; }
+  .admin-actions { flex-direction: column; align-items: stretch; }
+}

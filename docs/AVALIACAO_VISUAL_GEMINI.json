@@ -1,0 +1,15 @@
+{
+  "status": "BLOQUEADA_SEM_CREDENCIAL",
+  "created_at": "2026-11-06T06:47:22+00:00",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash",
+  "prompt_version": "p1",
+  "corpus": "lote_demo sintético de 16 páginas",
+  "pages_total": 16,
+  "completed_pages": 0,
+  "pages": [],
+  "field_accuracy": {},
+  "elapsed_seconds": 0.0,
+  "latency_ms": null,
+  "note": "GEMINI_API_KEY ausente; nenhuma chamada remota foi feita."
+}

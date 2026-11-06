@@ -16,10 +16,13 @@ import { api, docStatusLabels, pageList, typeLabels, type Doc, type SearchHit } 
 import { useApi } from "@/lib/use-api";
 
 export default function DocumentsPage() {
-  const { contract } = useSession();
+  const { contract, me, setContract } = useSession();
+  const supplier = me?.org_tipo === "FORNECEDORA";
+  const analyst = me?.papel === "ANALISTA_BH";
   const [status, setStatus] = useState("");
   const [tipo, setTipo] = useState("");
   const params = new URLSearchParams();
+  if (contract) params.set("contract_id", contract);
   if (status) params.set("status", status);
   if (tipo) params.set("tipo", tipo);
   const { data, error, loading, reload } = useApi<Doc[]>(`/api/documents?${params.toString()}`);
@@ -30,9 +33,9 @@ export default function DocumentsPage() {
       <PageIntro
         eyebrow="DOCUMENTOS CLASSIFICADOS"
         title="Separados, classificados e pesquisáveis."
-        description="Cada documento lógico foi montado a partir das páginas do lote, com tipo, trabalhador, competência e texto lido."
+        description={supplier ? "Consulte os documentos da fornecedora neste contrato, inclusive os enviados por outros operadores. A seleção de contrato limita a lista e a busca." : "Consulte os documentos do contrato. Revise itens pendentes ou abra qualquer documento apto para iniciar uma revisão manual justificada."}
       />
-      <SearchBox />
+      <SearchBox key={contract} contract={contract} />
       <div className="list-toolbar">
         <label className="filter-label">
           Tipo
@@ -47,7 +50,7 @@ export default function DocumentsPage() {
           Situação
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="">Todas</option>
-            {(["APTO", "PENDENTE_CORRECAO", "REVISAO_HUMANA", "SUBSTITUIDO"] as const).map((k) => (
+            {(["APTO", "PENDENTE_CORRECAO", supplier ? "EM_ANALISE" : "REVISAO_HUMANA", "SUBSTITUIDO"] as const).map((k) => (
               <option key={k} value={k}>{docStatusLabels[k]}</option>
             ))}
           </select>
@@ -83,6 +86,12 @@ export default function DocumentsPage() {
                   <td>#{d.batch_id} · {pageList(d.paginas)}</td>
                   <td><DocumentBadge status={d.status} /></td>
                   <td>
+                    {analyst && ["REVISAO_HUMANA", "PENDENTE_CORRECAO"].includes(d.status) && (
+                      <Link className="table-action" href={`/painel/revisao/detalhe?id=${d.id}`}
+                        onClick={() => setContract(d.contract_id)}>
+                        Revisar <ArrowUpRight size={14} />
+                      </Link>
+                    )}
                     <Link className="table-action" href={`/painel/documentos/detalhe?id=${d.id}`}>
                       Abrir <ArrowUpRight size={14} />
                     </Link>
@@ -97,7 +106,7 @@ export default function DocumentsPage() {
   );
 }
 
-function SearchBox() {
+function SearchBox({ contract }: { contract: string }) {
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<SearchHit[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +117,7 @@ function SearchBox() {
     setBusy(true);
     setError(null);
     try {
-      setHits(await api<SearchHit[]>(`/api/search?q=${encodeURIComponent(query.trim())}`));
+      setHits(await api<SearchHit[]>(`/api/search?q=${encodeURIComponent(query.trim())}&contract_id=${encodeURIComponent(contract)}`));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha na busca");
       setHits(null);

@@ -15,6 +15,7 @@ from PIL import Image, ImageSequence, UnidentifiedImageError
 
 from .. import config
 from ..contracts import PaginaRenderizada
+from ..aej import AEJError, parse_aej
 from ..importer import UnsupportedFile, detect_type
 
 #: Limite de pixels por imagem de entrada (protege contra "decompression bomb").
@@ -22,7 +23,7 @@ MAX_PIXELS_IMAGEM = 60_000_000
 Image.MAX_IMAGE_PIXELS = MAX_PIXELS_IMAGEM
 
 _TIFF_MAGIC = (b"II*\x00", b"MM\x00*")
-EXTENSAO_POR_TIPO = {"PDF": ".pdf", "PNG": ".png", "JPEG": ".jpg", "TIFF": ".tif"}
+EXTENSAO_POR_TIPO = {"PDF": ".pdf", "PNG": ".png", "JPEG": ".jpg", "TIFF": ".tif", "AEJ": ".aej"}
 
 
 class ArquivoInvalido(ValueError):
@@ -53,8 +54,7 @@ def detectar_formato(filename: str, data: bytes) -> str:
         return "PDF"
     if tipo == "IMAGE":
         return "PNG" if data.startswith(b"\x89PNG") else "JPEG"
-    # AEJ é estruturado (texto), não passa pelo motor de imagem.
-    raise ArquivoInvalido("Arquivo AEJ não é aceito neste envio; use o fluxo de jornada eletrônica.")
+    return tipo
 
 
 def _checar_tamanho(data: bytes) -> None:
@@ -96,6 +96,13 @@ def inspecionar_arquivo(data: bytes, filename: str = "arquivo") -> InfoArquivo:
     """Valida o arquivo SEM renderizar: formato, tamanho, integridade e nº de páginas."""
     _checar_tamanho(data)
     tipo = detectar_formato(filename, data)
+    if tipo == "AEJ":
+        try:
+            parse_aej(data)
+        except AEJError as exc:
+            raise ArquivoInvalido(str(exc)) from exc
+        # AEJ é dado estruturado; não possui páginas rasterizadas nem passa por OCR.
+        return InfoArquivo(tipo="AEJ", paginas=0)
     if tipo == "PDF":
         doc = _abrir_pdf(data)
         try:

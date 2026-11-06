@@ -1,9 +1,12 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { authEntry } from "@/lib/auth-mode";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 export function Header() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   return (
     <header className="header">
       <div className="container header-inner">
@@ -31,12 +34,12 @@ export function Header() {
           className={open ? "navigation open" : "navigation"}
           onClick={() => setOpen(false)}
         >
-          <Link href="/#plataforma">A plataforma</Link>
-          <Link href="/#como-funciona">Como funciona</Link>
-          <Link href="/#modulos">Módulos</Link>
-          <Link href="/contato">Contato</Link>
-          <Link href="/acesso" className="button small">
-            Acessar demonstração <ArrowUpRight size={16} />
+          <Link href="/solucao" aria-current={pathname === "/solucao" ? "page" : undefined}>A plataforma</Link>
+          <Link href="/como-funciona" aria-current={pathname === "/como-funciona" ? "page" : undefined}>Como funciona</Link>
+          <Link href="/modulos" aria-current={pathname === "/modulos" ? "page" : undefined}>Módulos</Link>
+          <Link href="/contato" aria-current={pathname === "/contato" ? "page" : undefined}>Contato</Link>
+          <Link href={authEntry()} className="button small">
+            Acesso <ArrowUpRight size={16} />
           </Link>
         </nav>
       </div>

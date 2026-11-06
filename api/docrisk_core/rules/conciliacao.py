@@ -83,8 +83,22 @@ def _insumo(conn: sqlite3.Connection, doc: sqlite3.Row) -> dict[str, Any]:
     paginas = [int(r[0]) for r in conn.execute(
         "SELECT p.ordem FROM doc_pages dp JOIN pages p ON p.id=dp.page_id WHERE dp.document_id=?"
         " ORDER BY dp.posicao", (doc["id"],))]
-    return {"doc_id": int(doc["id"]), "tipo": doc["tipo"], "versao": int(doc["versao"]),
-            "batch_id": int(doc["batch_id"]), "status": doc["status"], "paginas": paginas}
+    resultado = {"doc_id": int(doc["id"]), "tipo": doc["tipo"], "versao": int(doc["versao"]),
+                 "batch_id": int(doc["batch_id"]), "status": doc["status"], "paginas": paginas}
+    aej = conn.execute("SELECT worker_link_id, calculation_json FROM aej_documents WHERE document_id=?",
+                       (doc["id"],)).fetchone()
+    if aej is not None:
+        detalhe = json.loads(aej["calculation_json"] or "{}")
+        resultado["origem"] = "AEJ"
+        resultado["worker_link_id"] = aej["worker_link_id"]
+        linhas = {
+            line for dia in detalhe.get("days", []) for line in dia.get("source_lines", [])
+        }
+        linhas.update(int(item["line_number"]) for item in detalhe.get("compensations", []))
+        if detalhe.get("worker_record_line"):
+            linhas.add(int(detalhe["worker_record_line"]))
+        resultado["linhas_origem"] = sorted(linhas)
+    return resultado
 
 
 def conciliar(conn: sqlite3.Connection, contract_id: str, worker_id: str, competencia: str) -> int:
