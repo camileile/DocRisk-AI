@@ -92,7 +92,7 @@ Empresas/contratos produtivos precisam estar previamente provisionados/importado
 
 ## Complemento — convite do administrador inicial ao cadastrar auditora
 
-A rota POST /api/platform/auditors aceita no modo Clerk os campos nome, administrador e email. Apenas a identidade institucional ADMIN_PLATAFORMA pode criar organizações auditoras. A operação cria a organização e emite convite ADMIN_BH pelo mecanismo de /api/auth/invitations, retornando convite_status=PENDING, sem administrador_id nem token_teste. Em caso de falha no envio, o cadastro da organização é desfeito.
+A rota POST /api/platform/auditors aceita no modo Clerk os campos nome, administrador e email. Apenas a identidade institucional ADMIN_PLATAFORMA pode criar organizações auditoras. A operação cria a organização e emite convite ADMIN_BH pelo mecanismo de /api/auth/invitations, retornando convite_status=PENDING, sem administrador_id nem token_teste. Em caso de falha no envio, a compensação remove apenas o convite identificado pela tentativa inicial. A organização só é removida, sob transação de escrita, se não houver outros convites, usuários ou contratos; operações concorrentes bem-sucedidas são preservadas e auditadas.
 
 O usuário interno somente é criado após o destinatário aceitar o convite em /api/auth/invitations/{id}/accept, com e-mail verificado, provedor ativo e revalidação do emissor. A listagem institucional mostra convites iniciais e administradores já ativados. O cadastro por token continua restrito ao ambiente demonstrativo.
 

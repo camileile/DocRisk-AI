@@ -117,14 +117,26 @@ def create_auditor(payload: AuditorInput, x_docrisk_link: str = Header(default="
         # aceitar o convite. Não provisionar um usuário com token de demonstração.
         invitation = InvitationInput(email=payload.email, nome=payload.administrador,
                                      org_id=org, role=Papel.ADMIN_BH)
+        initial_invitation_id = secrets.token_urlsafe(24)
         conn.commit()  # A emissão usa sua própria transação antes da chamada ao Clerk.
         try:
-            issued = issue_invitation(conn, user, x_docrisk_link, invitation)
+            issued = issue_invitation(conn, user, x_docrisk_link, invitation,
+                                      invitation_id=initial_invitation_id)
         except Exception:
-            # Falha no convite => não deixar auditora sem responsável inicial.
-            # Uma eventual mensagem externa sem registro local não concede acesso.
-            conn.execute("DELETE FROM identity_invitations WHERE org_id=?", (org,))
-            conn.execute("DELETE FROM organizations WHERE id=?", (org,))
+            # Compensar somente esta tentativa. Outra requisição pode ter emitido
+            # ou aceitado um convite durante a chamada externa ao Clerk.
+            conn.rollback()
+            conn.execute("BEGIN IMMEDIATE")
+            conn.execute("DELETE FROM identity_invitations WHERE id=? AND org_id=? "
+                         "AND status IN ('CREATING','FAILED')", (initial_invitation_id, org))
+            removed = conn.execute(
+                "DELETE FROM organizations WHERE id=? "
+                "AND NOT EXISTS (SELECT 1 FROM identity_invitations WHERE org_id=?) "
+                "AND NOT EXISTS (SELECT 1 FROM users WHERE org_id=?) "
+                "AND NOT EXISTS (SELECT 1 FROM contracts WHERE bernhoeft_id=? "
+                "OR contratante_id=? OR fornecedora_id=?)", (org, org, org, org, org, org))
+            if not removed.rowcount:
+                auditar(conn, user, "AUDITORA_CADASTRO_PRESERVADO", org, "ERRO")
             conn.commit()
             raise
         auditar(conn, user, "AUDITORA_CRIADA", org)

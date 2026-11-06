@@ -92,7 +92,8 @@ def pending_invitations(identity=Depends(principal), conn=Depends(connection)):
         (email, now().isoformat()))]
 
 
-def issue_invitation(conn, user: Usuario, x_docrisk_link: str, payload: InvitationInput):
+def issue_invitation(conn, user: Usuario, x_docrisk_link: str, payload: InvitationInput,
+                     *, invitation_id: str | None = None):
     """Emite convite auditável; reutilizado no cadastro da auditora e na gestão de vínculos."""
     authorize_invitation(conn, user, payload.org_id, payload.role)
     redirect = urlsplit(config.CLERK_INVITE_REDIRECT_URL)
@@ -106,7 +107,8 @@ def issue_invitation(conn, user: Usuario, x_docrisk_link: str, payload: Invitati
     if conn.execute("SELECT 1 FROM identity_invitations WHERE email=? AND org_id=? AND role=? AND status IN ('CREATING','PENDING') AND expires_at>?",
                     (payload.email, payload.org_id, payload.role.value, now().isoformat())).fetchone():
         raise HTTPException(409, "Já existe convite pendente para este acesso.")
-    invitation_id = secrets.token_urlsafe(24)
+    if invitation_id is None:
+        invitation_id = secrets.token_urlsafe(24)
     created = now()
     conn.execute("INSERT INTO identity_invitations (id,email,nome,org_id,role,invited_by,invited_link_id,status,created_at,expires_at) VALUES (?,?,?,?,?,?,?,'CREATING',?,?)",
                  (invitation_id, payload.email, payload.nome, payload.org_id, payload.role.value, user.id, x_docrisk_link,

@@ -23,7 +23,7 @@ No modo operacional (DOCRISK_AUTH_MODE=clerk e DOCRISK_DEMO_MODE=0), a mesma aç
 1. Confirma a identidade institucional ADMIN_PLATAFORMA e o vínculo Clerk ativo de quem está cadastrando.
 2. Rejeita nomes de auditoras duplicados, inclusive diferenças de caixa e espaços nas extremidades.
 3. Cria a organização e emite um convite para ADMIN_BH pelo fluxo já existente de Clerk, com validade de 72 horas.
-4. Só considera a criação concluída quando o convite é registrado como PENDING. Falha no envio desfaz o cadastro da organização e remove o convite local.
+4. Só considera a criação concluída quando o convite é registrado como PENDING. Falha no envio remove somente o convite da tentativa que falhou. Sem outras operações, também desfaz o cadastro da organização, permitindo repetir o cadastro. Se outra requisição já emitiu/aceitou um convite ou criou vínculos/contratos, esses registros e a organização são preservados; a ocorrência fica na auditoria como AUDITORA_CADASTRO_PRESERVADO. Atualize a lista e gerencie os convites da organização existente.
 5. **Não cria usuário operacional nem retorna token demonstrativo** nessa etapa. O administrador é criado em users e recebe vínculo autorizado somente após confirmar o e-mail e aceitar o convite.
 6. Exibe convite pendente e administrador ativado na listagem de auditoras. A revogação de vínculo real acontece na tela Vínculos; botões de status por token de testes permanecem indisponíveis em modo Clerk.
 
