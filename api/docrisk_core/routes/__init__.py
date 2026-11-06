@@ -425,13 +425,23 @@ def review_document(document_id: int, payload: dict[str, Any],
              user.id, now, document_id))
         par_depois = _document_pair({"tipo": tipo_final.value, "worker_id": trabalhador_id,
                                      "competencia": competencia})
-        if dados_corrigidos and tipo_final in TIPOS_FOCO:
+        # Aprovar uma "possível duplicidade" confirma o documento novo como versão vigente.
+        duplicidade = any("Possível duplicidade" in m for m in _json_list(doc["motivos_revisao"]))
+        if (dados_corrigidos or duplicidade) and tipo_final in TIPOS_FOCO:
+            anteriores = conn.execute(
+                "SELECT id, versao FROM documents WHERE contract_id=? AND tipo=? AND worker_id=? "
+                "AND competencia=? AND status=? AND id<>? ORDER BY versao DESC, id DESC",
+                (doc["contract_id"], tipo_final.value, trabalhador_id, competencia,
+                 StatusDocumento.APTO.value, document_id)).fetchall()
             conn.execute(
                 "UPDATE documents SET status=?, revisado_por=?, updated_at=? "
                 "WHERE contract_id=? AND tipo=? AND worker_id=? AND competencia=? AND status=? AND id<>?",
                 (StatusDocumento.SUBSTITUIDO.value, user.id, now, doc["contract_id"], tipo_final.value,
                  trabalhador_id, competencia, StatusDocumento.APTO.value, document_id),
             )
+            if duplicidade and anteriores:
+                conn.execute("UPDATE documents SET versao=?, substitui_id=? WHERE id=?",
+                             (int(anteriores[0]["versao"]) + 1, anteriores[0]["id"], document_id))
         pendencias.resolver_do_documento(conn, document_id, "resolvida na revisão")
         _reconcile_pairs(conn, doc["contract_id"], par_antes, par_depois)
     elif action == "solicitar_correcao":
