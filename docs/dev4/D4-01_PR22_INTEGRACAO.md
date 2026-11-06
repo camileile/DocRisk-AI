@@ -84,3 +84,5 @@ Não houve publicação nem chamadas pagas.
 `nResultado final: 361 aprovados, 1 ignorado (76,99 s). CONCLUÍDA LOCALMENTE.
 
 Revalidação após PR #46: base a1f6109; 391 aprovados, 1 ignorado (91,95s). Ambiente exclusivo no worktree Dev4; sem APIs pagas.
+
+Base final f085df4 (PR #47): 408 aprovados, 1 ignorado, 233,85s, Python 3.13.14/Pillow 12.3.0; revisão estática diff --check aprovada. Status CONCLUÍDA LOCALMENTE; sem CI remoto.
