@@ -9,7 +9,7 @@ const base = process.env.DOCRISK_WEB_URL || "http://127.0.0.1:4173";
 const mockUrl = "http://127.0.0.1:8000/api/**";
 const cors = {
   "access-control-allow-origin": base,
-  "access-control-allow-methods": "GET, OPTIONS",
+  "access-control-allow-methods": "GET, POST, OPTIONS",
   "access-control-allow-headers": "Authorization, Content-Type, Accept",
   "content-type": "application/json",
 };
@@ -24,6 +24,8 @@ const batches = [
   { id: 21, contract_id: "CT-001", uploaded_by: "u-oper-beta", filename: "lote-real-teste.pdf", tipo_arquivo: "PDF", status: "CONCLUIDO", total_pages: 2, issue_id: null, erro: null, created_at: "2026-11-05T20:00:00", finished_at: "2026-11-05T20:00:07" },
   { id: 20, contract_id: "CT-002", uploaded_by: "u-oper-gama", filename: "outro-contrato.png", tipo_arquivo: "PNG", status: "PROCESSANDO", total_pages: 1, issue_id: null, erro: null, created_at: "2026-11-05T18:00:00", finished_at: null },
 ];
+const uploadedBatch = { id: 22, contract_id: "CT-001", uploaded_by: "u-oper-beta", filename: "novo-lote-sintetico.pdf", tipo_arquivo: "PDF", status: "CONCLUIDO", total_pages: 1, issue_id: null, erro: null, created_at: "2026-11-05T20:35:00", finished_at: "2026-11-05T20:35:08" };
+let uploadConfirmed = false;
 const docs = [
   { id: 88, batch_id: 21, contract_id: "CT-001", tipo: "HOLERITE", worker_id: "T001", competencia: "10/2026", status: "REVISAO_HUMANA", versao: 1, motivos_pendencia: [], motivos_revisao: ["revisar vínculo"] },
 ];
@@ -50,7 +52,18 @@ async function run() {
     const isSupplier = token === "Bearer test-supplier-token";
     if (path === "/api/me") return mockResponse(route, 200, isSupplier ? supplier : analyst);
     if (path === "/api/contracts") return mockResponse(route, 200, isSupplier ? [contracts[0]] : contracts);
-    if (path === "/api/batches") return mockResponse(route, 200, isSupplier ? [batches[0]] : batches);
+    if (path === "/api/supplier/batches" && req.method() === "POST") {
+      if (!isSupplier) return mockResponse(route, 403, { detail: "Ação não permitida" });
+      const body = req.postDataBuffer()?.toString("latin1") ?? "";
+      if (!body.includes("CT-001") || !body.includes("contract_id")) return mockResponse(route, 422, { detail: "Contrato ausente" });
+      if (body.includes("corrompido.pdf")) return mockResponse(route, 422, { detail: "PDF corrompido ou ilegível." });
+      if (!body.includes("novo-lote-sintetico.pdf")) return mockResponse(route, 422, { detail: "Arquivo não esperado" });
+      uploadConfirmed = true;
+      return mockResponse(route, 202, { batch_id: 22, status: "RECEBIDO" });
+    }
+    if (path === "/api/batches") return mockResponse(route, 200, isSupplier ? [...(uploadConfirmed ? [uploadedBatch] : []), batches[0]] : batches);
+    if (path === "/api/batches/22") return mockResponse(route, 200, uploadedBatch);
+    if (path === "/api/batches/22/documents") return mockResponse(route, 200, []);
     if (path === "/api/batches/21") return mockResponse(route, 200, batches[0]);
     if (path === "/api/batches/21/documents") {
       return mockResponse(route, 200, isSupplier
@@ -62,13 +75,13 @@ async function run() {
   try {
     await page.goto(base + "/acesso/", { waitUntil: "domcontentloaded" });
 
-    console.log("[F1 1/5] Token inválido mantém o usuário fora da área API");
+    console.log("[F1 1/6] Token inválido mantém o usuário fora da área API");
     await page.getByLabel("Token Bearer de teste").fill("token-incorreto");
     await page.getByRole("button", { name: "Conectar API de testes" }).click();
     await page.getByRole("alert").getByText(/Token inválido/).waitFor();
     assert(page.url().includes("/acesso"));
 
-    console.log("[F1 2/5] Identidade e contratos autorizados do analista");
+    console.log("[F1 2/6] Identidade e contratos autorizados do analista");
     await page.getByLabel("Token Bearer de teste").fill("test-analyst-token");
     await page.getByRole("button", { name: "Conectar API de testes" }).click();
     await page.waitForURL((url) => url.pathname.startsWith("/painel"));
@@ -78,7 +91,7 @@ async function run() {
     assert.equal(await page.getByText("lote-real-teste.pdf").count(), 0);
     await page.getByRole("combobox", { name: "Contrato" }).selectOption("CT-001");
 
-    console.log("[F1 3/5] Lotes e documentos obtidos da API, sem dados sintéticos");
+    console.log("[F1 3/6] Lotes e documentos obtidos da API, sem dados sintéticos");
     await page.getByRole("link", { name: "Lotes enviados", exact: true }).click();
     await page.getByText("lote-real-teste.pdf").waitFor();
     assert.equal(await page.getByText("LOTE-009").count(), 0);
@@ -86,8 +99,9 @@ async function run() {
     await page.getByText("Documento #88").waitFor();
     await page.getByText(/revisar vínculo/).waitFor();
     assert.equal(await page.getByRole("link", { name: "Pareceres", exact: true }).count(), 0);
+    assert.equal(await page.getByRole("link", { name: "Enviar documentos", exact: true }).count(), 0);
 
-    console.log("[F1 4/5] Saída limpa a sessão e demonstração continua disponível");
+    console.log("[F1 4/6] Saída limpa a sessão e demonstração continua disponível");
     await page.getByRole("link", { name: "Trocar perspectiva" }).click();
     await page.waitForURL((url) => url.pathname.startsWith("/acesso"));
     const html = await page.content();
@@ -98,7 +112,7 @@ async function run() {
     await page.getByRole("link", { name: "Lotes enviados", exact: true }).click();
     await page.getByText("LOTE-009").waitFor();
 
-    console.log("[F1 5/5] Fornecedora vê somente dados autorizados, sem revisão interna");
+    console.log("[F1 5/6] Fornecedora vê somente dados autorizados, sem revisão interna");
     await page.goto(base + "/acesso/");
     await page.getByLabel("Token Bearer de teste").fill("test-supplier-token");
     await page.getByRole("button", { name: "Conectar API de testes" }).click();
@@ -109,6 +123,30 @@ async function run() {
     await page.getByRole("button", { name: "Ver documentos" }).click();
     await page.getByText("Em análise").waitFor();
     assert.equal(await page.getByText("revisar vínculo").count(), 0);
+
+    console.log("[F1 6/6] Upload multipart real no cliente, erro 422 e acompanhamento de lote");
+    await page.getByRole("link", { name: "Enviar documentos", exact: true }).click();
+    await page.getByLabel("Selecionar arquivo para envio real").setInputFiles({
+      name: "arquivo.aej", mimeType: "text/plain", buffer: Buffer.from("AEJ de exemplo"),
+    });
+    await page.getByRole("alert").getByText(/AEJ ainda está pendente/).waitFor();
+    await page.getByLabel("Selecionar arquivo para envio real").setInputFiles({
+      name: "corrompido.pdf", mimeType: "application/pdf", buffer: Buffer.from("falso PDF de teste"),
+    });
+    await page.getByRole("checkbox", { name: /Confirmo que o arquivo é/ }).check();
+    await page.getByRole("button", { name: "Enviar arquivo ao backend" }).click();
+    await page.getByRole("alert").getByText("PDF corrompido ou ilegível.").waitFor();
+    assert(!uploadConfirmed, "Upload rejeitado não pode criar lote");
+    await page.getByLabel("Selecionar arquivo para envio real").setInputFiles({
+      name: "novo-lote-sintetico.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 teste sintético"),
+    });
+    await page.getByRole("checkbox", { name: /Confirmo que o arquivo é/ }).check();
+    await page.getByRole("button", { name: "Enviar arquivo ao backend" }).click();
+    await page.getByText("Recebimento confirmado — lote #22").waitFor();
+    await page.getByText(/Processamento documental concluído/).waitFor();
+    assert(uploadConfirmed, "O endpoint multipart deveria ter recebido um lote de teste");
+    await page.getByRole("link", { name: "Consultar histórico de lotes" }).click();
+    await page.getByText("novo-lote-sintetico.pdf").waitFor();
 
     assert(seen.every((request) => request.token === "presente"));
     assert.equal(runtimeErrors.length, 0, "Erros JS: " + runtimeErrors.join("; "));
