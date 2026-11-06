@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - "web/**"
+      - "api/**"
       - ".github/workflows/frontend-validation.yml"
   push:
     branches: [feat/web-admin-auditoria, main]
     paths:
       - "web/**"
+      - "api/**"
       - ".github/workflows/frontend-validation.yml"
   workflow_dispatch:
 
@@ -39,6 +41,8 @@ jobs:
         run: npm run typecheck
       - name: Build e exportação estática
         run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:8000
       - name: Validar rotas geradas
         run: |
           test -f out/index.html
@@ -62,5 +66,25 @@ jobs:
           done
           cat /tmp/docrisk-static.log
           exit 1
-      - name: Teste de navegação por perfil
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: API real (leitor offline, modo demonstração)
+        working-directory: api
+        env:
+          AI_PROVIDER: textlayer
+          DOCRISK_DEMO_MODE: "1"
+          DOCRISK_DATA_DIR: /tmp/docrisk-ci-data
+          CORS_ORIGINS: http://127.0.0.1:4173
+        run: |
+          pip install -e .
+          python -m uvicorn docrisk_core.api:app --host 127.0.0.1 --port 8000 > /tmp/docrisk-api.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8000/health > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/docrisk-api.log
+          exit 1
+      - name: Teste ponta a ponta por perfil (front + API)
         run: node scripts/smoke.cjs

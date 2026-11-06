@@ -1,0 +1,37 @@
+name: Backend - pytest
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "api/**"
+      - ".github/workflows/backend-tests.yml"
+  push:
+    branches: [main]
+    paths:
+      - "api/**"
+      - ".github/workflows/backend-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    name: Testes da API, motor documental e regras
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Dependências
+        run: pip install -e ".[test]"
+      - name: pytest (leitor offline; sem chamadas ao Gemini)
+        env:
+          AI_PROVIDER: textlayer
+        run: pytest -q
