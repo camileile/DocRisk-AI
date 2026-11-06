@@ -180,4 +180,4 @@ def test_mutacoes_de_status_bloqueadas_fora_do_modo_demo(demo, monkeypatch):
             if ator == "u-plataforma":
                 continue  # conta da plataforma só existe no seed demo
             r = client.patch(path, headers=_h(ator), json={"ativo": False})
-            assert r.status_code == 403, (ator, path)
+            assert r.status_code == 401, (ator, path)  # OIDC: tokens demo recusados antes da autorização
