@@ -10,15 +10,15 @@
 
 ## Execução
 
-- Data: 2026-11-06 06:16:01 UTC
+- Data: 2026-11-06 06:31:02 UTC
 - Leitor: `textlayer` (determinístico, sem chamadas de IA remotas)
-- Ambiente: Python 3.13.5, Windows-10-10.0.19045-SP0, processador `AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD`
+- Ambiente: Python 3.13.14, Windows-11-10.0.26300-SP0, processador `AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD`
 - Lote: 300 páginas, 100 trabalhadores, 300 documentos; status `CONCLUIDO`
-- Tempo total medido: 21.04 s
-- Vazão: 855.5 páginas/min
-- Tempo médio: 70.1 ms/página
-- Segmentação: 3.9 ms
-- Conciliação: 18.8 ms
+- Tempo total medido: 19.75 s
+- Vazão: 911.3 páginas/min
+- Tempo médio: 65.8 ms/página
+- Segmentação: 5.0 ms
+- Conciliação: 28.1 ms
 - Páginas lidas sem erro: 300/300
 
 ## Acurácia contra `gabarito.json`
