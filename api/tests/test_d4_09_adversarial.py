@@ -192,14 +192,14 @@ def test_CC02_uploads_simultaneos_geram_lotes_distintos(banco):  # noqa: F811
                             files={"file": (f"l{i}.pdf", pdf(f"Holerite {i}", "Pagina 1 de 1"), "application/pdf")})
             resultados.append(r.status_code)
 
-        threads = [threading.Thread(target=enviar, args=(i,)) for i in range(8)]
+        threads = [threading.Thread(target=enviar, args=(i,)) for i in range(16)]
         [t.start() for t in threads]
         [t.join(60) for t in threads]
-    assert resultados.count(202) == 8, resultados
+    assert resultados.count(202) == 16, resultados
     ids = [r[0] for r in _q("SELECT id FROM batches")]
-    assert len(ids) == len(set(ids)) == 8
+    assert len(ids) == len(set(ids)) == 16
     arquivos = {r[0] for r in _q("SELECT arquivo FROM batches")}
-    assert len(arquivos) == 8
+    assert len(arquivos) == 16
 
 
 def test_CC03_enfileirar_repetido_nao_duplica_na_fila(banco, monkeypatch):  # noqa: F811
