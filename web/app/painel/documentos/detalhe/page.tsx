@@ -44,6 +44,7 @@ function DocumentDetail() {
   if (!id) return <EmptyState title="Documento não informado." text="Abra um documento a partir da lista." />;
   if (loading) return <LoadingState />;
   if (error || !d) return <ErrorState message={error ?? "Documento não encontrado"} onRetry={reload} />;
+  const activeDocument = d;
   const bernhoeft = me?.org_tipo === "BERNHOEFT";
   const isAnalyst = me?.papel === "ANALISTA_BH";
   const batchId = d.batch_id;
@@ -53,16 +54,16 @@ function DocumentDetail() {
     setManualBusy(true);
     setManualError("");
     try {
-      await api("/api/documents/" + d.id + "/review", {
+      await api("/api/documents/" + activeDocument.id + "/review", {
         method: "PATCH",
         body: JSON.stringify({
           acao: "iniciar_revisao",
           motivo: manualReason.trim(),
-          esperado_em: d.updated_at,
+          esperado_em: activeDocument.updated_at,
         }),
       });
-      setContract(d.contract_id);
-      router.push("/painel/revisao/detalhe?id=" + d.id);
+      setContract(activeDocument.contract_id);
+      router.push("/painel/revisao/detalhe?id=" + activeDocument.id);
     } catch (error) {
       setManualError(error instanceof Error ? error.message : "Não foi possível iniciar a revisão manual.");
       await reload();
