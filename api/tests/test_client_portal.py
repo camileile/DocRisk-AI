@@ -14,7 +14,9 @@ def publish(client, contract="CT-001", month="10/2026"):
     draft = client.post("/api/reports", headers=headers,
                         json={"contract_id": contract, "competencia": month})
     assert draft.status_code == 201
-    result = client.post(f"/api/reports/{draft.json()['id']}/publish", headers=headers)
+    preview = client.get(f"/api/reports/{draft.json()['id']}/preview", headers=headers)
+    result = client.post(f"/api/reports/{draft.json()['id']}/publish", headers=headers,
+                         json={"conteudo_sha256": preview.json()["conteudo_sha256"]})
     assert result.status_code == 200
     return result.json()["id"]
 
