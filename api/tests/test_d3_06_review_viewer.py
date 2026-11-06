@@ -203,6 +203,36 @@ def test_manual_review_start_is_exclusive_to_analyst(document, role):
                             (document["id"],)).fetchone()[0] == "APTO"
 
 
+@pytest.mark.parametrize("action,initial_status,expected_status", [
+    ("iniciar_revisao", "APTO", "REVISAO_HUMANA"),
+    ("aprovar", "REVISAO_HUMANA", "APTO"),
+    ("corrigir_campos", "REVISAO_HUMANA", "REVISAO_HUMANA"),
+])
+def test_review_result_is_persisted_before_dependency_teardown(document, action, initial_status, expected_status):
+    from docrisk_core.auth import Usuario
+    from docrisk_core.contracts import Papel
+    from docrisk_core.routes import review_document
+
+    with db.tx() as conn:
+        conn.execute("UPDATE documents SET status=? WHERE id=?", (initial_status, document["id"]))
+    user = Usuario("u-analista", "Analista", "ORG-BH", "BERNHOEFT", Papel.ANALISTA_BH)
+    request = payload(document, acao=action)
+    writer = db.connect()
+    try:
+        result = review_document(document["id"], request, user, writer)
+        # An immediate redirect opens a separate connection before a yield
+        # dependency necessarily finishes. Success must already be visible.
+        with db.tx() as reader:
+            saved = reader.execute("SELECT status,campos_json FROM documents WHERE id=?", (document["id"],)).fetchone()
+            assert saved["status"] == result["status"] == expected_status
+            if action == "corrigir_campos":
+                assert json.loads(saved["campos_json"])["horas_extras_h"] == 12
+            assert reader.execute("SELECT COUNT(*) FROM audit WHERE acao=? AND alvo=?",
+                                  ("DOCUMENTO_" + action.upper(), str(document["id"]))).fetchone()[0] == 1
+    finally:
+        writer.close()
+
+
 @pytest.mark.parametrize("invalid", [
     {"motivo": "curto"}, {"motivo": " " * 20}, {"motivo": "x" * 501},
     {"motivo": None}, {"motivo": 12345678912}, {"esperado_em": "2000-01-01"},
