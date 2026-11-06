@@ -35,3 +35,14 @@ jobs:
         env:
           AI_PROVIDER: textlayer
         run: pytest -q
+      - name: Ambiente conectado com processos reais (D4-04)
+        env:
+          AI_PROVIDER: textlayer
+        run: python scripts/runtime_check.py --json "$RUNNER_TEMP/runtime-check.json"
+      - name: Relatorio do ambiente conectado
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-check-report
+          path: ${{ runner.temp }}/runtime-check.json
+          if-no-files-found: ignore
