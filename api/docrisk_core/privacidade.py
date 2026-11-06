@@ -1,7 +1,8 @@
 """Anonimização de dados pessoais (LGPD). Dono: FRENTE 3. Módulo puro: sem banco, sem rede.
 
 - mascarar_texto(texto)  -> (texto mascarado, [{"tipo", "inicio", "fim"}])  (offsets do texto ORIGINAL)
-- anonimizar_pdf(bytes)  -> bytes de um PDF com tarja preta; o texto sob a tarja é apagado de verdade.
+- anonimizar_pdf(bytes, paginas=None) -> bytes de um PDF com tarja preta (só as `paginas` 1-based, se
+  dadas); o texto sob a tarja é apagado de verdade. Página só de imagem levanta SemCamadaDeTexto.
 
 Mascara: CPF, RG, PIS/NIS, CTPS, data de nascimento (só com rótulo), e-mail, telefone,
 agência e conta bancária (só com rótulo).
@@ -66,12 +67,25 @@ def mascarar_texto(texto: str) -> tuple[str, list[dict]]:
     return "".join(saida), [{"tipo": t, "inicio": i, "fim": f} for t, i, f, _ in achados]
 
 
-def anonimizar_pdf(data: bytes) -> bytes:
-    """PDF com tarja preta sobre cada trecho sensível; apply_redactions apaga o texto de verdade."""
+class SemCamadaDeTexto(ValueError):
+    """Página só de imagem: a tarja não teria onde achar o dado, então não devolvemos PDF "anonimizado"."""
+
+
+def anonimizar_pdf(data: bytes, paginas: list[int] | None = None) -> bytes:
+    """PDF com tarja preta sobre cada trecho sensível; apply_redactions apaga o texto de verdade.
+
+    `paginas` (1-based) devolve só essas páginas, na ordem dada. Página com imagem e sem texto
+    levanta SemCamadaDeTexto. Imagem dentro de página que também tem texto NÃO é coberta
+    (shortcut: dado pessoal dentro de imagem exige as coordenadas do Gemini).
+    """
     doc = fitz.open(stream=data, filetype="pdf")
     try:
+        if paginas is not None:
+            doc.select([n - 1 for n in paginas])
         for page in doc:
             texto = page.get_text()
+            if not texto.strip() and page.get_images():
+                raise SemCamadaDeTexto(f"página {page.number + 1} é só imagem")
             valores = {texto[i:f] for _, i, f, _ in _detectar(texto)}
             for valor in valores:
                 for rect in page.search_for(valor):

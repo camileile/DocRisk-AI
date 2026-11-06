@@ -1,8 +1,12 @@
 """Anonimização: um caso positivo e um negativo por tipo + PDF com tarja de verdade."""
+import io
+
 import pymupdf as fitz
 import pytest
+from PIL import Image
 
-from docrisk_core.privacidade import anonimizar_pdf, mascarar_texto
+from docrisk_core.privacidade import SemCamadaDeTexto, anonimizar_pdf, mascarar_texto
+from test_f3_regras import _gerador
 
 # (tipo, texto com dado pessoal FICTÍCIO, valor que não pode sobrar)
 POSITIVOS = [
@@ -82,3 +86,32 @@ def test_pdf_sem_dado_pessoal_mantem_texto():
     saida = anonimizar_pdf(_pdf("Matrícula: T001", "Horas extras 08:00"))
     texto = fitz.open(stream=saida, filetype="pdf")[0].get_text()
     assert "T001" in texto and "08:00" in texto
+
+
+def test_paginas_escolhe_e_mantem_a_ordem_pedida():
+    doc = fitz.open()
+    for n in (1, 2, 3):
+        doc.new_page().insert_text((50, 80), f"pagina {n} CPF: 123.456.789-09", fontsize=11)
+    saida = fitz.open(stream=anonimizar_pdf(doc.tobytes(), [3, 1]), filetype="pdf")
+    assert [p.get_text().split()[1] for p in saida] == ["3", "1"]
+    assert "123.456.789-09" not in "".join(p.get_text() for p in saida)
+
+
+def test_pagina_so_de_imagem_e_recusada_em_vez_de_sair_sem_tarja():
+    buf = io.BytesIO()
+    Image.new("RGB", (40, 40), "white").save(buf, "PNG")
+    doc = fitz.open()
+    doc.new_page().insert_image(fitz.Rect(50, 50, 200, 200), stream=buf.getvalue())
+    with pytest.raises(SemCamadaDeTexto):
+        anonimizar_pdf(doc.tobytes())
+
+
+def test_lote_demo_holerites_tem_cpf_e_rg_e_saem_com_tarja(tmp_path):
+    lote = _gerador().gerar(tmp_path)["lote_demo.pdf"].read_bytes()
+    original = "".join(p.get_text() for p in fitz.open(stream=lote, filetype="pdf"))
+    depois = "".join(p.get_text() for p in fitz.open(stream=anonimizar_pdf(lote), filetype="pdf"))
+    for n in range(1, 6):
+        assert f"000.000.00{n}-00" in original and f"00.000.00{n}-0" in original
+        assert f"000.000.00{n}-00" not in depois and f"00.000.00{n}-0" not in depois
+    assert "00.000.000-0" not in depois  # RG do documento de identidade (rótulo "Registro")
+    assert depois.count("T001") == original.count("T001")  # matrícula e horas permanecem
