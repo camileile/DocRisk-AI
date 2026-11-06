@@ -36,11 +36,22 @@ async function run() {
     console.log("[live 1/5] Identidade e contratos do SQLite via FastAPI");
     await enter(analyst.token);
     await page.locator(".workspace-person").getByText("Analista Bernhoeft (demo)").waitFor();
-    const select = page.getByRole("combobox", { name: "Contrato" });
-    assert.equal(await select.locator("option").count(), 2);
+    // O Analista agora seleciona contratante/fornecedora/competência e só
+    // aprofunda por contrato quando necessário.
+    await page.getByRole("heading", { name: "Visão geral das divergências." }).waitFor();
+    await page.getByText("Cobertura da análise").waitFor();
+    const clientFilter = page.getByRole("combobox", { name: "Contratante" });
+    assert.equal(await clientFilter.locator("option").count(), 2);
+    const contractFilter = page.getByRole("combobox", { name: "Contrato (opcional)" });
+    assert.equal(await contractFilter.locator("option").count(), 3);
+    await clientFilter.selectOption("ORG-ALFA");
+    await page.getByRole("combobox", { name: "Fornecedora" }).selectOption("ORG-BETA");
+    await page.getByRole("combobox", { name: "Contrato (opcional)" }).selectOption("CT-001");
+    assert.equal(await page.getByRole("link", { name: "Lotes enviados", exact: true }).count(), 0);
 
     console.log("[live 2/5] Consulta lote/documentos processados pela F2");
-    await page.getByRole("link", { name: "Lotes enviados", exact: true }).click();
+    // Rota de consulta preservada, embora sem atalho no menu do Analista.
+    await page.goto(site + "/painel/lotes/", { waitUntil: "domcontentloaded" });
     await page.getByText("integracao-f1-sintetico.pdf").waitFor();
     await page.getByRole("row", { name: /integracao-f1-sintetico\.pdf/ }).getByRole("link", { name: /Abrir/ }).click();
     await page.getByText(/documento\(s\) separados/).waitFor();

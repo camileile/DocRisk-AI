@@ -123,7 +123,7 @@ function ProcessingStatus({ receipt, token, submittedContract, filename }: {
 }
 
 export function ApiUpload() {
-  const { apiSession, contract } = useDemo();
+  const { apiSession, contract, isDemo } = useDemo();
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [confirmed, setConfirmed] = useState(false);
@@ -138,6 +138,23 @@ export function ApiUpload() {
     (apiSession.user.papel === "OPERADOR_FORN" || apiSession.user.papel === "GESTOR_FORN") &&
     apiSession.contracts.some((item) => item.id === contract),
   );
+
+  if (isDemo) {
+    return (
+      <>
+        <PageIntro
+          eyebrow="DEMONSTRAÇÃO · FORNECEDORA"
+          title="Envio de documentos."
+          description="Esta prévia funciona sem API e mostra somente dados fictícios. Nenhum arquivo é recebido ou processado."
+        />
+        <section className="workspace-card api-unavailable">
+          <h2>Envio desativado nesta demonstração</h2>
+          <p>O envio de PDFs e imagens está disponível exclusivamente no ambiente de testes com backend conectado. Para conhecer o fluxo sem enviar dados, explore um lote ilustrativo e suas pendências.</p>
+          <Link className="button secondary" href="/painel/lotes">Ver lotes fictícios</Link>
+        </section>
+      </>
+    );
+  }
 
   if (!apiSession || !allowed) {
     return (

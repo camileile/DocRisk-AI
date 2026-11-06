@@ -95,10 +95,14 @@ class Pagina:
             self.p.insert_text((LARGURA - 120, ALTURA - 30), pagina, fontsize=9)
 
 
+def _nome(trabalhador: str) -> str:
+    """Nome fictício: os 5 do lote de demonstração ou um nome genérico (T006 em diante)."""
+    return NOMES.get(trabalhador, f"Trabalhador Fictício {trabalhador[1:]}")
+
+
 def _cabecalho(pg: Pagina, trabalhador: str) -> Pagina:
-    nome = NOMES.get(trabalhador, f"Trabalhador Fictício {trabalhador[1:]}")
     return (pg.linha(EMPRESA, 9)
-              .linha(f"Trabalhador: {nome}    Matrícula: {trabalhador}", 10)
+              .linha(f"Trabalhador: {_nome(trabalhador)}    Matrícula: {trabalhador}", 10)
               .linha(f"Competência: {COMPETENCIA}", 10).linha())
 
 
@@ -190,7 +194,7 @@ def _corpo_borrado(linhas: list[tuple[str, ...]]) -> bytes:
 def comprovante(doc: fitz.Document, t: str, valor: str, data: str) -> None:
     pg = Pagina(doc).titulo("COMPROVANTE DE PAGAMENTO")
     pg.linha("Banco Fictício S.A. — transferência eletrônica", 9).linha()
-    pg.linha(f"Favorecido: {NOMES[t]}    Matrícula: {t}", 10)
+    pg.linha(f"Favorecido: {_nome(t)}    Matrícula: {t}", 10)
     pg.linha(f"Competência: {COMPETENCIA}", 10)
     pg.linha(f"Valor pago: R$ {valor}", 11, negrito=True)
     pg.linha(f"Data do pagamento: {data}", 10)

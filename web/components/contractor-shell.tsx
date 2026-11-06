@@ -16,7 +16,7 @@ export function ContractorShell({ children }: { children: ReactNode }) {
 }
 
 function Contractor({ children }: { children: ReactNode }) {
-  const { me, logout } = useSession();
+  const { me, logout, isDemo } = useSession();
   const router = useRouter();
   if (!me) return null;
   return (
@@ -37,8 +37,8 @@ function Contractor({ children }: { children: ReactNode }) {
           <div className="sidebar-demo">
             <FlaskConical size={18} />
             <p>
-              <strong>Ambiente de demonstração</strong>
-              <span>Somente dados sintéticos</span>
+              <strong>{isDemo ? "Demonstração offline" : "Ambiente conectado"}</strong>
+              <span>{isDemo ? "Dados fictícios · somente consulta" : "API de testes"}</span>
             </p>
           </div>
           <button
@@ -68,7 +68,10 @@ function Contractor({ children }: { children: ReactNode }) {
             </div>
           </div>
         </header>
-        <main className="workspace-body">{children}</main>
+        <main className="workspace-body">
+          {isDemo && <div className="api-notice" role="status"><strong>Demonstração offline:</strong> parecer ilustrativo, não publicado de verdade.</div>}
+          {children}
+        </main>
       </div>
     </div>
   );

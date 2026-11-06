@@ -9,7 +9,6 @@ import {
   FileCheck2,
   Files,
   FlaskConical,
-  GitCompareArrows,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -27,11 +26,10 @@ const FORN: Papel[] = ["GESTOR_FORN", "OPERADOR_FORN"];
 const navigation = [
   { href: "/painel", label: "Visão geral", icon: LayoutDashboard, roles: [...BH, ...FORN] },
   { href: "/painel/envio", label: "Enviar lote", icon: Upload, roles: FORN },
-  { href: "/painel/lotes", label: "Lotes enviados", icon: Package, roles: [...BH, ...FORN] },
-  { href: "/painel/documentos", label: "Documentos", icon: Files, roles: [...BH, ...FORN] },
-  { href: "/painel/revisao", label: "Fila de revisão", icon: ClipboardCheck, roles: BH },
-  { href: "/painel/pendencias", label: "Pendências", icon: CircleAlert, roles: [...BH, ...FORN] },
-  { href: "/painel/conciliacoes", label: "Conciliações", icon: GitCompareArrows, roles: BH },
+  { href: "/painel/lotes", label: "Lotes enviados", icon: Package, roles: FORN },
+  { href: "/painel/documentos", label: "Documentos", icon: Files, roles: FORN },
+  { href: "/painel/revisao", label: "Fila de Exceções", icon: ClipboardCheck, roles: BH },
+  { href: "/painel/pendencias", label: "Pendências", icon: CircleAlert, roles: FORN },
   { href: "/painel/pareceres", label: "Pareceres", icon: FileCheck2, roles: BH },
 ];
 
@@ -70,13 +68,19 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
 function Workspace({ children }: { children: ReactNode }) {
   const path = usePathname().replace(/\/$/, "") || "/";
   const router = useRouter();
-  const { me, logout, contracts, contract, setContract } = useSession();
+  const { me, logout, contracts, contract, setContract, isDemo } = useSession();
   const [open, setOpen] = useState(false);
   if (!me) return null;
   const items = navigation.filter((item) => item.roles.includes(me.papel));
-  const current = items
-    .filter((item) => path === item.href || (item.href !== "/painel" && path.startsWith(`${item.href}/`)))
-    .sort((a, b) => b.href.length - a.href.length)[0];
+  // Rotas de detalhe continuam válidas, embora não apareçam como menus do Analista.
+  const isAnalystContext = me.papel === "ANALISTA_BH" &&
+    ["/painel/documentos", "/painel/lotes", "/painel/conciliacoes", "/painel/pendencias"]
+      .some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
+  const current = isAnalystContext
+    ? items.find((item) => item.href === "/painel/revisao")
+    : items
+        .filter((item) => path === item.href || (item.href !== "/painel" && path.startsWith(`${item.href}/`)))
+        .sort((a, b) => b.href.length - a.href.length)[0];
   const initials = me.nome
     .split(/\s+/)
     .filter((w) => /^[A-ZÀ-Ú]/.test(w))
@@ -117,8 +121,8 @@ function Workspace({ children }: { children: ReactNode }) {
           <div className="sidebar-demo">
             <FlaskConical size={18} />
             <p>
-              <strong>Ambiente de demonstração</strong>
-              <span>Somente dados sintéticos</span>
+              <strong>{isDemo ? "Demonstração offline" : "Ambiente conectado"}</strong>
+              <span>{isDemo ? "Dados fictícios · somente consulta" : "API de testes"}</span>
             </p>
           </div>
           <button
@@ -155,7 +159,8 @@ function Workspace({ children }: { children: ReactNode }) {
           </div>
         </header>
         <main className="workspace-body" id="conteudo-painel">
-          {contracts.length > 0 && (
+          {isDemo && <div className="api-notice" role="status"><strong>Demonstração offline:</strong> informações e documentos são inteiramente fictícios. Nenhuma alteração é enviada à API.</div>}
+          {contracts.length > 0 && !(me.papel === "ANALISTA_BH" && path === "/painel") && (
             <div className="workspace-context">
               <span>CONTRATO</span>
               <div>

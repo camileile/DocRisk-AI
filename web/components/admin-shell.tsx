@@ -16,7 +16,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 }
 
 function Admin({ children }: { children: ReactNode }) {
-  const { me, logout } = useSession();
+  const { me, logout, isDemo } = useSession();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   if (!me) return null;
@@ -45,8 +45,8 @@ function Admin({ children }: { children: ReactNode }) {
           <div className="sidebar-demo">
             <FlaskConical size={18} />
             <p>
-              <strong>Ambiente de demonstração</strong>
-              <span>Somente dados sintéticos</span>
+              <strong>{isDemo ? "Demonstração offline" : "Ambiente conectado"}</strong>
+              <span>{isDemo ? "Dados fictícios · somente consulta" : "API de testes"}</span>
             </p>
           </div>
           <button
@@ -85,6 +85,7 @@ function Admin({ children }: { children: ReactNode }) {
           </div>
         </header>
         <main className="workspace-body" id="conteudo-admin">
+          {isDemo && <div className="api-notice" role="status"><strong>Demonstração offline:</strong> eventos fictícios, sem acesso à API real.</div>}
           <div className="admin-context">
             <div>
               <ShieldCheck size={21} aria-hidden="true" />

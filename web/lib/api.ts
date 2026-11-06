@@ -1,3 +1,4 @@
+import { demoPageImage, demoRead, getDemoRole } from "./offline-demo";
 /* Cliente da API DocRisk (FastAPI em api/). O token fica só em sessionStorage e
  * vai no cabeçalho Authorization; imagens de página são baixadas como blob. */
 
@@ -166,6 +167,43 @@ export type Report = {
   created_at?: string;
   publicado_em: string | null;
 };
+export type AnalystOverviewData = {
+  filtros: {
+    contratantes: { id: string; nome: string }[];
+    fornecedoras: { id: string; nome: string }[];
+    contratos: { id: string; nome: string }[];
+    competencias: string[];
+    competencia_selecionada: string | null;
+  };
+  resumo: {
+    cadastrados: number;
+    avaliados: number;
+    divergencias: number;
+    taxa_divergencias: number | null;
+    cobertura: number | null;
+    horas_divergentes: number;
+    divergencias_sem_horas: number;
+    pendencias_criticas: number;
+    pendencias_abertas: number;
+  };
+  evolucao: {
+    competencia: string;
+    avaliados: number;
+    divergencias: number;
+    taxa_divergencias: number | null;
+    cobertura: number | null;
+  }[];
+  comparacao: {
+    id: string;
+    nome: string;
+    avaliados: number;
+    divergencias: number;
+    taxa_divergencias: number | null;
+    cobertura: number | null;
+  }[];
+  observacao: string;
+};
+
 export type Metrics = {
   documentos: {
     logicos: number;
@@ -250,6 +288,12 @@ async function errorMessage(response: Response): Promise<string> {
 }
 
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const demoRole = getDemoRole();
+  if (demoRole) {
+    if ((init.method ?? "GET").toUpperCase() !== "GET")
+      throw new ApiError(403, "Demonstração somente para consulta: nenhuma alteração foi enviada ao servidor.");
+    return demoRead(path, demoRole) as T;
+  }
   const headers = new Headers(init.headers);
   const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
@@ -288,6 +332,11 @@ export async function downloadBatchSource(batchId: number): Promise<void> {
 }
 
 export async function apiBlob(path: string): Promise<Blob> {
+  if (getDemoRole()) {
+    const match = path.match(/^\/api\/pages\/(\d+)\/image$/);
+    if (!match) throw new ApiError(404, "Imagem indisponível na demonstração.");
+    return demoPageImage(Number(match[1]));
+  }
   const token = getToken();
   const response = await fetch(`${API_URL}${path}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,

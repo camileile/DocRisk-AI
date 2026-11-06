@@ -1,4 +1,10 @@
-"""Insere T006–T100 no CT-001 sem alterar o seed-base da aplicação."""
+"""Insere T006–T100 no CT-001 sem alterar o seed-base da aplicação.
+
+ATENÇÃO: NÃO rode no banco da demonstração. O parecer lista TODOS os trabalhadores do
+contrato, então o lote de 16 páginas passaria a aparecer como "5 avaliados de 100".
+Use uma pasta de dados separada, por exemplo:  $env:DOCRISK_DATA_DIR = "data-100"
+(scripts/benchmark.py já usa um banco temporário próprio e não precisa deste script).
+"""
 from __future__ import annotations
 
 import sys

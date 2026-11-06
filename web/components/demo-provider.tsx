@@ -3,9 +3,12 @@
  * contratos de GET /api/contracts; a interface só esconde o que a API já bloqueia. */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { api, ApiError, getToken, setToken, type Contract, type Me, type Papel } from "@/lib/api";
+import { DEMO_CONTRACTS, demoUser, getDemoRole, setDemoRole } from "@/lib/offline-demo";
 
 type Session = {
   me: Me | null;
+  isDemo: boolean;
+  enterDemo: (role: Papel) => Me;
   role: Papel | null;
   loading: boolean;
   error: string | null;
@@ -27,6 +30,7 @@ const SessionContext = createContext<Session | null>(null);
 
 export function DemoProvider({ children }: { children: ReactNode }) {
   const [me, setMe] = useState<Me | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [contracts, setContracts] = useState<Contract[]>([]);
@@ -34,6 +38,18 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const [competence, setCompetence] = useState("10/2026");
 
   const load = useCallback(async (): Promise<Me | null> => {
+    const offline = getDemoRole();
+    if (offline) {
+      const user = demoUser(offline);
+      setMe(user);
+      setIsDemo(true);
+      setContracts(DEMO_CONTRACTS);
+      setContract((current) => DEMO_CONTRACTS.some((c) => c.id === current) ? current : DEMO_CONTRACTS[0].id);
+      setError(null);
+      setLoading(false);
+      return user;
+    }
+    setIsDemo(false);
     if (!getToken()) {
       setMe(null);
       setLoading(false);
@@ -63,6 +79,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (token: string) => {
+      setDemoRole(null);
+      setIsDemo(false);
       setToken(token);
       const user = await load();
       if (!user) throw new Error("Não foi possível entrar com este perfil.");
@@ -71,8 +89,23 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     [load],
   );
 
+  const enterDemo = useCallback((role: Papel): Me => {
+    setToken(null);
+    setDemoRole(role);
+    const user = demoUser(role);
+    setMe(user);
+    setIsDemo(true);
+    setContracts(DEMO_CONTRACTS);
+    setContract(DEMO_CONTRACTS[0].id);
+    setError(null);
+    setLoading(false);
+    return user;
+  }, []);
+
   const logout = useCallback(() => {
     setToken(null);
+    setDemoRole(null);
+    setIsDemo(false);
     setMe(null);
     setContracts([]);
     setContract("");
@@ -90,6 +123,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     <SessionContext.Provider
       value={{
         me,
+        isDemo,
+        enterDemo,
         role: me?.papel ?? null,
         loading,
         error,

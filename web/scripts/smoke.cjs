@@ -15,12 +15,23 @@ async function go(page, route) {
 }
 
 async function login(page, roleLabel, expectedPath) {
+  const roles = {
+    "Operador da fornecedora": "OPERADOR_FORN",
+    "Gestor da fornecedora": "GESTOR_FORN",
+    "Analista Bernhoeft": "ANALISTA_BH",
+    "Gestor da contratante": "GESTOR_CONTR",
+    "Administrador Bernhoeft": "ADMIN_BH",
+  };
+  const url = process.env.DOCRISK_API_URL || "http://127.0.0.1:8000";
+  const response = await fetch(url + "/api/demo/users");
+  assert.equal(response.status, 200, "API local deve habilitar DOCRISK_DEMO_MODE=1");
+  const users = await response.json();
+  const user = users.find((item) => (item.role || item.papel) === roles[roleLabel]);
+  assert.ok(user?.token, "Perfil de testes nao encontrado: " + roleLabel);
   await page.evaluate(() => sessionStorage.clear()).catch(() => {});
   await go(page, "/acesso/");
-  const radio = page.getByRole("radio", { name: new RegExp(roleLabel) }).first();
-  await radio.waitFor({ timeout: 20000 });
-  await radio.check();
-  await page.getByRole("button", { name: /^Entrar/ }).click();
+  await page.getByLabel("Token Bearer de teste").fill(user.token);
+  await page.getByRole("button", { name: /Conectar API de testes/ }).click();
   await page.waitForURL((url) => url.pathname.startsWith(expectedPath), { timeout: 20000 });
 }
 
@@ -38,7 +49,7 @@ async function run() {
 
     console.log("[2/7] Fornecedora envia o lote sintético e acompanha o processamento");
     await login(page, "Operador da fornecedora", "/painel");
-    assert.equal(await page.getByRole("link", { name: "Fila de revisão", exact: true }).count(), 0);
+    assert.equal(await page.getByRole("link", { name: "Fila de Exceções", exact: true }).count(), 0);
     assert.equal(await page.getByRole("link", { name: "Pareceres", exact: true }).count(), 0);
     await page.getByRole("link", { name: "Enviar lote", exact: true }).first().click();
     await page.getByLabel("Selecionar arquivo para envio real").setInputFiles(path.join(lote, "lote_demo.pdf"));
@@ -59,6 +70,14 @@ async function run() {
 
     console.log("[4/7] Analista: conciliação, revisão humana e busca");
     await login(page, "Analista Bernhoeft", "/painel");
+    await go(page, "/painel/");
+    await page.getByRole("heading", { name: "Visão geral das divergências." }).waitFor();
+    await page.getByRole("combobox", { name: "Contratante" }).selectOption("ORG-ALFA");
+    await page.getByRole("combobox", { name: "Fornecedora" }).selectOption("ORG-BETA");
+    await page.getByRole("combobox", { name: "Competência" }).selectOption("10/2026");
+    await page.getByText("Taxa de divergências trabalhistas").waitFor();
+    await page.getByText("Cobertura da análise").waitFor();
+    await page.getByText("Evolução mensal das divergências").waitFor();
     await go(page, "/painel/conciliacoes/");
     await page.getByText(/diferença de 4 h a conferir/).waitFor({ timeout: 30000 });
     await page.locator(".analysis-card", { hasText: "Trabalhador T002" }).locator(".status-badge", { hasText: "Sem divergência" }).waitFor({ timeout: 30000 });
@@ -66,7 +85,11 @@ async function run() {
     await page.getByRole("link", { name: /Conferir/ }).first().click();
     await page.getByRole("combobox", { name: /^Tipo/ }).selectOption("OUTRO");
     await page.getByRole("button", { name: /Aprovar classificação/ }).click();
-    await page.getByText("Fila vazia.").waitFor();
+    // Mesmo após resolver a revisão documental, conciliações e pendências
+    // continuam na fila; a navegação reduzida não as descarta.
+    await page.getByRole("heading", { name: "Fila de Exceções" }).waitFor();
+    await page.getByText("Nenhum documento aguardando revisão.").waitFor();
+    await page.getByText("Conciliações que exigem atenção", { exact: false }).waitFor();
     await go(page, "/painel/documentos/");
     await page.getByRole("searchbox").fill("T001");
     await page.getByRole("button", { name: "Buscar" }).click();
