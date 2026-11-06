@@ -6,7 +6,7 @@ from typing import Iterable
 
 from fastapi import Header, HTTPException
 
-from . import db
+from . import config, db
 from .contracts import Papel
 
 
@@ -20,6 +20,9 @@ class Usuario:
 
 
 def usuario_atual(authorization: str = Header(default="")) -> Usuario:
+    if not config.DEMO_MODE:
+        raise HTTPException(status_code=401, detail="Autenticação operacional OIDC ainda não configurada",
+                            headers={"WWW-Authenticate": "Bearer"})
     esquema, _, token = authorization.partition(" ")
     if esquema.lower() != "bearer" or not token.strip():
         raise HTTPException(status_code=401, detail="Token bearer obrigatório",
