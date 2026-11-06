@@ -47,3 +47,12 @@ backlog, CPU/memória, recuperação e duplicidade. Sem API paga.
 
 Diagnóstico concluído; implementação aguarda D2-14 (o lease muda o contrato de estados de Dev2)
 e a estabilização da release P0.
+
+## Reconciliação Codex — 2026-11-06
+Base a1f6109; backup backup/d4-10-20261106 (5d09bc9); rebase sem conflitos.
+Diagnóstico relido no código atual: fila local/thread e ausência de lease
+persistente permanecem. A trava mencionada acima pertence à D4-04, que é branch
+irmã e não está integrada nesta branch. Nenhuma implementação distribuída foi feita.
+Sem testes de carga 10x; alterações de schema/estados exigem alinhamento Dev1/Dev2.
+Status: NÃO INICIADA para implementação; apenas diagnóstico reconciliado.
+Suíte na base a1f6109: 370 aprovados, 1 ignorado (98,49s). D1-10 foi integrado depois no PR #47; telemetria agora existe, porém não implementa distribuição.
