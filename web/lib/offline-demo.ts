@@ -236,6 +236,7 @@ export function demoRead(path: string, role: Papel): unknown {
     if (d) {
       const detail: DocDetail = {
         ...visibleDoc(d, role),
+        aej: undefined, // a demonstração offline não tem documentos derivados de AEJ
         paginas_detalhe: d.paginas.map((p) => ({ ...p, texto: "EXEMPLO FICTÍCIO — " + d.tipo + ", trabalhador " + (d.worker_id ?? "não identificado") + ", competência " + (d.competencia ?? "não informada") })),
         versoes: [{ id: d.id, versao: d.versao, status: d.status, batch_id: d.batch_id, created_at: d.created_at }],
       };

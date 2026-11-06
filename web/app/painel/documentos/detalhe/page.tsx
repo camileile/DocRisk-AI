@@ -40,11 +40,12 @@ function DocumentDetail() {
   if (loading) return <LoadingState />;
   if (error || !d) return <ErrorState message={error ?? "Documento não encontrado"} onRetry={reload} />;
   const bernhoeft = me?.org_tipo === "BERNHOEFT";
+  const batchId = d.batch_id;
   async function downloadSource() {
     setSourceBusy(true);
     setSourceError("");
     try {
-      await downloadBatchSource(d.batch_id);
+      await downloadBatchSource(batchId);
     } catch (err) {
       setSourceError(err instanceof Error ? err.message : "Falha ao baixar o arquivo original");
     } finally {
