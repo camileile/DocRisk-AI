@@ -7,6 +7,26 @@ const TOKEN_KEY = "docrisk.token";
 const ROLE_KEY = "docrisk.offline-demo-role";
 let activeToken: string | null | undefined;
 let activeRole: Papel | null | undefined;
+let clerkProvider: (() => Promise<string | null>) | null = null;
+let clerkSessionId = "";
+let activeLink = "";
+const invalidationListeners = new Set<() => void>();
+export function onSessionInvalidated(listener: () => void) {
+  invalidationListeners.add(listener);
+  return () => { invalidationListeners.delete(listener); };
+}
+export function invalidateSession() {
+  clearClerkSession(); setToken(null);
+  invalidationListeners.forEach(listener => listener());
+}
+export function configureClerkSession(provider: () => Promise<string | null>, sessionId: string) {
+  activeToken = null; write(TOKEN_KEY, null);
+  clerkProvider = provider; clerkSessionId = sessionId; activeLink = ""; replaceSession();
+}
+export function selectClerkLink(id: string) { activeLink = id; replaceSession(); }
+export function clearClerkSession() {
+  clerkProvider = null; clerkSessionId = ""; activeLink = ""; replaceSession();
+}
 let version = 0;
 let controller = new AbortController();
 
@@ -28,6 +48,8 @@ function write(key: string, value: string | null) {
 }
 
 export function getToken(): string | null {
+  if (clerkProvider) return `clerk:${clerkSessionId}:${activeLink}`;
+  if (process.env.NEXT_PUBLIC_AUTH_MODE === "clerk") return null;
   if (activeToken === undefined) activeToken = read(TOKEN_KEY)?.trim() || null;
   return activeToken;
 }
@@ -47,5 +69,5 @@ export function setDemoRole(role: Papel | null): void {
 }
 export function getSessionVersion(): number { return version; }
 export function captureSession() {
-  return { token: getToken(), role: getDemoRole(), version, signal: controller.signal };
+  return { token: getToken(), role: getDemoRole(), version, signal: controller.signal, clerkProvider, link: activeLink };
 }

@@ -134,8 +134,9 @@ def test_cookie_policy_requires_http_only_secure_and_valid_samesite():
 
 
 def test_demo_bearer_authentication_is_rejected_in_operational_mode(banco, monkeypatch):
+    monkeypatch.setattr(config, "AUTH_MODE", "token")
     monkeypatch.setattr(config, "DEMO_MODE", False)
     with TestClient(app) as client:
         response = client.get("/api/me", headers={"Authorization": f"Bearer {_token('u-analista')}"})
     assert response.status_code == 401
-    assert "OIDC" in response.json()["detail"]
+    assert response.headers["www-authenticate"] == "Bearer"

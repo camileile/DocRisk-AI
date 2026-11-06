@@ -257,3 +257,39 @@ CREATE TABLE IF NOT EXISTS platform_settings (
   contato TEXT NOT NULL DEFAULT ''
 );
 INSERT OR IGNORE INTO platform_settings (id,nome) VALUES (1,'DocRisk AI');
+
+-- Identidades produtivas são independentes dos tokens demonstrativos.
+CREATE TABLE IF NOT EXISTS identity_links (
+  id TEXT PRIMARY KEY,
+  issuer TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  user_id TEXT UNIQUE REFERENCES users(id),
+  platform_account_id TEXT UNIQUE REFERENCES platform_accounts(id),
+  ativo INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL,
+  CHECK ((user_id IS NULL) != (platform_account_id IS NULL))
+);
+CREATE INDEX IF NOT EXISTS ix_identity_subject ON identity_links(issuer,subject,ativo);
+CREATE TABLE IF NOT EXISTS identity_invitations (
+  id TEXT PRIMARY KEY,
+  email TEXT NOT NULL,
+  nome TEXT NOT NULL,
+  org_id TEXT NOT NULL REFERENCES organizations(id),
+  role TEXT NOT NULL,
+  invited_by TEXT NOT NULL,
+  invited_link_id TEXT NOT NULL REFERENCES identity_links(id),
+  provider_id TEXT,
+  status TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  accepted_by TEXT,
+  accepted_at TEXT
+);
+CREATE INDEX IF NOT EXISTS ix_identity_invite_email ON identity_invitations(email,status);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ix_pending_identity_invite
+  ON identity_invitations(email,org_id,role) WHERE status IN ('CREATING','PENDING');
+CREATE TRIGGER IF NOT EXISTS identity_kind_exclusive BEFORE INSERT ON identity_links
+WHEN EXISTS (SELECT 1 FROM identity_links WHERE issuer=NEW.issuer AND subject=NEW.subject
+             AND (platform_account_id IS NULL) != (NEW.platform_account_id IS NULL))
+BEGIN SELECT RAISE(ABORT,'Identidade institucional independente'); END;

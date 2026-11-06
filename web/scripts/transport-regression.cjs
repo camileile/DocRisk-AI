@@ -148,5 +148,35 @@ async function cancellationAndSession() {
   }
   console.log('PASS: caller abort, session replacement and stale files discarded with/without storage');
 }
-(async () => { await httpAndBodies(); await uploadsAndTimeouts(); await cancellationAndSession(); })()
+async function clerkSessions() {
+  let bearer = 'jwt-first';
+  const calls = [];
+  const env = connected({ fetch: async (_url, init) => { calls.push(init); return new Response('{"ok":true}'); } });
+  env.session.configureClerkSession(async () => bearer, 'session-id');
+  env.session.selectClerkLink('link-authorized');
+  assert.equal(env.storage.has('docrisk.token'), false, 'Clerk credentials must not persist in sessionStorage');
+  await env.api('/api/me');
+  bearer = 'jwt-refreshed';
+  await env.api('/api/me');
+  assert.equal(calls[0].headers.get('Authorization'), 'Bearer jwt-first');
+  assert.equal(calls[1].headers.get('Authorization'), 'Bearer jwt-refreshed');
+  assert.equal(calls[1].headers.get('X-DocRisk-Link'), 'link-authorized');
+  const obsolete = env.getToken();
+  env.session.selectClerkLink('link-other');
+  await assert.rejects(env.api('/api/me', { expectedToken: obsolete }), error(env, 401, 'session'));
+  let invalidated = false;
+  const unsubscribe = env.session.onSessionInvalidated(() => { invalidated = true; });
+  env.context.fetch = async () => new Response('{}', { status: 403, headers: { 'X-DocRisk-Link-Invalid': '1' } });
+  await assert.rejects(env.api('/api/me'), e => e.status === 403);
+  assert(invalidated); assert.equal(env.getToken(), null); unsubscribe();
+  const late = deferred();
+  env.session.configureClerkSession(() => late.promise, 'another-session');
+  const request = env.api('/api/me');
+  const rejected = assert.rejects(request, error(env, 0, 'session'));
+  env.session.clearClerkSession();
+  late.resolve('jwt-obsolete'); await rejected;
+  assert.equal(calls.length, 2, 'old token provider must not trigger a request after logout');
+  console.log('PASS: Clerk renewal, binding headers, revoked context, no stored JWT and late identity discarded');
+}
+(async () => { await httpAndBodies(); await uploadsAndTimeouts(); await cancellationAndSession(); await clerkSessions(); })()
   .catch(e => { console.error(e); process.exitCode = 1; });
