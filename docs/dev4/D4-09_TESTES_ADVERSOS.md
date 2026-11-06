@@ -73,3 +73,13 @@ A branch original está em uso na pasta que o usuário mandou manter intocada.
 Esta adaptação fica em codex/d4-09-validated-snapshot, cópia isolada de d591967.
 Não movida para a branch original; depende da liberação daquela árvore.
 Status: PARCIAL (validação local aprovada; referência original não atualizada).
+
+### Revalidação final f085df4 — FALHOU
+Na base PR47, com Pillow12.3: 419 aprovados, 1 ignorado e 1 falha em 201,76s.
+CC01 (quatro processamentos do mesmo lote) reproduziu IntegrityError UNIQUE
+constraint failed: doc_pages.page_id. Repetição isolada confirmou (27 aprovados,
+1 falha até interromper). Na base a1f6109 esse cenário passou.
+CC02 (16 uploads) passou na suíte; preservado sem reduzir concorrência.
+Necessita investigação de Dev1 em worker/consolidação e revalidação com Dev2.
+Não alterado pipeline nem mascarado o teste. Status atual: FALHOU, além da
+pendência de aplicar esta cópia à branch original quando a árvore for liberada.
