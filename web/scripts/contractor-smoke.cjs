@@ -13,7 +13,7 @@ async function run() {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   try {
-    await page.goto(base + (connected ? "/operacao/" : "/acesso/"));
+    await page.goto(base + (connected ? "/operacao/" : "/demo/"));
     if (!connected) await page.getByRole("radio").first().waitFor();
     if (connected) {
       const users = await (await fetch(api + "/api/demo/users")).json();
