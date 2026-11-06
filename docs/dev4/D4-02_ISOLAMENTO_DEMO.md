@@ -112,3 +112,5 @@ Backend: 340 aprovados, 1 ignorado. test:transport aprovado.
 A primeira execução P0 encontrou react-test-renderer ausente; repetida com as
 dependências do npm ci instalado no worktree de reconciliação.
 Status: CONCLUÍDA LOCALMENTE para isolamento. CI remoto não executado.
+
+Base final f085df4: 387 aprovados, 1 ignorado (225,87s), Python 3.13.14/Pillow12.3. Isolamento 26/26 após Clerk; PR47 altera somente backend/docs, frontend idêntico ao ensaiado. TypeScript/build/P0/transporte aprovados no frontend equivalente do ensaio final. Status CONCLUÍDA LOCALMENTE; sem CI remoto.
