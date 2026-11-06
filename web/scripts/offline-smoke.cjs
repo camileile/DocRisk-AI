@@ -43,7 +43,7 @@ async function run() {
         assert.equal(await page.getByRole("button", { name: "Criar rascunho" }).isDisabled(), true);
       }
       if (role === "Gestor da contratante") {
-        await page.getByText("O que foi conferido").waitFor();
+        await page.getByRole("heading", { name: /O que foi conferido/ }).waitFor();
         await page.goto(base + "/painel/", { waitUntil: "domcontentloaded" });
         await page.waitForURL((url) => url.pathname.startsWith("/contratante/"), { timeout: 15000 });
       }
