@@ -1,4 +1,5 @@
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 from fastapi.testclient import TestClient
 
@@ -16,6 +17,15 @@ def _token(user_id):
 
 def _headers(user_id="u-analista"):
     return {"Authorization": f"Bearer {_token(user_id)}"}
+
+
+def _publish(client, report_id, user_id="u-analista", conteudo_sha256=None):
+    headers = _headers(user_id)
+    if conteudo_sha256 is None:
+        preview = client.get(f"/api/reports/{report_id}/preview", headers=headers)
+        conteudo_sha256 = preview.json()["conteudo_sha256"]
+    return client.post(f"/api/reports/{report_id}/publish", headers=headers,
+                       json={"conteudo_sha256": conteudo_sha256})
 
 
 def _api_lote():
@@ -321,10 +331,7 @@ def test_publish_new_report_version_replaces_previous(banco, monkeypatch):
         assert new_report["versao"] == 2
         assert new_report["status"] == "RASCUNHO"
 
-        publish_response = client.post(
-            f"/api/reports/{new_report['id']}/publish",
-            headers=_headers(),
-        )
+        publish_response = _publish(client, new_report["id"])
 
     assert publish_response.status_code == 200, publish_response.text
 
@@ -341,6 +348,68 @@ def test_publish_new_report_version_replaces_previous(banco, monkeypatch):
     assert current["status"] == "APROVADO_PUBLICADO"
     assert current["versao"] == 2
     assert json.loads(current["conteudo_json"]) == {"versao": 2}
+
+
+def test_publish_rejects_changed_preview_and_an_older_draft(banco, monkeypatch):
+    from docrisk_core.routes import parecer
+
+    snapshots = iter((
+        {"estado": "prévia"}, {"estado": "prévia antes da mudança"}, {"estado": "mudou"},
+        {"estado": "atualizado"}, {"estado": "atualizado"},
+    ))
+    monkeypatch.setattr(
+        parecer,
+        "snapshot_parecer",
+        lambda conn, contract_id, competencia: next(snapshots),
+    )
+    with TestClient(app) as client:
+        older = client.post("/api/reports", headers=_headers(),
+                            json={"contract_id": "CT-001", "competencia": "10/2026"}).json()
+        preview = client.get(f"/api/reports/{older['id']}/preview", headers=_headers())
+        with db.tx() as conn:
+            assert conn.execute("SELECT conteudo_json FROM reports WHERE id=?", (older["id"],)).fetchone()[0] is None
+
+        newer = client.post("/api/reports", headers=_headers(),
+                            json={"contract_id": "CT-001", "competencia": "10/2026"}).json()
+        stale_preview = client.get(f"/api/reports/{newer['id']}/preview", headers=_headers())
+        stale_publish = client.post(f"/api/reports/{newer['id']}/publish", headers=_headers(),
+                                    json={"conteudo_sha256": stale_preview.json()["conteudo_sha256"]})
+        current_preview = client.get(f"/api/reports/{newer['id']}/preview", headers=_headers())
+        publish_newer = client.post(f"/api/reports/{newer['id']}/publish", headers=_headers(),
+                                    json={"conteudo_sha256": current_preview.json()["conteudo_sha256"]})
+        publish_older = _publish(client, older["id"], conteudo_sha256="0" * 64)
+
+    assert preview.status_code == stale_preview.status_code == 200
+    assert stale_publish.status_code == 409
+    assert current_preview.status_code == publish_newer.status_code == 200
+    assert preview.json()["conteudo_json"] == {"estado": "prévia"}
+    assert publish_newer.json()["conteudo_json"] == {"estado": "atualizado"}
+    assert publish_older.status_code == 409
+    with db.tx() as conn:
+        old = conn.execute("SELECT status, conteudo_json FROM reports WHERE id=?", (older["id"],)).fetchone()
+        current = conn.execute("SELECT status FROM reports WHERE id=?", (newer["id"],)).fetchone()
+    assert old["status"] == "RASCUNHO" and old["conteudo_json"] is None
+    assert current["status"] == "APROVADO_PUBLICADO"
+
+
+def test_concurrent_publication_accepts_only_one_request(banco, monkeypatch):
+    from docrisk_core.routes import parecer
+
+    monkeypatch.setattr(parecer, "snapshot_parecer",
+                        lambda conn, contract_id, competencia: {"fixo": True})
+    with TestClient(app) as client:
+        draft = client.post("/api/reports", headers=_headers(),
+                            json={"contract_id": "CT-001", "competencia": "10/2026"}).json()
+        preview = client.get(f"/api/reports/{draft['id']}/preview", headers=_headers()).json()
+        payload = {"conteudo_sha256": preview["conteudo_sha256"]}
+
+        def publish_once():
+            return client.post(f"/api/reports/{draft['id']}/publish", headers=_headers(), json=payload)
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            responses = list(pool.map(lambda _: publish_once(), range(2)))
+
+    assert sorted(response.status_code for response in responses) == [200, 409]
 
 def test_search_snippet_uses_neutral_markers(banco):
     batch_id = _insert_batch(status="CONCLUIDO")

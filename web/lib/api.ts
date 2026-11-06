@@ -163,6 +163,7 @@ export type Report = {
   versao: number;
   status: "RASCUNHO" | "EM_REVISAO" | "APROVADO_PUBLICADO" | "SUBSTITUIDO_POR_VERSAO";
   conteudo_json: ReportContent | Record<string, never>;
+  conteudo_sha256?: string;
   observacoes?: string | null;
   autor_id?: string;
   created_at?: string;

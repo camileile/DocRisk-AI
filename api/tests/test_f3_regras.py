@@ -164,7 +164,10 @@ def test_lote_demo_confere_com_gabarito_e_fluxo_completo(banco, lote):  # noqa: 
         assert client.get(f"/api/reports/{rascunho['id']}/preview",
                           headers=_h("u-gestor-alfa")).status_code == 403
         assert client.post(f"/api/reports/{rascunho['id']}/publish", headers=_h("u-gestor-alfa")).status_code == 403
-        pub = client.post(f"/api/reports/{rascunho['id']}/publish", headers=_h("u-analista"))
+        analyst = _h("u-analista")
+        preview = client.get(f"/api/reports/{rascunho['id']}/preview", headers=analyst)
+        pub = client.post(f"/api/reports/{rascunho['id']}/publish", headers=analyst,
+                          json={"conteudo_sha256": preview.json()["conteudo_sha256"]})
         assert pub.status_code == 200
         publicados = client.get("/api/client/reports", headers=_h("u-gestor-alfa")).json()
         assert len(publicados) == 1

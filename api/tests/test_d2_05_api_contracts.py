@@ -30,7 +30,9 @@ def test_report_routes_validate_competence_and_return_content_as_object(banco):
         assert draft["status"] == "RASCUNHO"
         assert draft["conteudo_json"] == {}
 
-        published = client.post(f"/api/reports/{draft['id']}/publish", headers=analyst)
+        preview = client.get(f"/api/reports/{draft['id']}/preview", headers=analyst)
+        published = client.post(f"/api/reports/{draft['id']}/publish", headers=analyst,
+                                json={"conteudo_sha256": preview.json()["conteudo_sha256"]})
         assert published.status_code == 200, published.text
         result = published.json()
         assert result["status"] == "APROVADO_PUBLICADO"

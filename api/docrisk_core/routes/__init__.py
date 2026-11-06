@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import re
@@ -13,7 +14,7 @@ from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, 
 from fastapi.responses import FileResponse, Response
 
 from .. import config, db
-from ..api_models import ReportCreate, ReportResponse
+from ..api_models import ReportCreate, ReportPublish, ReportResponse
 from ..auth import (Usuario, auditar, contratos_do_usuario, exigir_contrato,
                     exigir_papel, usuario_atual)
 from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT,
@@ -88,7 +89,13 @@ def _reconcile_pairs(conn: sqlite3.Connection, contract_id: str,
 def _report_result(row: sqlite3.Row | dict[str, Any]) -> dict[str, Any]:
     result = dict(row)
     result["conteudo_json"] = _json_object(result.get("conteudo_json"))
+    result["conteudo_sha256"] = _hash_report_content(result["conteudo_json"])
     return result
+
+
+def _hash_report_content(content: dict[str, Any]) -> str:
+    canonical = json.dumps(content, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def _contract_or_404(conn: sqlite3.Connection, user: Usuario, contract_id: str) -> None:
@@ -810,6 +817,7 @@ def search(q: str = Query(min_length=1, max_length=250),
 def create_report(payload: ReportCreate, user: Usuario = Depends(usuario_atual),
                   conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     exigir_papel(user, [Papel.ANALISTA_BH])
+    conn.execute("BEGIN IMMEDIATE")
     contract_id = payload.contract_id
     competencia = payload.competencia
     _contract_or_404(conn, user, contract_id)
@@ -857,28 +865,47 @@ def preview_report(report_id: int, user: Usuario = Depends(usuario_atual),
         return _report_result(report)
     result = _report_result(report)
     result["conteudo_json"] = parecer.snapshot_parecer(conn, report["contract_id"], report["competencia"])
+    result["conteudo_sha256"] = _hash_report_content(result["conteudo_json"])
     return result
 
 
 @router.post("/api/reports/{report_id}/publish", response_model=ReportResponse,
              response_model_exclude_unset=True)
-def publish_report(report_id: int, user: Usuario = Depends(usuario_atual),
+def publish_report(report_id: int, payload: ReportPublish | None = None, user: Usuario = Depends(usuario_atual),
                    conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     exigir_papel(user, [Papel.ANALISTA_BH])
+    conn.execute("BEGIN IMMEDIATE")
     report = conn.execute("SELECT * FROM reports WHERE id=?", (report_id,)).fetchone()
     if report is None:
         raise HTTPException(404, "Parecer não encontrado")
     _contract_or_404(conn, user, report["contract_id"])
     if report["status"] != StatusParecer.RASCUNHO.value:
         raise HTTPException(409, "Somente rascunhos podem ser publicados")
+    if payload is None:
+        raise HTTPException(422, "Hash da prévia é obrigatório para publicar")
+    publicada = conn.execute(
+        "SELECT MAX(versao) FROM reports WHERE contract_id=? AND competencia=? AND status IN (?, ?)",
+        (report["contract_id"], report["competencia"], StatusParecer.APROVADO_PUBLICADO.value,
+         StatusParecer.SUBSTITUIDO_POR_VERSAO.value),
+    ).fetchone()[0]
+    if publicada is not None and int(publicada) >= int(report["versao"]):
+        raise HTTPException(409, "Já existe versão publicada igual ou mais recente")
     try:
         snapshot = parecer.snapshot_parecer(conn, report["contract_id"], report["competencia"])
     except NotImplementedError as exc:
         raise HTTPException(503, "Geração de parecer ainda não está disponível (F3)") from exc
+    conteudo_sha256 = _hash_report_content(snapshot)
+    if conteudo_sha256 != payload.conteudo_sha256:
+        raise HTTPException(409, "Conteúdo alterado desde a prévia; atualize e confira antes de publicar")
     now = db.agora()
-    conn.execute("UPDATE reports SET status=?, conteudo_json=?, publicado_em=?, publicado_por=? WHERE id=?",
-                 (StatusParecer.APROVADO_PUBLICADO.value, json.dumps(snapshot, ensure_ascii=False),
-                  now, user.id, report_id))
+    updated = conn.execute(
+        "UPDATE reports SET status=?, conteudo_json=?, publicado_em=?, publicado_por=? "
+        "WHERE id=? AND status=?",
+        (StatusParecer.APROVADO_PUBLICADO.value, json.dumps(snapshot, ensure_ascii=False),
+         now, user.id, report_id, StatusParecer.RASCUNHO.value),
+    )
+    if updated.rowcount != 1:
+        raise HTTPException(409, "O rascunho foi alterado durante a publicação")
     conn.execute("UPDATE reports SET status=? WHERE contract_id=? AND competencia=? AND id<>? "
                  "AND status=?", (StatusParecer.SUBSTITUIDO_POR_VERSAO.value, report["contract_id"],
                                   report["competencia"], report_id,
