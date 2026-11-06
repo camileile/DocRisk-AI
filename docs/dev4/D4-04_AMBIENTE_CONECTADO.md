@@ -114,3 +114,5 @@ Suíte completa: 365 aprovados, 1 ignorado em 74,83 s. compileall e diff --check
 Revalidação após PR #46: base a1f6109; conflito de lifespan resolvido mantendo validate_configuration e db.init_db(seed=config.AUTH_MODE == token e DEMO_MODE). Suíte: 395 aprovados, 1 ignorado (115,37s).
 
 Base final f085df4: mantidas funções de tarifas e novos limites Gemini do Dev1 ao resolver conflito em config.py. Suíte com Pillow12.3: 412 aprovados, 1 ignorado (234,98s). runtime_check repetido com esse ambiente: 11/11. Status CONCLUÍDA LOCALMENTE para ambiente conectado local; não equivale a homologação de piloto.
+
+Preparação de revisão 2026-11-06: cópia codex/d4-04-review-1148, base 1148e76, original preservada. Suíte: 424 aprovados, 1 ignorado (115,96s); runtime_check 11/11. Dev1 revisa config.py e interação worker/runtime; Dev2 revisa lifespan, CORS e autenticação. Mantida validação CORS de import do Dev2 e política operacional adicional do runtime; existe sobreposição intencional na leitura de origens, sem substituir o contrato atual nem refatorar essas fronteiras. Sem publicação.
