@@ -12,13 +12,12 @@ from typing import Any
 import pymupdf
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse, Response
-from pydantic import ValidationError
 
 from .. import config, db, report_document, report_pdf
-from ..api_models import FieldReviewRequest, ReportCreate, ReportEditorial, ReportPublish, ReportResponse
+from ..api_models import ReportCreate, ReportEditorial, ReportPublish, ReportResponse
 from ..auth import (Usuario, auditar, contratos_do_usuario, exigir_contrato,
                     exigir_papel, usuario_atual)
-from ..contracts import (CamposPagina, CategoriaPendencia, PAPEIS_BERNHOEFT,
+from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT,
                          PAPEIS_FORNECEDORA, TIPOS_FOCO, Papel, StatusDocumento,
                          StatusParecer, StatusPendencia, StatusLote, TipoDocumento)
 from ..pipeline.render import ArquivoInvalido
@@ -506,67 +505,11 @@ def review_document(document_id: int, payload: dict[str, Any],
                          _document_pair({"tipo": doc["tipo"], "worker_id": doc["worker_id"],
                                          "competencia": doc["competencia"]}))
     elif action == "corrigir_campos":
-        if "fontes" in payload:
-            if doc["status"] not in {StatusDocumento.REVISAO_HUMANA.value, StatusDocumento.PENDENTE_CORRECAO.value}:
-                raise HTTPException(409, "A edição exige documento em revisão ou pendente de correção")
-            field_review.corrigir(conn, doc, payload, user.id)
-            _reconcile_pairs(conn, doc["contract_id"], _document_pair(doc))
-            auditar(conn, user, "DOCUMENTO_CORRIGIR_CAMPOS", str(document_id))
-            return {"document_id": document_id, "acao": action, "status": doc["status"]}
-        if doc["status"] == StatusDocumento.SUBSTITUIDO.value:
-            raise HTTPException(409, "Documento substituído não pode receber correções")
-        try:
-            request = FieldReviewRequest.model_validate(payload)
-        except ValidationError as exc:
-            raise HTTPException(422, "Informe campos, motivo e fonte válidos para a correção") from exc
-        corrections = request.campos
-        reason = request.motivo
-        source = request.fonte
-        allowed_fields = set(CamposPagina.model_fields)
-        unknown_fields = set(corrections) - allowed_fields
-        if unknown_fields:
-            raise HTTPException(422, f"Campo(s) não reconhecido(s): {', '.join(sorted(unknown_fields))}")
-
-        atuais = _json_object(doc["campos_json"])
-        corrigidos: dict[str, Any] = {}
-        for field_name, raw_value in corrections.items():
-            if raw_value is None:
-                raise HTTPException(422, f"Informe um valor para {field_name}")
-            try:
-                valor = getattr(CamposPagina.model_validate({field_name: raw_value}), field_name)
-            except ValidationError as exc:
-                raise HTTPException(422, f"Valor inválido para {field_name}") from exc
-            if valor is None or (isinstance(valor, (int, float)) and not math.isfinite(valor)):
-                raise HTTPException(422, f"Valor inválido para {field_name}")
-            if field_name == "data_pagamento":
-                if not isinstance(valor, str):
-                    raise HTTPException(422, "data_pagamento deve estar no formato DD/MM/AAAA")
-                try:
-                    datetime.strptime(valor, "%d/%m/%Y")
-                except ValueError as exc:
-                    raise HTTPException(422, "data_pagamento deve estar no formato DD/MM/AAAA") from exc
-            corrigidos[field_name] = valor
-
-        revision = int(conn.execute(
-            "SELECT COALESCE(MAX(revision_number), 0) + 1 FROM document_field_reviews WHERE document_id=?",
-            (document_id,),
-        ).fetchone()[0])
-        for field_name, valor in corrigidos.items():
-            original = atuais.get(field_name)
-            conn.execute(
-                "INSERT INTO document_field_reviews (document_id, field_name, original_value_json, "
-                "corrected_value_json, author_id, reason, source, document_version, revision_number, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (document_id, field_name, json.dumps(original, ensure_ascii=False, allow_nan=False),
-                 json.dumps(valor, ensure_ascii=False, allow_nan=False), user.id, reason[:1000], source[:500],
-                 int(doc["versao"]), revision, now),
-            )
-            atuais[field_name] = valor
-            revision += 1
-        conn.execute(
-            "UPDATE documents SET campos_json=?, revisado_por=?, updated_at=? WHERE id=?",
-            (json.dumps(atuais, ensure_ascii=False, allow_nan=False), user.id, now, document_id),
-        )
+        # Contrato documental único, mesmo quando chamado fora do frontend.
+        if doc["status"] not in {StatusDocumento.REVISAO_HUMANA.value,
+                                 StatusDocumento.PENDENTE_CORRECAO.value}:
+            raise HTTPException(409, "A edição exige documento em revisão ou pendente de correção")
+        field_review.corrigir(conn, doc, payload, user.id)
         _reconcile_pairs(conn, doc["contract_id"], _document_pair(doc))
     elif action in {"dividir", "unir_proximo"}:
         try:
@@ -981,8 +924,10 @@ def create_report(payload: ReportCreate, user: Usuario = Depends(usuario_atual),
          payload.observacoes, user.id, now))
     conn.execute("INSERT INTO report_editorial (report_id,recomendacoes) VALUES (?,?)", (cursor.lastrowid,payload.recomendacoes.strip()))
     auditar(conn, user, "PARECER_RASCUNHO_CRIADO", str(cursor.lastrowid))
-    return _report_result(conn.execute(
+    result = _report_result(conn.execute(
         "SELECT * FROM reports WHERE id=?", (cursor.lastrowid,)).fetchone(), conn)
+    conn.commit()
+    return result
 
 
 @router.get("/api/reports", response_model=list[ReportResponse], response_model_exclude_unset=True)
@@ -1018,7 +963,9 @@ def edit_report(report_id: int, payload: ReportEditorial, user: Usuario = Depend
     conn.execute("INSERT INTO report_editorial (report_id,recomendacoes) VALUES (?,?) ON CONFLICT(report_id) DO UPDATE SET recomendacoes=excluded.recomendacoes",
                  (report_id,payload.recomendacoes.strip()))
     auditar(conn,user,"PARECER_RECOMENDACOES_EDITADAS",str(report_id))
-    return _report_result(row,conn)
+    result = _report_result(row,conn)
+    conn.commit()
+    return result
 
 
 @router.get("/api/reports/{report_id}/preview", response_model=ReportResponse,
@@ -1035,6 +982,7 @@ def preview_report(report_id: int, user: Usuario = Depends(usuario_atual),
         return _report_result(report, conn)
     result = _report_result(report, conn)
     result["conteudo_json"], result["conteudo_sha256"] = report_document.cache_preview(conn, report, user)
+    conn.commit()
     return result
 
 
@@ -1086,8 +1034,10 @@ def publish_report(report_id: int, payload: ReportPublish | None = None, user: U
                                   report["competencia"], report_id,
                                   StatusParecer.APROVADO_PUBLICADO.value))
     auditar(conn, user, "PARECER_PUBLICADO", str(report_id))
-    return _report_result(conn.execute(
+    result = _report_result(conn.execute(
         "SELECT * FROM reports WHERE id=?", (report_id,)).fetchone(), conn)
+    conn.commit()
+    return result
 
 
 @router.get("/api/reports/{report_id}/pdf", response_class=Response, responses={200: {"content": {"application/pdf": {}}, "description": "Parecer em PDF"}})
