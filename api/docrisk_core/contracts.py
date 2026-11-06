@@ -8,6 +8,7 @@ Dono: as três frentes juntas (mudanças combinadas).
 """
 from __future__ import annotations
 
+import math
 import re
 from dataclasses import dataclass, field
 from enum import StrEnum
@@ -134,16 +135,86 @@ def numero_br(valor: Any) -> float | None:
     if valor is None or isinstance(valor, bool):
         return None
     if isinstance(valor, (int, float)):
-        return float(valor)
+        n = float(valor)
+        return n if math.isfinite(n) else None
     texto = re.sub(r"[^\d,.\-]", "", str(valor))
     if not texto:
         return None
     if "," in texto:
         texto = texto.replace(".", "").replace(",", ".")
     try:
-        return float(texto)
+        n = float(texto)
+        return n if math.isfinite(n) else None
     except ValueError:
         return None
+
+
+_DURACAO_HHMM = re.compile(r"^(\d{1,3}):(\d{2})$")
+_DURACAO_HH_HMM = re.compile(r"^(\d{1,3})\s*h\s*(\d{1,2})(?:\s*m(?:in(?:utos?)?)?)?$", re.I)
+_DURACAO_H = re.compile(r"^(\d{1,3})\s*h$", re.I)
+_DURACAO_DECIMAL = re.compile(r"^(\d{1,3}(?:[.,]\d+)?)\s*(?:h|horas?)$", re.I)
+_NAO_FINITO = re.compile(r"^[+-]?(?:nan|inf(?:inity)?)$", re.I)
+_MOEDA = re.compile(r"(?:R\$|\$|\bBRL\b|\breais?\b)", re.I)
+
+
+def _duracao_horas(valor: str) -> float:
+    texto = valor.strip().lower()
+    if _MOEDA.search(texto):
+        raise ValueError("valor monetário incompatível com campo de horas")
+    if _NAO_FINITO.fullmatch(texto):
+        raise ValueError("duração precisa ser finita")
+    if match := _DURACAO_HHMM.fullmatch(texto):
+        horas, minutos = map(int, match.groups())
+        if minutos >= 60:
+            raise ValueError("minutos da duração devem estar entre 00 e 59")
+        return horas + minutos / 60
+    if match := _DURACAO_HH_HMM.fullmatch(texto):
+        horas, minutos = map(int, match.groups())
+        if minutos >= 60:
+            raise ValueError("minutos da duração devem estar entre 00 e 59")
+        return horas + minutos / 60
+    if match := _DURACAO_H.fullmatch(texto):
+        return float(match.group(1))
+    if match := _DURACAO_DECIMAL.fullmatch(texto):
+        return numero_br(match.group(1))  # type: ignore[return-value]
+    if ":" in texto or re.search(r"\d\s*h", texto):
+        raise ValueError("formato de duração incompleto ou inválido")
+    numero = numero_br(texto)
+    if numero is None:
+        raise ValueError("duração ausente ou inválida")
+    return numero
+
+
+def _normalizar_numero_campo(valor: Any, campo: str) -> float | None:
+    if valor is None:
+        return None
+    if isinstance(valor, bool):
+        raise ValueError("booleano não é número válido")
+    if campo == "horas_extras_h" and isinstance(valor, str):
+        numero = _duracao_horas(valor)
+    elif isinstance(valor, (int, float)):
+        numero = float(valor)
+    elif isinstance(valor, str):
+        texto = valor.strip()
+        if _NAO_FINITO.fullmatch(texto):
+            raise ValueError("valor numérico precisa ser finito")
+        if re.search(r"\d\s*(?:h|horas?|:)", texto, re.I):
+            raise ValueError("duração incompatível com campo monetário")
+        numero = numero_br(texto)
+        if numero is None:
+            raise ValueError("valor incompleto ou inválido")
+    else:
+        raise ValueError("tipo numérico incompatível")
+    if not math.isfinite(numero):
+        raise ValueError("valor numérico precisa ser finito")
+    if numero < 0:
+        raise ValueError("valor numérico não pode ser negativo")
+    return numero
+
+
+def normalizar_duracao(valor: Any) -> float | None:
+    """Converte duração explícita para horas; rejeita moeda, finitude inválida e formatos truncados."""
+    return _normalizar_numero_campo(valor, "horas_extras_h")
 
 
 class CamposPagina(BaseModel):
@@ -157,9 +228,8 @@ class CamposPagina(BaseModel):
 
     @field_validator("horas_extras_h", "horas_extras_valor", "valor_liquido", "valor_pago", mode="before")
     @classmethod
-    def _numero(cls, v: Any) -> float | None:
-        n = numero_br(v)
-        return n if n is None or n >= 0 else None
+    def _numero(cls, v: Any, info) -> float | None:
+        return _normalizar_numero_campo(v, info.field_name)
 
 
 class AnalisePagina(BaseModel):
@@ -180,7 +250,37 @@ class AnalisePagina(BaseModel):
     qualidade: float = Field(default=0.5, ge=0, le=1)
     confianca_tipo: float = Field(default=0.5, ge=0, le=1)
     campos: CamposPagina = Field(default_factory=CamposPagina)
+    avisos_validacao: list[str] = Field(default_factory=list)
     origem: OrigemLeitura = "GEMINI"
+
+    @model_validator(mode="before")
+    @classmethod
+    def _sinalizar_campos_invalidos(cls, valores: Any) -> Any:
+        """Anula valores incompatíveis e registra aviso para revisão em vez de inventar número."""
+        if not isinstance(valores, dict):
+            return valores
+        dados = dict(valores)
+        if "campos" not in dados:
+            return dados
+        campos = dados.get("campos")
+        if hasattr(campos, "model_dump"):
+            campos = campos.model_dump()
+        if not isinstance(campos, dict):
+            return dados
+        campos_limpos = dict(campos)
+        avisos_brutos = dados.get("avisos_validacao")
+        avisos = list(avisos_brutos) if isinstance(avisos_brutos, list) else []
+        for nome in ("horas_extras_h", "horas_extras_valor", "valor_liquido", "valor_pago"):
+            if nome not in campos_limpos or campos_limpos[nome] is None:
+                continue
+            try:
+                campos_limpos[nome] = _normalizar_numero_campo(campos_limpos[nome], nome)
+            except ValueError as exc:
+                campos_limpos[nome] = None
+                avisos.append(f"Campo {nome}: {exc}; conferência humana necessária.")
+        dados["campos"] = campos_limpos
+        dados["avisos_validacao"] = list(dict.fromkeys(avisos))
+        return dados
 
     @field_validator("tipo", mode="before")
     @classmethod
