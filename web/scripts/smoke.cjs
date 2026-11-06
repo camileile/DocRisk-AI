@@ -15,12 +15,23 @@ async function go(page, route) {
 }
 
 async function login(page, roleLabel, expectedPath) {
+  const roles = {
+    "Operador da fornecedora": "OPERADOR_FORN",
+    "Gestor da fornecedora": "GESTOR_FORN",
+    "Analista Bernhoeft": "ANALISTA_BH",
+    "Gestor da contratante": "GESTOR_CONTR",
+    "Administrador Bernhoeft": "ADMIN_BH",
+  };
+  const url = process.env.DOCRISK_API_URL || "http://127.0.0.1:8000";
+  const response = await fetch(url + "/api/demo/users");
+  assert.equal(response.status, 200, "API local deve habilitar DOCRISK_DEMO_MODE=1");
+  const users = await response.json();
+  const user = users.find((item) => (item.role || item.papel) === roles[roleLabel]);
+  assert.ok(user?.token, "Perfil de testes nao encontrado: " + roleLabel);
   await page.evaluate(() => sessionStorage.clear()).catch(() => {});
   await go(page, "/acesso/");
-  const radio = page.getByRole("radio", { name: new RegExp(roleLabel) }).first();
-  await radio.waitFor({ timeout: 20000 });
-  await radio.check();
-  await page.getByRole("button", { name: /^Entrar/ }).click();
+  await page.getByLabel("Token Bearer de teste").fill(user.token);
+  await page.getByRole("button", { name: /Conectar API de testes/ }).click();
   await page.waitForURL((url) => url.pathname.startsWith(expectedPath), { timeout: 20000 });
 }
 

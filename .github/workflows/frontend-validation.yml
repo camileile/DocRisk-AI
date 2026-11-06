@@ -66,6 +66,8 @@ jobs:
           done
           cat /tmp/docrisk-static.log
           exit 1
+      - name: Demonstracao offline (5 perfis sem backend)
+        run: node scripts/offline-smoke.cjs
       - name: Python 3.12
         uses: actions/setup-python@v5
         with:
