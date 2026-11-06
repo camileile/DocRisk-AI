@@ -144,3 +144,5 @@ troca de sessão não se reproduziu nesta base. Não houve alteração do fronte
 Relatório: dev4-evidence/d4-03-latest-rehearsal.json no worktree de reconciliação.
 Status atual: PARCIAL para release (ensaio aprovado; sem vídeo e sem SHA congelado).
 Suíte a1f6109: 370 aprovados, 1 ignorado (99,23s).
+
+Base final f085df4: suíte com Pillow12.3, 387 aprovados, 1 ignorado (183,51s). Ensaio 7/7 em 70,8s. TypeScript/P0/transporte aprovados (incluindo renovação Clerk). Não congelar release enquanto regressão concorrente D4-09/CC01 estiver aberta; vídeo continua pendente. Status PARCIAL.
