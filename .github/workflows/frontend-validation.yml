@@ -1,0 +1,66 @@
+name: Frontend - TypeScript, build e smoke
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "web/**"
+      - ".github/workflows/frontend-validation.yml"
+  push:
+    branches: [feat/web-admin-auditoria, main]
+    paths:
+      - "web/**"
+      - ".github/workflows/frontend-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: TypeScript, build e navegação
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Dependências
+        run: npm ci
+      - name: TypeScript
+        run: npm run typecheck
+      - name: Build e exportação estática
+        run: npm run build
+      - name: Validar rotas geradas
+        run: |
+          test -f out/index.html
+          test -f out/acesso/index.html
+          test -f out/contato/index.html
+          test -f out/painel/index.html
+          test -f out/painel/conciliacoes/index.html
+          test -f out/painel/pareceres/index.html
+          test -f out/contratante/index.html
+          test -f out/administracao/index.html
+      - name: Playwright e Chromium (somente testes)
+        run: |
+          npm install --no-save --package-lock=false playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Servidor da exportação estática
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory out > /tmp/docrisk-static.log 2>&1 &
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:4173/ > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/docrisk-static.log
+          exit 1
+      - name: Teste de navegação por perfil
+        run: node scripts/smoke.cjs
