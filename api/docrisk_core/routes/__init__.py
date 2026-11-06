@@ -15,7 +15,7 @@ from fastapi.responses import FileResponse, Response
 from .. import config, db
 from ..auth import (Usuario, auditar, contratos_do_usuario, exigir_contrato,
                     exigir_papel, usuario_atual)
-from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT, PAPEIS_CONTRATANTE,
+from ..contracts import (CategoriaPendencia, PAPEIS_BERNHOEFT,
                          PAPEIS_FORNECEDORA, TIPOS_FOCO, Papel, StatusDocumento,
                          StatusParecer, StatusPendencia, StatusLote, TipoDocumento)
 from ..pipeline.render import ArquivoInvalido
@@ -566,7 +566,8 @@ def get_document(document_id: int, user: Usuario = Depends(usuario_atual),
 @router.get("/api/documents/{document_id}/anonimizado")
 def document_anonimizado(document_id: int, user: Usuario = Depends(usuario_atual),
                          conn: sqlite3.Connection = Depends(get_conn)) -> Response:
-    exigir_papel(user, [*PAPEIS_BERNHOEFT, *PAPEIS_FORNECEDORA, *PAPEIS_CONTRATANTE])
+    # A contratante consulta apenas pareceres publicados, nunca documentos operacionais.
+    _require_batch_reader(user)
     row = _document_or_404(conn, user, document_id)
     lote = conn.execute("SELECT arquivo, tipo_arquivo FROM batches WHERE id=?", (row["batch_id"],)).fetchone()
     if lote is None or lote["tipo_arquivo"] != "PDF":
@@ -590,7 +591,13 @@ def document_anonimizado(document_id: int, user: Usuario = Depends(usuario_atual
             if max(ordens) > original.page_count:
                 raise HTTPException(409, "Páginas do documento não correspondem ao PDF original")
             for ordem in ordens:
-                blocos = original[ordem - 1].get_text("dict").get("blocks", [])
+                page = original[ordem - 1]
+                # Anotações, campos e links não entram no texto usado pelas tarjas.
+                # Recusar a página evita devolver dados pessoais fora dessa camada.
+                if page.annot_xrefs():
+                    raise HTTPException(
+                        422, "PDF contém anotações, links ou formulários; não é possível anonimizar com segurança")
+                blocos = page.get_text("dict").get("blocks", [])
                 if any(bloco.get("type") == 1 for bloco in blocos):
                     raise HTTPException(
                         422, "PDF contém imagem; a anonimização não consegue garantir a remoção dos dados nela")

@@ -40,13 +40,34 @@ def test_ocr_inteiro_so_para_bernhoeft(lote_enviado):
 
 def test_pdf_anonimizado_so_do_documento_e_sem_dado_pessoal(lote_enviado):
     client, doc = lote_enviado
-    for usuario in ("u-oper-beta", "u-analista", "u-gestor-alfa"):  # fornecedora, Bernhoeft, contratante
+    for usuario in ("u-oper-beta", "u-gestor-beta", "u-analista", "u-admin"):
         r = client.get(f"/api/documents/{doc}/anonimizado", headers=_h(usuario))
         assert r.status_code == 200 and r.headers["content-type"] == "application/pdf", usuario
         assert len(fitz.open(stream=io.BytesIO(r.content), filetype="pdf")) == 1
         assert CPF_T001 not in _texto(r) and RG_T001 not in _texto(r) and "T001" in _texto(r)
     with db.tx() as conn:
-        assert conn.execute("SELECT COUNT(*) FROM audit WHERE acao='DOCUMENTO_ANONIMIZADO_BAIXADO'").fetchone()[0] == 3
+        assert conn.execute("SELECT COUNT(*) FROM audit WHERE acao='DOCUMENTO_ANONIMIZADO_BAIXADO'").fetchone()[0] == 4
+
+
+def test_contratante_nao_baixa_documentos_antes_ou_depois_da_publicacao(lote_enviado):
+    client, doc = lote_enviado
+    path = f"/api/documents/{doc}/anonimizado"
+    customer = _h("u-gestor-alfa")
+    assert client.get("/api/client/reports", headers=customer).json() == []
+    with db.tx() as conn:
+        conn.execute("UPDATE documents SET status='REVISAO_HUMANA' WHERE id=?", (doc,))
+    assert client.get(path, headers=customer).status_code == 403
+    assert client.get("/api/documents/999999/anonimizado", headers=customer).status_code == 403
+    draft = client.post("/api/reports", headers=_h("u-analista"),
+                        json={"contract_id": "CT-001", "competencia": "10/2026"})
+    assert draft.status_code == 201, draft.text
+    assert client.get(path, headers=customer).status_code == 403
+    published = client.post(f"/api/reports/{draft.json()['id']}/publish", headers=_h("u-analista"))
+    assert published.status_code == 200, published.text
+    assert client.get("/api/client/reports", headers=customer).json()
+    assert client.get(path, headers=customer).status_code == 403
+    with db.tx() as conn:
+        assert conn.execute("SELECT COUNT(*) FROM audit WHERE acao='DOCUMENTO_ANONIMIZADO_BAIXADO'").fetchone()[0] == 0
 
 
 def test_pdf_anonimizado_respeita_isolamento_por_contrato(lote_enviado):
@@ -95,3 +116,42 @@ def test_pdf_com_imagem_e_texto_e_recusado(lote_enviado):
     response = client.get(f"/api/documents/{doc}/anonimizado", headers=_h("u-oper-beta"))
     assert response.status_code == 422
     assert "imagem" in response.json()["detail"].lower()
+
+
+@pytest.mark.parametrize("conteudo", ["comentario", "formulario", "link"])
+def test_pdf_com_conteudo_fora_do_texto_e_recusado(lote_enviado, conteudo):
+    client, doc = lote_enviado
+    with db.tx() as conn:
+        batch = conn.execute(
+            "SELECT b.id,b.arquivo FROM batches b JOIN documents d ON d.batch_id=b.id WHERE d.id=?",
+            (doc,),
+        ).fetchone()
+        order = conn.execute(
+            "SELECT p.ordem FROM doc_pages dp JOIN pages p ON p.id=dp.page_id WHERE dp.document_id=?",
+            (doc,),
+        ).fetchone()[0]
+    with fitz.open(batch["arquivo"]) as original:
+        page = original[order - 1]
+        if conteudo == "comentario":
+            page.add_text_annot((50, 50), f"CPF: {CPF_T001}")
+        elif conteudo == "formulario":
+            widget = fitz.Widget()
+            widget.field_name = "cpf"
+            widget.field_type = fitz.PDF_WIDGET_TYPE_TEXT
+            widget.field_value = CPF_T001
+            widget.rect = fitz.Rect(50, 50, 200, 80)
+            page.add_widget(widget)
+        else:
+            page.insert_link({"kind": fitz.LINK_URI, "from": fitz.Rect(50, 50, 200, 80),
+                              "uri": f"https://example.invalid/?cpf={CPF_T001}"})
+        path = config.UPLOAD_DIR / f"pdf-{conteudo}-{doc}.pdf"
+        original.save(path)
+    with db.tx() as conn:
+        conn.execute("UPDATE batches SET arquivo=? WHERE id=?", (str(path), batch["id"]))
+    for user in ("u-oper-beta", "u-analista"):
+        response = client.get(f"/api/documents/{doc}/anonimizado", headers=_h(user))
+        assert response.status_code == 422, response.status_code
+        assert "anotações" in response.json()["detail"]
+        assert CPF_T001 not in response.text
+    with db.tx() as conn:
+        assert conn.execute("SELECT COUNT(*) FROM audit WHERE acao='DOCUMENTO_ANONIMIZADO_BAIXADO'").fetchone()[0] == 0
