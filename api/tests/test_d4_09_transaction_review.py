@@ -166,3 +166,73 @@ def test_same_aej_concurrently_does_not_duplicate_derived_documents(banco, monke
         derived = conn.execute("SELECT COUNT(*) FROM aej_documents WHERE batch_id=?", (bid,)).fetchone()[0]
         assert len(docs) == derived == 1, {"documents": len(docs), "aej_documents": derived}
         assert conn.execute("SELECT status, erro FROM batches WHERE id=?", (bid,)).fetchone()[:] == ("CONCLUIDO", None)
+
+
+def test_late_failure_cannot_downgrade_a_successful_concurrent_batch(banco, monkeypatch):
+    bid = ready_batch()
+    waiting = threading.Event()
+    finished = threading.Event()
+    original = worker._registrar_paginas
+    def controlled_register(batch):
+        if threading.current_thread().name == "late-failing-reader":
+            waiting.set()
+            assert finished.wait(10)
+            raise OSError("falha sintética de leitor atrasado")
+        return original(batch)
+    monkeypatch.setattr(worker, "_registrar_paginas", controlled_register)
+    # Nome explícito identifica somente a chamada de teste que falhará.
+    error = []
+    def late():
+        try:
+            worker.processar_lote(bid, TextLayerProvider())
+        except BaseException as exc:
+            error.append(repr(exc))
+    thread = threading.Thread(target=late, name="late-failing-reader")
+    thread.start()
+    try:
+        assert waiting.wait(10)
+        worker.processar_lote(bid, TextLayerProvider())
+    finally:
+        finished.set()
+        thread.join(10)
+    assert not thread.is_alive() and not error, error
+    with db.tx() as conn:
+        batch = dict(conn.execute("SELECT status, erro, finished_at FROM batches WHERE id=?", (bid,)).fetchone())
+        assert conn.execute("SELECT COUNT(*) FROM documents WHERE batch_id=?", (bid,)).fetchone()[0] == 6
+        assert batch["status"] == "CONCLUIDO" and batch["erro"] is None, batch
+
+
+def test_consolidation_timeout_leaves_recoverable_state_without_partial_docs(banco, monkeypatch):
+    bid = ready_batch()
+    original_connect = db.connect
+    original_consolidate = worker.consolidar_lote
+    holders = []
+    def bounded_connect():
+        conn = original_connect()
+        conn.execute("PRAGMA busy_timeout=100")
+        return conn
+    def contested_consolidate(conn, batch_id):
+        holder = original_connect()
+        holders.append(holder)
+        holder.execute("BEGIN IMMEDIATE")
+        return original_consolidate(conn, batch_id)
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(db, "connect", bounded_connect)
+            patch.setattr(worker, "consolidar_lote", contested_consolidate)
+            start = time.monotonic()
+            with pytest.raises(sqlite3.OperationalError) as error:
+                worker.processar_lote(bid, TextLayerProvider())
+            assert error.value.sqlite_errorcode == sqlite3.SQLITE_BUSY
+            assert time.monotonic() - start < 5
+    finally:
+        for holder in holders:
+            holder.rollback()
+            holder.close()
+    with db.tx() as conn:
+        assert conn.execute("SELECT status, finished_at FROM batches WHERE id=?", (bid,)).fetchone()[:] == ("PROCESSANDO", None)
+        assert conn.execute("SELECT COUNT(*) FROM documents WHERE batch_id=?", (bid,)).fetchone()[0] == 0
+    worker.processar_lote(bid, TextLayerProvider())
+    with db.tx() as conn:
+        assert conn.execute("SELECT status, erro FROM batches WHERE id=?", (bid,)).fetchone()[:] == ("CONCLUIDO", None)
+        assert not conn.execute("PRAGMA foreign_key_check").fetchall()
