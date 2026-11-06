@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCheck, Clock3, Package, RefreshCw, CircleAlert, ArrowRight } from "lucide-react";
+import { CheckCheck, Clock3, Package, RefreshCw, CircleAlert, ArrowRight, Upload } from "lucide-react";
 import { PageIntro, EmptyState } from "@/components/workspace-parts";
 import { BatchBadge } from "@/components/batch-badge";
 import { useDemo } from "@/components/demo-provider";
@@ -28,9 +28,14 @@ export function ApiOverview() {
         title="Seu contrato, seus lotes."
         description={"Acesso confirmado como " + apiSession.user.nome + ". Os indicadores abaixo são derivados de registros consultados na API."}
         action={
-          <button type="button" className="button secondary" disabled={loading} onClick={refresh}>
-            <RefreshCw size={17} /> {loading ? "Atualizando…" : "Atualizar dados"}
-          </button>
+          <div className="api-page-actions">
+            {apiSession.user.org_tipo === "FORNECEDORA" && (
+              <Link className="button" href="/painel/envio"><Upload size={17}/> Enviar arquivo</Link>
+            )}
+            <button type="button" className="button secondary" disabled={loading} onClick={refresh}>
+              <RefreshCw size={17} /> {loading ? "Atualizando…" : "Atualizar dados"}
+            </button>
+          </div>
         }
       />
       {apiSession.contracts.length === 0 && (
