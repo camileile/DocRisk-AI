@@ -110,6 +110,18 @@ async function run() {
     await page.getByText("Nenhum documento aguardando revisão.").waitFor();
     await page.getByText("Conciliações que exigem atenção", { exact: false }).waitFor();
     await go(page, "/painel/documentos/");
+    console.log("[analista] Revisão manual iniciada voluntariamente em documento apto");
+    const aptRow = page.locator("table.data-table tbody tr")
+      .filter({ has: page.locator(".status-badge", { hasText: "Apto" }) }).first();
+    await aptRow.getByRole("link", { name: "Abrir" }).click();
+    await page.getByRole("button", { name: "Iniciar revisão manual" }).click();
+    await page.getByLabel("Motivo para iniciar a revisão manual")
+      .fill("Conferência voluntária por divergência verificada no documento.");
+    await page.getByRole("button", { name: "Confirmar revisão manual" }).click();
+    await page.getByRole("heading", { name: /Conferir:/ }).waitFor();
+    await page.getByRole("button", { name: /Aprovar classificação/ }).click();
+    await page.getByRole("heading", { name: "Fila de Exceções" }).waitFor();
+    await go(page, "/painel/documentos/");
     await page.getByRole("searchbox").fill("T001");
     await page.getByRole("button", { name: "Buscar" }).click();
     await page.locator(".search-results mark").first().waitFor();

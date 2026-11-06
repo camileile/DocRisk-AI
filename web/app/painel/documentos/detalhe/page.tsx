@@ -1,7 +1,7 @@
 "use client";
 import { Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Download } from "lucide-react";
 import { useSession } from "@/components/demo-provider";
 import {
@@ -11,7 +11,7 @@ import {
   LoadingState,
   PageIntro,
 } from "@/components/workspace-parts";
-import { downloadBatchSource, formatHours, pageList, typeLabels, type DocDetail } from "@/lib/api";
+import { api, downloadBatchSource, formatHours, pageList, typeLabels, type DocDetail } from "@/lib/api";
 import { DocumentViewer } from "@/components/document-viewer";
 import { useApi } from "@/lib/use-api";
 import { useState } from "react";
@@ -32,15 +32,45 @@ function money(value: number | null | undefined) {
 
 function DocumentDetail() {
   const id = useSearchParams().get("id");
-  const { me, setContract } = useSession();
+  const { me, setContract, isDemo } = useSession();
+  const router = useRouter();
+  const [manualOpen, setManualOpen] = useState(false);
+  const [manualReason, setManualReason] = useState("");
+  const [manualBusy, setManualBusy] = useState(false);
+  const [manualError, setManualError] = useState("");
   const [sourceBusy, setSourceBusy] = useState(false);
   const [sourceError, setSourceError] = useState("");
   const { data: d, error, loading, reload } = useApi<DocDetail>(id ? `/api/documents/${id}?include_page_text=false` : null);
   if (!id) return <EmptyState title="Documento não informado." text="Abra um documento a partir da lista." />;
   if (loading) return <LoadingState />;
   if (error || !d) return <ErrorState message={error ?? "Documento não encontrado"} onRetry={reload} />;
+  const activeDocument = d;
   const bernhoeft = me?.org_tipo === "BERNHOEFT";
+  const isAnalyst = me?.papel === "ANALISTA_BH";
   const batchId = d.batch_id;
+  async function startManualReview(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!isAnalyst || isDemo || manualBusy || manualReason.trim().length < 10) return;
+    setManualBusy(true);
+    setManualError("");
+    try {
+      await api("/api/documents/" + activeDocument.id + "/review", {
+        method: "PATCH",
+        body: JSON.stringify({
+          acao: "iniciar_revisao",
+          motivo: manualReason.trim(),
+          esperado_em: activeDocument.updated_at,
+        }),
+      });
+      setContract(activeDocument.contract_id);
+      router.push("/painel/revisao/detalhe?id=" + activeDocument.id);
+    } catch (error) {
+      setManualError(error instanceof Error ? error.message : "Não foi possível iniciar a revisão manual.");
+      await reload();
+    } finally {
+      setManualBusy(false);
+    }
+  }
   async function downloadSource() {
     setSourceBusy(true);
     setSourceError("");
@@ -120,10 +150,48 @@ function DocumentDetail() {
               </>
             )}
           </dl>
-          {bernhoeft && d.status === "REVISAO_HUMANA" && (
-            <Link className="button" href={`/painel/revisao/detalhe?id=${d.id}`}>
-              Revisar documento <ArrowUpRight size={16} />
-            </Link>
+          {isAnalyst && ["REVISAO_HUMANA", "PENDENTE_CORRECAO"].includes(d.status) && (
+            <div>
+              <Link className="button" href={`/painel/revisao/detalhe?id=${d.id}`} onClick={() => setContract(d.contract_id)}>
+                Revisar documento <ArrowUpRight size={16} />
+              </Link>
+              {d.status === "PENDENTE_CORRECAO" && (
+                <p className="muted">Existe uma correção pendente da fornecedora. Confira o documento antes de decidir por aprovação ou aguardar o reenvio.</p>
+              )}
+            </div>
+          )}
+          {isAnalyst && d.status === "APTO" && (
+            <div>
+              {!manualOpen ? (
+                <button type="button" className="button secondary" disabled={isDemo}
+                  onClick={() => { setManualOpen(true); setManualError(""); }}>
+                  Iniciar revisão manual <ArrowUpRight size={16} />
+                </button>
+              ) : (
+                <form onSubmit={(event) => void startManualReview(event)}>
+                  <label className="filter-label">
+                    Motivo para iniciar a revisão manual
+                    <textarea required minLength={10} maxLength={500} rows={3}
+                      disabled={manualBusy || isDemo} value={manualReason}
+                      placeholder="Descreva o indício ou a inconsistência que precisa ser conferida."
+                      onChange={(event) => setManualReason(event.target.value)} />
+                  </label>
+                  <p className="muted">O documento passará a aguardar revisão humana e a conciliação será recalculada. A revisão fica registrada para auditoria.</p>
+                  {manualError && <p role="alert" className="api-error">{manualError}</p>}
+                  <div className="inline-form">
+                    <button type="submit" className="button" disabled={manualBusy || isDemo || manualReason.trim().length < 10}>
+                      {manualBusy ? "Iniciando…" : "Confirmar revisão manual"}
+                    </button>
+                    <button type="button" className="button secondary" disabled={manualBusy}
+                      onClick={() => { setManualOpen(false); setManualReason(""); setManualError(""); }}>Cancelar</button>
+                  </div>
+                </form>
+              )}
+              {isDemo && <p className="muted">Conecte a API de testes para iniciar uma revisão manual. A demonstração offline é somente leitura.</p>}
+            </div>
+          )}
+          {isAnalyst && d.status === "SUBSTITUIDO" && (
+            <p className="muted">Esta versão foi substituída e permanece disponível apenas para consulta do histórico.</p>
           )}
         </section>
         <section className="workspace-card">

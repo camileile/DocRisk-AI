@@ -399,9 +399,41 @@ def review_document(document_id: int, payload: dict[str, Any],
                     conn: sqlite3.Connection = Depends(get_conn)) -> dict[str, Any]:
     exigir_papel(user, [Papel.ANALISTA_BH])
     doc = _document_or_404(conn, user, document_id)
+    action = str(payload.get("acao", "")).strip().lower()
+    if action == "iniciar_revisao":
+        # Entrada voluntária do Analista, inclusive para AEJ. Documentos históricos
+        # substituídos e pendências da fornecedora não são reabertos implicitamente.
+        if doc["status"] != StatusDocumento.APTO.value:
+            raise HTTPException(409, "Somente documento apto pode iniciar nova revisão manual.")
+        motivo = payload.get("motivo")
+        esperado = payload.get("esperado_em")
+        if (not isinstance(motivo, str) or len(motivo.strip()) < 10 or
+                len(motivo.strip()) > 500 or not isinstance(esperado, str) or
+                not esperado.strip()):
+            raise HTTPException(422, "Informe justificativa de 10 a 500 caracteres e o estado atual do documento.")
+        if esperado != doc["updated_at"]:
+            raise HTTPException(409, "O documento foi alterado. Recarregue antes de iniciar a revisão.")
+        justificativa = motivo.strip()
+        motivos = _json_list(doc["motivos_revisao"])
+        motivos.append("Revisão manual iniciada: " + justificativa)
+        # Timestamp com microssegundos para não reutilizar o mesmo estado quando
+        # um documento muda mais de uma vez no mesmo segundo.
+        instante = datetime.now().isoformat(timespec="microseconds")
+        cursor = conn.execute(
+            "UPDATE documents SET status=?, motivos_revisao=?, revisado_por=?, updated_at=? "
+            "WHERE id=? AND status=? AND updated_at=?",
+            (StatusDocumento.REVISAO_HUMANA.value,
+             json.dumps(motivos, ensure_ascii=False), user.id, instante,
+             document_id, StatusDocumento.APTO.value, esperado),
+        )
+        if cursor.rowcount != 1:
+            raise HTTPException(409, "O documento mudou durante a solicitação. Recarregue os dados.")
+        _reconcile_pairs(conn, doc["contract_id"], _document_pair(doc))
+        auditar(conn, user, "DOCUMENTO_INICIAR_REVISAO", str(document_id))
+        return {"document_id": document_id, "acao": action,
+                "status": StatusDocumento.REVISAO_HUMANA.value}
     if conn.execute("SELECT 1 FROM aej_documents WHERE document_id=?", (document_id,)).fetchone():
         raise HTTPException(409, "Documento AEJ deve ser conferido na tela de cálculo estruturado.")
-    action = str(payload.get("acao", "")).strip().lower()
     now = db.agora()
     if action == "aprovar":
         if doc["status"] not in {StatusDocumento.REVISAO_HUMANA.value,
