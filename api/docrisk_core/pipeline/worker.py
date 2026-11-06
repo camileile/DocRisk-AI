@@ -426,6 +426,8 @@ def processar_lote(batch_id: int, provedor: ProvedorLeitura | None = None) -> No
     + CONCLUIDO. Lote já CONCLUIDO: nada a fazer (idempotente).
     """
     with db.tx() as conn:
+        # Reservar escrita antes de ler evita reabrir um lote concluído por outro chamador.
+        conn.execute("BEGIN IMMEDIATE")
         lote = conn.execute("SELECT * FROM batches WHERE id = ?", (batch_id,)).fetchone()
         if lote is None:
             raise LoteNaoEncontrado(f"Lote {batch_id} não existe.")
@@ -506,6 +508,10 @@ def consolidar_lote(conn: sqlite3.Connection, batch_id: int) -> set[tuple[str, s
     - PENDENTE_CORRECAO -> F3: rules.pendencias.criar_pendencia.
     Depois chama F3: rules.conciliacao.conciliar para cada par afetado e devolve esses pares.
     """
+    # A leitura de idempotência e os INSERTs precisam da mesma reserva de escrita.
+    # SELECT sozinho não abre transação no modo padrão do sqlite3.
+    if not conn.in_transaction:
+        conn.execute("BEGIN IMMEDIATE")
     if conn.execute("SELECT 1 FROM documents WHERE batch_id = ? LIMIT 1", (batch_id,)).fetchone():
         return _pares_do_lote(conn, batch_id)
 
