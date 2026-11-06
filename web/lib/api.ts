@@ -12,7 +12,7 @@ export type Papel = "ADMIN_PLATAFORMA" | "ADMIN_BH" | "ANALISTA_BH" | "GESTOR_FO
 export type OrgTipo = "PLATAFORMA" | "BERNHOEFT" | "FORNECEDORA" | "CONTRATANTE";
 
 export type Me = { id: string; nome: string; org_id: string; org_tipo: OrgTipo; papel: Papel };
-export type DemoUser = Me & { role: Papel; token: string };
+export type DemoUser = Omit<Me, "papel"> & { role: Papel; token: string };
 export type Contract = {
   id: string;
   nome: string;
@@ -142,6 +142,7 @@ export type ReportItem = {
     tipo: string; documento: number; versao: number; lote: number; paginas: number[];
     origem?: string; vinculo_aej?: string; linhas_origem?: number[];
   }[];
+  analise_id?: number;
 };
 export type ReportContent = {
   contrato: { id: string; nome: string };
@@ -166,6 +167,12 @@ export type Report = {
   autor_id?: string;
   created_at?: string;
   publicado_em: string | null;
+  publicado_por?: string | null;
+};
+export type ReportCreateInput = {
+  contract_id: string;
+  competencia: string;
+  observacoes?: string;
 };
 export type AnalystOverviewData = {
   filtros: {
