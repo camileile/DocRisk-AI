@@ -209,6 +209,8 @@ def create_company(payload: CompanyInput, user: Usuario = Depends(usuario_atual)
             fornecedora_id=org_id,
         ))
     auditar(conn, user, "EMPRESA_CRIADA", audit_target)
+    # Persistir antes da resposta: a interface consulta novamente imediatamente.
+    conn.commit()
     return {"id": org_id, "nome": nome, "tipo": payload.tipo, "cnpj": cnpj, "contract_id": contract_id}
 
 
@@ -216,7 +218,9 @@ def create_company(payload: CompanyInput, user: Usuario = Depends(usuario_atual)
 def create_contract(payload: ContractInput, user: Usuario = Depends(usuario_atual),
                     conn: sqlite3.Connection = Depends(_conn)) -> dict[str, str]:
     _write_allowed(user)
-    return {"id": _create_contract(conn, user, payload)}
+    contract_id = _create_contract(conn, user, payload)
+    conn.commit()
+    return {"id": contract_id}
 
 
 @router.post("/users", status_code=201)
@@ -237,6 +241,8 @@ def create_user(payload: UserInput, user: Usuario = Depends(usuario_atual),
         (uid, payload.nome.strip(), payload.org_id, payload.papel, token),
     )
     auditar(conn, user, "USUARIO_CRIADO", uid)
+    # Persistir antes da resposta: a interface consulta novamente imediatamente.
+    conn.commit()
     # Token só é mostrado no momento do cadastro, no ambiente de testes.
     return {"id": uid, "nome": payload.nome.strip(), "org_id": payload.org_id,
             "papel": payload.papel, "ativo": 1, "token_teste": token}
@@ -254,4 +260,6 @@ def update_user_status(uid: str, payload: StatusInput,
         raise HTTPException(404, "Usuário não encontrado.")
     conn.execute("UPDATE users SET ativo=? WHERE id=?", (int(payload.ativo), uid))
     auditar(conn, user, "USUARIO_STATUS_ALTERADO", uid)
+    # Persistir antes da resposta: a interface consulta novamente imediatamente.
+    conn.commit()
     return {"id": uid, "ativo": payload.ativo}

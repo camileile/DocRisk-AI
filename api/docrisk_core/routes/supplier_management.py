@@ -59,6 +59,8 @@ def create_operator(payload: OperatorInput, user: Usuario = Depends(usuario_atua
     conn.execute("INSERT INTO users (id,nome,org_id,role,token) VALUES (?,?,?,'OPERADOR_FORN',?)",
                  (uid, payload.nome, user.org_id, token))
     auditar(conn, user, "OPERADOR_CRIADO", uid)
+    # Persistir antes da resposta: a interface consulta novamente imediatamente.
+    conn.commit()
     # Credencial efêmera de teste, mostrada apenas nesta resposta, nunca na lista.
     return {"id": uid, "nome": payload.nome, "org_id": user.org_id,
             "papel": "OPERADOR_FORN", "ativo": 1, "token_teste": token}
@@ -74,4 +76,6 @@ def operator_status(uid: str, payload: StatusInput, user: Usuario = Depends(usua
         raise HTTPException(404, "Operador não encontrado.")
     conn.execute("UPDATE users SET ativo=? WHERE id=?", (int(payload.ativo), uid))
     auditar(conn, user, "OPERADOR_ATIVADO" if payload.ativo else "OPERADOR_DESATIVADO", uid)
+    # Persistir antes da resposta: a interface consulta novamente imediatamente.
+    conn.commit()
     return {"id": uid, "ativo": payload.ativo}

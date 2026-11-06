@@ -86,6 +86,8 @@ def create_auditor(payload: AuditorInput, user: Usuario = Depends(usuario_atual)
     conn.execute("INSERT INTO organizations (id,nome,tipo) VALUES (?,?,'BERNHOEFT')", (org, payload.nome))
     conn.execute("INSERT INTO users (id,nome,org_id,role,token) VALUES (?,?,?,'ADMIN_BH',?)", (uid, payload.administrador, org, token))
     auditar(conn, user, "AUDITORA_CRIADA", org)
+    # Persistir antes da resposta: a interface consulta novamente imediatamente.
+    conn.commit()
     return {"id": org, "administrador_id": uid, "token_teste": token}
 
 
@@ -98,6 +100,8 @@ def administrator_status(uid: str, payload: StatusInput, user: Usuario = Depends
         raise HTTPException(404, "Administrador da auditora não encontrado.")
     conn.execute("UPDATE users SET ativo=? WHERE id=?", (int(payload.ativo), uid))
     auditar(conn, user, "ADMIN_AUDITORA_ATIVADO" if payload.ativo else "ADMIN_AUDITORA_DESATIVADO", uid)
+    # Persistir antes da resposta: a interface consulta novamente imediatamente.
+    conn.commit()
     return {"id": uid, "ativo": payload.ativo}
 
 
@@ -106,4 +110,6 @@ def update_settings(payload: SettingsInput, user: Usuario = Depends(usuario_atua
     authorize(user, write=True)
     conn.execute("UPDATE platform_settings SET nome=?,contato=? WHERE id=1", (payload.nome, payload.contato.strip()))
     auditar(conn, user, "CONFIGURACAO_PLATAFORMA_ATUALIZADA", "dados-institucionais")
+    # Persistir antes da resposta: a interface consulta novamente imediatamente.
+    conn.commit()
     return {"nome": payload.nome, "contato": payload.contato.strip()}
