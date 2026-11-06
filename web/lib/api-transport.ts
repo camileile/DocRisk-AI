@@ -37,7 +37,24 @@ function endpoint(path: string): string {
   return origin.origin + path;
 }
 
-function httpError(status: number): ApiError {
+/* As mensagens `detail` do backend são escritas para o usuário ("Somente rascunhos podem ser
+ * publicados", motivo de arquivo recusado…). Só são exibidas quando são texto curto e simples;
+ * HTML, várias linhas, rastros de erro ou listas de validação caem na mensagem controlada. */
+async function apiDetail(response: Response): Promise<string | null> {
+  try {
+    if (!(response.headers.get("Content-Type") ?? "").includes("application/json")) return null;
+    const detail = (await response.json())?.detail;
+    if (typeof detail !== "string") return null;
+    const text = detail.trim();
+    if (!text || text.length > 300 || /[<>\r\n]/.test(text) || /traceback|exception/i.test(text)) return null;
+    return text;
+  } catch {
+    return null;
+  }
+}
+
+function httpError(status: number, detail: string | null = null): ApiError {
+  if (detail) return new ApiError(status, detail);
   const messages: Record<number, string> = {
     401: "Token inválido, expirado ou usuário inativo.",
     403: "O perfil não tem acesso a esta operação.",
@@ -94,7 +111,11 @@ export async function request<T>(
       ...init, headers, cache: "no-store", redirect: "error", signal: controller.signal,
     });
     check();
-    if (!response.ok) throw httpError(response.status);
+    if (!response.ok) {
+      const detail = await apiDetail(response);
+      check();
+      throw httpError(response.status, detail);
+    }
     let result: T;
     try { result = await consume(response); } catch (error) {
       check();
